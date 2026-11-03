@@ -15,13 +15,9 @@ import {
   Eye,
   EyeOff,
   Star,
-  ExternalLink,
   Save,
   Search,
-  Filter,
   AlertCircle,
-  Copy,
-  Check,
   Sparkles,
 } from 'lucide-react';
 import { useStudio } from '../context/StudioContext';
@@ -33,7 +29,6 @@ import {
   FaqItem,
   TestimonialItem,
   ProjectCategory,
-  ProjectType,
   InquiryStatus,
 } from '../types';
 
@@ -55,11 +50,8 @@ export const AdminDashboard: React.FC = () => {
     deleteInquiry,
     services,
     updateService,
-    addService,
-    deleteService,
     faqs,
     addFaq,
-    updateFaq,
     deleteFaq,
     testimonials,
     addTestimonial,
@@ -211,14 +203,16 @@ export const AdminDashboard: React.FC = () => {
     return (
       <>
         <SEO title="Studio Administration | Sign In" />
-        <div className="min-h-screen flex items-center justify-center pt-24 pb-16 px-4 bg-[#0B0D12]">
-          <div className="w-full max-w-md rounded-3xl border border-[#252A36] bg-[#121620] p-8 sm:p-10 shadow-2xl text-left space-y-6">
+        <div className="min-h-screen flex items-center justify-center pt-24 pb-16 px-4 bg-[#0B0D12] dark:bg-[#0B0D12] light:bg-[#FAFAFC] transition-colors">
+          <div className="w-full max-w-md rounded-3xl border border-[#252A36] dark:border-[#252A36] light:border-slate-200 bg-[#121620] dark:bg-[#121620] light:bg-white p-8 sm:p-10 shadow-2xl text-left space-y-6">
             <div className="text-center space-y-2">
               <div className="w-12 h-12 rounded-2xl bg-indigo-500/10 border border-indigo-500/30 text-indigo-400 flex items-center justify-center mx-auto">
                 <Shield className="w-6 h-6" />
               </div>
-              <h1 className="text-2xl font-extrabold text-white">Studio Admin Access</h1>
-              <p className="text-xs text-zinc-400">
+              <h1 className="text-2xl font-extrabold text-white dark:text-white light:text-slate-900">
+                Studio Admin Access
+              </h1>
+              <p className="text-xs text-zinc-400 dark:text-zinc-400 light:text-slate-500">
                 Secure administration portal for Kinetic Studio management.
               </p>
             </div>
@@ -232,7 +226,7 @@ export const AdminDashboard: React.FC = () => {
 
             <form onSubmit={handleLogin} className="space-y-4">
               <div>
-                <label className="block text-xs font-medium text-zinc-300 mb-1">
+                <label className="block text-xs font-medium text-zinc-300 dark:text-zinc-300 light:text-slate-700 mb-1">
                   Administrator Email
                 </label>
                 <input
@@ -241,12 +235,12 @@ export const AdminDashboard: React.FC = () => {
                   placeholder="admin@kineticstudio.co"
                   value={authEmail}
                   onChange={e => setAuthEmail(e.target.value)}
-                  className="w-full px-4 py-2.5 rounded-xl border border-[#252A36] bg-[#0B0D12] text-sm text-white placeholder:text-zinc-600 focus:outline-none focus:border-indigo-500"
+                  className="w-full px-4 py-2.5 rounded-xl border border-[#252A36] dark:border-[#252A36] light:border-slate-300 bg-[#0B0D12] dark:bg-[#0B0D12] light:bg-slate-50 text-sm text-white dark:text-white light:text-slate-900 placeholder:text-zinc-600 dark:placeholder:text-zinc-600 light:placeholder:text-slate-400 focus:outline-none focus:border-indigo-500"
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-medium text-zinc-300 mb-1">
+                <label className="block text-xs font-medium text-zinc-300 dark:text-zinc-300 light:text-slate-700 mb-1">
                   Secure Password
                 </label>
                 <input
@@ -255,7 +249,7 @@ export const AdminDashboard: React.FC = () => {
                   placeholder="••••••••••••"
                   value={authPassword}
                   onChange={e => setAuthPassword(e.target.value)}
-                  className="w-full px-4 py-2.5 rounded-xl border border-[#252A36] bg-[#0B0D12] text-sm text-white placeholder:text-zinc-600 focus:outline-none focus:border-indigo-500"
+                  className="w-full px-4 py-2.5 rounded-xl border border-[#252A36] dark:border-[#252A36] light:border-slate-300 bg-[#0B0D12] dark:bg-[#0B0D12] light:bg-slate-50 text-sm text-white dark:text-white light:text-slate-900 placeholder:text-zinc-600 dark:placeholder:text-zinc-600 light:placeholder:text-slate-400 focus:outline-none focus:border-indigo-500"
                 />
               </div>
 
@@ -268,14 +262,14 @@ export const AdminDashboard: React.FC = () => {
               </button>
             </form>
 
-            <div className="pt-4 border-t border-[#252A36] text-center space-y-3">
-              <div className="text-[11px] text-zinc-400">
+            <div className="pt-4 border-t border-[#252A36] dark:border-[#252A36] light:border-slate-200 text-center space-y-3">
+              <div className="text-[11px] text-zinc-400 dark:text-zinc-400 light:text-slate-500">
                 Preview Mode active. You can sign in immediately:
               </div>
               <button
                 type="button"
                 onClick={handleQuickLogin}
-                className="w-full py-2.5 px-3 rounded-xl border border-indigo-500/30 bg-indigo-500/10 hover:bg-indigo-500/20 text-xs font-mono text-indigo-300 transition-colors flex items-center justify-center gap-2"
+                className="w-full py-2.5 px-3 rounded-xl border border-indigo-500/30 dark:border-indigo-500/30 light:border-indigo-200 bg-indigo-500/10 hover:bg-indigo-500/20 text-xs font-mono text-indigo-300 dark:text-indigo-300 light:text-indigo-700 transition-colors flex items-center justify-center gap-2"
               >
                 <Sparkles className="w-3.5 h-3.5" />
                 <span>Instant Sign-In with Demo Credentials</span>
@@ -297,21 +291,21 @@ export const AdminDashboard: React.FC = () => {
     <>
       <SEO title="Studio Administration | Kinetic Studio" />
 
-      <div className="min-h-screen pt-28 pb-20 bg-[#0B0D12] text-left">
+      <div className="min-h-screen pt-28 pb-20 bg-[#0B0D12] dark:bg-[#0B0D12] light:bg-[#FAFAFC] text-left transition-colors">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           {/* Top Admin Header Bar */}
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between pb-6 mb-8 border-b border-[#252A36] gap-4">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between pb-6 mb-8 border-b border-[#252A36] dark:border-[#252A36] light:border-slate-200 gap-4">
             <div>
-              <div className="flex items-center gap-2 text-xs font-mono text-indigo-400">
+              <div className="flex items-center gap-2 text-xs font-mono text-indigo-400 light:text-indigo-600">
                 <Shield className="w-4 h-4" />
                 <span>ADMINISTRATION COMMAND CENTER</span>
               </div>
-              <h1 className="text-2xl sm:text-3xl font-extrabold text-white mt-1">
+              <h1 className="text-2xl sm:text-3xl font-extrabold text-white dark:text-white light:text-slate-900 mt-1">
                 Studio Management Portal
               </h1>
-              <p className="text-xs text-zinc-400">
-                Signed in as <strong className="text-zinc-200">{adminUser?.email}</strong> &bull; Role:{' '}
-                <span className="text-emerald-400 font-mono font-semibold uppercase">{adminUser?.role}</span>
+              <p className="text-xs text-zinc-400 dark:text-zinc-400 light:text-slate-500">
+                Signed in as <strong className="text-zinc-200 dark:text-zinc-200 light:text-slate-800">{adminUser?.email}</strong> &bull; Role:{' '}
+                <span className="text-emerald-400 light:text-emerald-600 font-mono font-semibold uppercase">{adminUser?.role}</span>
               </p>
             </div>
 
@@ -320,8 +314,8 @@ export const AdminDashboard: React.FC = () => {
               <div
                 className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-mono border ${
                   isConfigured
-                    ? 'border-emerald-500/30 bg-emerald-500/10 text-emerald-400'
-                    : 'border-amber-500/30 bg-amber-500/10 text-amber-300'
+                    ? 'border-emerald-500/30 bg-emerald-500/10 text-emerald-400 light:border-emerald-300 light:text-emerald-700'
+                    : 'border-amber-500/30 bg-amber-500/10 text-amber-300 light:border-amber-300 light:text-amber-800'
                 }`}
               >
                 <span className={`w-2 h-2 rounded-full ${isConfigured ? 'bg-emerald-400' : 'bg-amber-400 animate-pulse'}`} />
@@ -330,7 +324,7 @@ export const AdminDashboard: React.FC = () => {
 
               <button
                 onClick={logoutAdmin}
-                className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl border border-[#252A36] bg-[#121620] text-xs font-medium text-zinc-300 hover:text-white hover:border-zinc-600 transition-colors"
+                className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl border border-[#252A36] dark:border-[#252A36] light:border-slate-200 bg-[#121620] dark:bg-[#121620] light:bg-white text-xs font-medium text-zinc-300 dark:text-zinc-300 light:text-slate-700 hover:text-white dark:hover:text-white light:hover:text-slate-900 transition-colors shadow-sm"
               >
                 <LogOut className="w-3.5 h-3.5" />
                 <span>Sign Out</span>
@@ -339,13 +333,13 @@ export const AdminDashboard: React.FC = () => {
           </div>
 
           {/* Tab Navigation */}
-          <div className="flex items-center gap-2 overflow-x-auto pb-4 mb-8 no-scrollbar border-b border-[#252A36]/60">
+          <div className="flex items-center gap-2 overflow-x-auto pb-4 mb-8 no-scrollbar border-b border-[#252A36]/60 dark:border-[#252A36]/60 light:border-slate-200">
             <button
               onClick={() => setActiveTab('overview')}
               className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-semibold whitespace-nowrap transition-all ${
                 activeTab === 'overview'
                   ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-500/25'
-                  : 'text-zinc-400 hover:text-white bg-[#121620]'
+                  : 'text-zinc-400 dark:text-zinc-400 light:text-slate-600 hover:text-white dark:hover:text-white light:hover:text-slate-900 bg-[#121620] dark:bg-[#121620] light:bg-white border border-transparent light:border-slate-200'
               }`}
             >
               <LayoutDashboard className="w-4 h-4" />
@@ -357,7 +351,7 @@ export const AdminDashboard: React.FC = () => {
               className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-semibold whitespace-nowrap transition-all ${
                 activeTab === 'projects'
                   ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-500/25'
-                  : 'text-zinc-400 hover:text-white bg-[#121620]'
+                  : 'text-zinc-400 dark:text-zinc-400 light:text-slate-600 hover:text-white dark:hover:text-white light:hover:text-slate-900 bg-[#121620] dark:bg-[#121620] light:bg-white border border-transparent light:border-slate-200'
               }`}
             >
               <FolderGit2 className="w-4 h-4" />
@@ -369,7 +363,7 @@ export const AdminDashboard: React.FC = () => {
               className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-semibold whitespace-nowrap transition-all ${
                 activeTab === 'inquiries'
                   ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-500/25'
-                  : 'text-zinc-400 hover:text-white bg-[#121620]'
+                  : 'text-zinc-400 dark:text-zinc-400 light:text-slate-600 hover:text-white dark:hover:text-white light:hover:text-slate-900 bg-[#121620] dark:bg-[#121620] light:bg-white border border-transparent light:border-slate-200'
               }`}
             >
               <Mail className="w-4 h-4" />
@@ -386,7 +380,7 @@ export const AdminDashboard: React.FC = () => {
               className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-semibold whitespace-nowrap transition-all ${
                 activeTab === 'settings'
                   ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-500/25'
-                  : 'text-zinc-400 hover:text-white bg-[#121620]'
+                  : 'text-zinc-400 dark:text-zinc-400 light:text-slate-600 hover:text-white dark:hover:text-white light:hover:text-slate-900 bg-[#121620] dark:bg-[#121620] light:bg-white border border-transparent light:border-slate-200'
               }`}
             >
               <Settings className="w-4 h-4" />
@@ -398,7 +392,7 @@ export const AdminDashboard: React.FC = () => {
               className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-semibold whitespace-nowrap transition-all ${
                 activeTab === 'content'
                   ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-500/25'
-                  : 'text-zinc-400 hover:text-white bg-[#121620]'
+                  : 'text-zinc-400 dark:text-zinc-400 light:text-slate-600 hover:text-white dark:hover:text-white light:hover:text-slate-900 bg-[#121620] dark:bg-[#121620] light:bg-white border border-transparent light:border-slate-200'
               }`}
             >
               <FileEdit className="w-4 h-4" />
@@ -410,7 +404,7 @@ export const AdminDashboard: React.FC = () => {
               className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-semibold whitespace-nowrap transition-all ${
                 activeTab === 'database'
                   ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-500/25'
-                  : 'text-zinc-400 hover:text-white bg-[#121620]'
+                  : 'text-zinc-400 dark:text-zinc-400 light:text-slate-600 hover:text-white dark:hover:text-white light:hover:text-slate-900 bg-[#121620] dark:bg-[#121620] light:bg-white border border-transparent light:border-slate-200'
               }`}
             >
               <Database className="w-4 h-4" />
@@ -425,27 +419,27 @@ export const AdminDashboard: React.FC = () => {
             <div className="space-y-8 animate-fadeIn">
               {/* Metrics cards */}
               <div className="grid grid-cols-2 md:grid-cols-4 gap-5">
-                <div className="p-6 rounded-2xl border border-[#252A36] bg-[#121620] space-y-1">
-                  <div className="text-xs font-mono uppercase text-zinc-400">Total Projects</div>
-                  <div className="text-3xl font-extrabold text-white">{totalProjects}</div>
+                <div className="p-6 rounded-2xl border border-[#252A36] dark:border-[#252A36] light:border-slate-200 bg-[#121620] dark:bg-[#121620] light:bg-white space-y-1 shadow-sm">
+                  <div className="text-xs font-mono uppercase text-zinc-400 dark:text-zinc-400 light:text-slate-500">Total Projects</div>
+                  <div className="text-3xl font-extrabold text-white dark:text-white light:text-slate-900">{totalProjects}</div>
                   <div className="text-[11px] text-zinc-500">In database archive</div>
                 </div>
 
-                <div className="p-6 rounded-2xl border border-[#252A36] bg-[#121620] space-y-1">
-                  <div className="text-xs font-mono uppercase text-zinc-400">Published Projects</div>
-                  <div className="text-3xl font-extrabold text-emerald-400">{publishedProjects}</div>
+                <div className="p-6 rounded-2xl border border-[#252A36] dark:border-[#252A36] light:border-slate-200 bg-[#121620] dark:bg-[#121620] light:bg-white space-y-1 shadow-sm">
+                  <div className="text-xs font-mono uppercase text-zinc-400 dark:text-zinc-400 light:text-slate-500">Published Projects</div>
+                  <div className="text-3xl font-extrabold text-emerald-400 light:text-emerald-600">{publishedProjects}</div>
                   <div className="text-[11px] text-zinc-500">Live on public website</div>
                 </div>
 
-                <div className="p-6 rounded-2xl border border-[#252A36] bg-[#121620] space-y-1">
-                  <div className="text-xs font-mono uppercase text-zinc-400">New Inquiries</div>
-                  <div className="text-3xl font-extrabold text-rose-400">{newInquiries}</div>
+                <div className="p-6 rounded-2xl border border-[#252A36] dark:border-[#252A36] light:border-slate-200 bg-[#121620] dark:bg-[#121620] light:bg-white space-y-1 shadow-sm">
+                  <div className="text-xs font-mono uppercase text-zinc-400 dark:text-zinc-400 light:text-slate-500">New Inquiries</div>
+                  <div className="text-3xl font-extrabold text-rose-400 light:text-rose-600">{newInquiries}</div>
                   <div className="text-[11px] text-zinc-500">Requires review</div>
                 </div>
 
-                <div className="p-6 rounded-2xl border border-[#252A36] bg-[#121620] space-y-1">
-                  <div className="text-xs font-mono uppercase text-zinc-400">Active Pipeline</div>
-                  <div className="text-3xl font-extrabold text-indigo-400">{pendingInquiries}</div>
+                <div className="p-6 rounded-2xl border border-[#252A36] dark:border-[#252A36] light:border-slate-200 bg-[#121620] dark:bg-[#121620] light:bg-white space-y-1 shadow-sm">
+                  <div className="text-xs font-mono uppercase text-zinc-400 dark:text-zinc-400 light:text-slate-500">Active Pipeline</div>
+                  <div className="text-3xl font-extrabold text-indigo-400 light:text-indigo-600">{pendingInquiries}</div>
                   <div className="text-[11px] text-zinc-500">New &amp; reviewing</div>
                 </div>
               </div>
@@ -453,15 +447,15 @@ export const AdminDashboard: React.FC = () => {
               {/* Quick Actions & Recent Inquiries */}
               <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
                 {/* Recent Inquiries List */}
-                <div className="lg:col-span-2 rounded-2xl border border-[#252A36] bg-[#121620] p-6 space-y-4">
-                  <div className="flex items-center justify-between pb-3 border-b border-[#252A36]">
-                    <h3 className="text-base font-bold text-white flex items-center gap-2">
-                      <Mail className="w-4 h-4 text-indigo-400" />
+                <div className="lg:col-span-2 rounded-2xl border border-[#252A36] dark:border-[#252A36] light:border-slate-200 bg-[#121620] dark:bg-[#121620] light:bg-white p-6 space-y-4 shadow-sm">
+                  <div className="flex items-center justify-between pb-3 border-b border-[#252A36] dark:border-[#252A36] light:border-slate-200">
+                    <h3 className="text-base font-bold text-white dark:text-white light:text-slate-900 flex items-center gap-2">
+                      <Mail className="w-4 h-4 text-indigo-400 light:text-indigo-600" />
                       <span>Recent Project Inquiries</span>
                     </h3>
                     <button
                       onClick={() => setActiveTab('inquiries')}
-                      className="text-xs text-indigo-400 hover:text-indigo-300 font-semibold"
+                      className="text-xs text-indigo-400 light:text-indigo-600 hover:text-indigo-300 font-semibold"
                     >
                       View All &rarr;
                     </button>
@@ -471,26 +465,26 @@ export const AdminDashboard: React.FC = () => {
                     {inquiries.slice(0, 4).map(inq => (
                       <div
                         key={inq.id}
-                        className="p-4 rounded-xl border border-white/5 bg-[#0B0D12] flex items-center justify-between gap-4"
+                        className="p-4 rounded-xl border border-white/5 dark:border-white/5 light:border-slate-200 bg-[#0B0D12] dark:bg-[#0B0D12] light:bg-slate-50 flex items-center justify-between gap-4"
                       >
                         <div>
                           <div className="flex items-center gap-2">
-                            <span className="text-sm font-bold text-white">{inq.full_name}</span>
-                            <span className="text-xs text-zinc-400">({inq.email})</span>
+                            <span className="text-sm font-bold text-white dark:text-white light:text-slate-900">{inq.full_name}</span>
+                            <span className="text-xs text-zinc-400 dark:text-zinc-400 light:text-slate-500">({inq.email})</span>
                           </div>
-                          <div className="text-xs text-zinc-400 mt-1">
-                            Type: <span className="text-zinc-200">{inq.project_type}</span> &bull; Budget:{' '}
-                            <span className="text-zinc-200">{inq.budget_range}</span>
+                          <div className="text-xs text-zinc-400 dark:text-zinc-400 light:text-slate-500 mt-1">
+                            Type: <span className="text-zinc-200 dark:text-zinc-200 light:text-slate-800 font-medium">{inq.project_type}</span> &bull; Budget:{' '}
+                            <span className="text-zinc-200 dark:text-zinc-200 light:text-slate-800 font-medium">{inq.budget_range}</span>
                           </div>
                         </div>
 
                         <span
                           className={`text-[10px] font-mono px-2.5 py-1 rounded-full uppercase tracking-wider ${
                             inq.status === 'new'
-                              ? 'bg-rose-500/20 text-rose-300 border border-rose-500/30'
+                              ? 'bg-rose-500/20 text-rose-300 light:bg-rose-100 light:text-rose-700 border border-rose-500/30 light:border-rose-300'
                               : inq.status === 'reviewing'
-                              ? 'bg-amber-500/20 text-amber-300 border border-amber-500/30'
-                              : 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/30'
+                              ? 'bg-amber-500/20 text-amber-300 light:bg-amber-100 light:text-amber-800 border border-amber-500/30 light:border-amber-300'
+                              : 'bg-emerald-500/20 text-emerald-300 light:bg-emerald-100 light:text-emerald-800 border border-emerald-500/30 light:border-emerald-300'
                           }`}
                         >
                           {inq.status}
@@ -501,14 +495,14 @@ export const AdminDashboard: React.FC = () => {
                 </div>
 
                 {/* Quick Shortcuts */}
-                <div className="rounded-2xl border border-[#252A36] bg-[#121620] p-6 space-y-4">
-                  <h3 className="text-base font-bold text-white pb-3 border-b border-[#252A36]">
+                <div className="rounded-2xl border border-[#252A36] dark:border-[#252A36] light:border-slate-200 bg-[#121620] dark:bg-[#121620] light:bg-white p-6 space-y-4 shadow-sm">
+                  <h3 className="text-base font-bold text-white dark:text-white light:text-slate-900 pb-3 border-b border-[#252A36] dark:border-[#252A36] light:border-slate-200">
                     Quick Actions
                   </h3>
                   <div className="space-y-2.5">
                     <button
                       onClick={openNewProjectModal}
-                      className="w-full py-3 px-4 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-semibold flex items-center justify-center gap-2 transition-colors"
+                      className="w-full py-3 px-4 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-semibold flex items-center justify-center gap-2 transition-colors shadow-md shadow-indigo-500/20"
                     >
                       <Plus className="w-4 h-4" />
                       <span>Add New Project</span>
@@ -516,7 +510,7 @@ export const AdminDashboard: React.FC = () => {
 
                     <button
                       onClick={() => setActiveTab('settings')}
-                      className="w-full py-3 px-4 rounded-xl border border-[#252A36] bg-[#0B0D12] hover:bg-[#181D2A] text-zinc-300 text-xs font-semibold flex items-center justify-center gap-2 transition-colors"
+                      className="w-full py-3 px-4 rounded-xl border border-[#252A36] dark:border-[#252A36] light:border-slate-200 bg-[#0B0D12] dark:bg-[#0B0D12] light:bg-slate-50 hover:bg-[#181D2A] light:hover:bg-slate-100 text-zinc-300 dark:text-zinc-300 light:text-slate-700 text-xs font-semibold flex items-center justify-center gap-2 transition-colors"
                     >
                       <Settings className="w-4 h-4" />
                       <span>Configure Company Info</span>
@@ -524,7 +518,7 @@ export const AdminDashboard: React.FC = () => {
 
                     <button
                       onClick={() => setActiveTab('database')}
-                      className="w-full py-3 px-4 rounded-xl border border-[#252A36] bg-[#0B0D12] hover:bg-[#181D2A] text-zinc-300 text-xs font-semibold flex items-center justify-center gap-2 transition-colors"
+                      className="w-full py-3 px-4 rounded-xl border border-[#252A36] dark:border-[#252A36] light:border-slate-200 bg-[#0B0D12] dark:bg-[#0B0D12] light:bg-slate-50 hover:bg-[#181D2A] light:hover:bg-slate-100 text-zinc-300 dark:text-zinc-300 light:text-slate-700 text-xs font-semibold flex items-center justify-center gap-2 transition-colors"
                     >
                       <Database className="w-4 h-4" />
                       <span>Supabase Credentials Status</span>
@@ -548,7 +542,7 @@ export const AdminDashboard: React.FC = () => {
                     placeholder="Search projects..."
                     value={projectSearch}
                     onChange={e => setProjectSearch(e.target.value)}
-                    className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-[#252A36] bg-[#121620] text-xs text-white placeholder:text-zinc-500 focus:outline-none focus:border-indigo-500"
+                    className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-[#252A36] dark:border-[#252A36] light:border-slate-300 bg-[#121620] dark:bg-[#121620] light:bg-white text-xs text-white dark:text-white light:text-slate-900 placeholder:text-zinc-500 focus:outline-none focus:border-indigo-500 shadow-sm"
                   />
                 </div>
 
@@ -561,11 +555,11 @@ export const AdminDashboard: React.FC = () => {
                 </button>
               </div>
 
-              {/* Projects Table / Cards */}
-              <div className="rounded-2xl border border-[#252A36] bg-[#121620] overflow-hidden">
+              {/* Projects Table */}
+              <div className="rounded-2xl border border-[#252A36] dark:border-[#252A36] light:border-slate-200 bg-[#121620] dark:bg-[#121620] light:bg-white overflow-hidden shadow-sm">
                 <div className="overflow-x-auto">
                   <table className="w-full text-left text-xs">
-                    <thead className="bg-[#0B0D12] text-zinc-400 font-mono uppercase tracking-wider border-b border-[#252A36]">
+                    <thead className="bg-[#0B0D12] dark:bg-[#0B0D12] light:bg-slate-100 text-zinc-400 dark:text-zinc-400 light:text-slate-600 font-mono uppercase tracking-wider border-b border-[#252A36] dark:border-[#252A36] light:border-slate-200">
                       <tr>
                         <th className="py-4 px-6">Project</th>
                         <th className="py-4 px-6">Category</th>
@@ -574,26 +568,26 @@ export const AdminDashboard: React.FC = () => {
                         <th className="py-4 px-6">Actions</th>
                       </tr>
                     </thead>
-                    <tbody className="divide-y divide-[#252A36]">
+                    <tbody className="divide-y divide-[#252A36] dark:divide-[#252A36] light:divide-slate-200">
                       {projects
                         .filter(p => p.title.toLowerCase().includes(projectSearch.toLowerCase()))
                         .map(proj => (
-                          <tr key={proj.id} className="hover:bg-white/[0.02] transition-colors">
+                          <tr key={proj.id} className="hover:bg-white/[0.02] dark:hover:bg-white/[0.02] light:hover:bg-slate-50 transition-colors">
                             <td className="py-4 px-6">
                               <div className="flex items-center gap-3">
                                 <img
                                   src={proj.thumbnail_url}
                                   alt={proj.title}
-                                  className="w-12 h-9 rounded-lg object-cover border border-white/10 shrink-0"
+                                  className="w-12 h-9 rounded-lg object-cover border border-white/10 dark:border-white/10 light:border-slate-200 shrink-0"
                                 />
                                 <div>
-                                  <div className="font-bold text-white text-sm">{proj.title}</div>
-                                  <div className="text-[11px] text-zinc-400">{proj.client_name}</div>
+                                  <div className="font-bold text-white dark:text-white light:text-slate-900 text-sm">{proj.title}</div>
+                                  <div className="text-[11px] text-zinc-400 dark:text-zinc-400 light:text-slate-500">{proj.client_name}</div>
                                 </div>
                               </div>
                             </td>
 
-                            <td className="py-4 px-6 text-zinc-300 font-mono">{proj.category}</td>
+                            <td className="py-4 px-6 text-zinc-300 dark:text-zinc-300 light:text-slate-700 font-mono">{proj.category}</td>
 
                             <td className="py-4 px-6">
                               <button
@@ -602,8 +596,8 @@ export const AdminDashboard: React.FC = () => {
                                 }
                                 className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-mono uppercase tracking-wider border ${
                                   proj.is_published
-                                    ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-400'
-                                    : 'bg-zinc-800 border-zinc-700 text-zinc-400'
+                                    ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-400 light:bg-emerald-100 light:border-emerald-300 light:text-emerald-700'
+                                    : 'bg-zinc-800 border-zinc-700 text-zinc-400 light:bg-slate-100 light:border-slate-200 light:text-slate-600'
                                 }`}
                               >
                                 {proj.is_published ? (
@@ -627,8 +621,8 @@ export const AdminDashboard: React.FC = () => {
                                 }
                                 className={`p-1.5 rounded-lg border transition-colors ${
                                   proj.is_featured
-                                    ? 'border-amber-500/40 bg-amber-500/10 text-amber-400'
-                                    : 'border-zinc-800 text-zinc-600 hover:text-zinc-400'
+                                    ? 'border-amber-500/40 bg-amber-500/10 text-amber-400 light:bg-amber-50 light:border-amber-300 light:text-amber-600'
+                                    : 'border-zinc-800 dark:border-zinc-800 light:border-slate-200 text-zinc-600 dark:text-zinc-600 light:text-slate-400 hover:text-zinc-400'
                                 }`}
                                 title="Toggle Featured"
                               >
@@ -640,7 +634,7 @@ export const AdminDashboard: React.FC = () => {
                               <div className="flex items-center gap-2">
                                 <button
                                   onClick={() => openEditProjectModal(proj)}
-                                  className="p-1.5 rounded-lg border border-zinc-700 hover:border-indigo-500 hover:text-indigo-400 text-zinc-300 transition-colors"
+                                  className="p-1.5 rounded-lg border border-zinc-700 dark:border-zinc-700 light:border-slate-300 hover:border-indigo-500 hover:text-indigo-400 text-zinc-300 dark:text-zinc-300 light:text-slate-700 transition-colors"
                                   title="Edit Project"
                                 >
                                   <Edit className="w-3.5 h-3.5" />
@@ -652,7 +646,7 @@ export const AdminDashboard: React.FC = () => {
                                       deleteProject(proj.id);
                                     }
                                   }}
-                                  className="p-1.5 rounded-lg border border-zinc-700 hover:border-rose-500 hover:text-rose-400 text-zinc-300 transition-colors"
+                                  className="p-1.5 rounded-lg border border-zinc-700 dark:border-zinc-700 light:border-slate-300 hover:border-rose-500 hover:text-rose-400 text-zinc-300 dark:text-zinc-300 light:text-slate-700 transition-colors"
                                   title="Delete Project"
                                 >
                                   <Trash2 className="w-3.5 h-3.5" />
@@ -682,16 +676,16 @@ export const AdminDashboard: React.FC = () => {
                     placeholder="Search inquiries by name, email, company..."
                     value={inquirySearch}
                     onChange={e => setInquirySearch(e.target.value)}
-                    className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-[#252A36] bg-[#121620] text-xs text-white placeholder:text-zinc-500 focus:outline-none focus:border-indigo-500"
+                    className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-[#252A36] dark:border-[#252A36] light:border-slate-300 bg-[#121620] dark:bg-[#121620] light:bg-white text-xs text-white dark:text-white light:text-slate-900 placeholder:text-zinc-500 focus:outline-none focus:border-indigo-500 shadow-sm"
                   />
                 </div>
 
                 <div className="flex items-center gap-2">
-                  <span className="text-xs text-zinc-400 font-mono">Status:</span>
+                  <span className="text-xs text-zinc-400 dark:text-zinc-400 light:text-slate-600 font-mono">Status:</span>
                   <select
                     value={inquiryStatusFilter}
                     onChange={e => setInquiryStatusFilter(e.target.value)}
-                    className="px-3 py-2 rounded-xl border border-[#252A36] bg-[#121620] text-xs text-white focus:outline-none focus:border-indigo-500"
+                    className="px-3 py-2 rounded-xl border border-[#252A36] dark:border-[#252A36] light:border-slate-300 bg-[#121620] dark:bg-[#121620] light:bg-white text-xs text-white dark:text-white light:text-slate-900 focus:outline-none focus:border-indigo-500"
                   >
                     <option value="all">All Inquiries</option>
                     <option value="new">New</option>
@@ -720,19 +714,19 @@ export const AdminDashboard: React.FC = () => {
                   .map(inq => (
                     <div
                       key={inq.id}
-                      className="rounded-2xl border border-[#252A36] bg-[#121620] p-6 space-y-4 shadow-lg"
+                      className="rounded-2xl border border-[#252A36] dark:border-[#252A36] light:border-slate-200 bg-[#121620] dark:bg-[#121620] light:bg-white p-6 space-y-4 shadow-sm"
                     >
-                      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-[#252A36]">
+                      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-[#252A36] dark:border-[#252A36] light:border-slate-200">
                         <div>
                           <div className="flex items-center gap-2">
-                            <h3 className="text-base font-bold text-white">{inq.full_name}</h3>
+                            <h3 className="text-base font-bold text-white dark:text-white light:text-slate-900">{inq.full_name}</h3>
                             {inq.company_name && (
-                              <span className="text-xs font-mono text-zinc-400">
+                              <span className="text-xs font-mono text-zinc-400 dark:text-zinc-400 light:text-slate-500">
                                 &bull; {inq.company_name}
                               </span>
                             )}
                           </div>
-                          <div className="text-xs text-indigo-400 font-mono mt-0.5">
+                          <div className="text-xs text-indigo-400 light:text-indigo-600 font-mono mt-0.5">
                             {inq.email} {inq.phone ? `&bull; ${inq.phone}` : ''}
                           </div>
                         </div>
@@ -746,14 +740,14 @@ export const AdminDashboard: React.FC = () => {
                             }
                             className={`px-3 py-1.5 rounded-xl text-xs font-mono font-semibold uppercase tracking-wider border ${
                               inq.status === 'new'
-                                ? 'bg-rose-500/10 border-rose-500/30 text-rose-300'
+                                ? 'bg-rose-500/10 border-rose-500/30 text-rose-300 light:bg-rose-100 light:border-rose-300 light:text-rose-700'
                                 : inq.status === 'reviewing'
-                                ? 'bg-amber-500/10 border-amber-500/30 text-amber-300'
+                                ? 'bg-amber-500/10 border-amber-500/30 text-amber-300 light:bg-amber-100 light:border-amber-300 light:text-amber-700'
                                 : inq.status === 'contacted'
-                                ? 'bg-cyan-500/10 border-cyan-500/30 text-cyan-300'
+                                ? 'bg-cyan-500/10 border-cyan-500/30 text-cyan-300 light:bg-cyan-100 light:border-cyan-300 light:text-cyan-700'
                                 : inq.status === 'converted'
-                                ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-300'
-                                : 'bg-zinc-800 border-zinc-700 text-zinc-400'
+                                ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-300 light:bg-emerald-100 light:border-emerald-300 light:text-emerald-700'
+                                : 'bg-zinc-800 border-zinc-700 text-zinc-400 light:bg-slate-100 light:border-slate-200 light:text-slate-600'
                             }`}
                           >
                             <option value="new">New</option>
@@ -769,7 +763,7 @@ export const AdminDashboard: React.FC = () => {
                                 deleteInquiry(inq.id);
                               }
                             }}
-                            className="p-2 rounded-lg border border-zinc-800 hover:border-rose-500 text-zinc-500 hover:text-rose-400 transition-colors"
+                            className="p-2 rounded-lg border border-zinc-800 dark:border-zinc-800 light:border-slate-200 hover:border-rose-500 text-zinc-500 hover:text-rose-400 transition-colors"
                             title="Delete Inquiry"
                           >
                             <Trash2 className="w-3.5 h-3.5" />
@@ -779,32 +773,32 @@ export const AdminDashboard: React.FC = () => {
 
                       {/* Scope Details */}
                       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs font-mono">
-                        <div className="p-3 rounded-xl bg-[#0B0D12] border border-white/5">
-                          <span className="text-zinc-500 block">Project Type</span>
-                          <span className="text-zinc-200 font-semibold">{inq.project_type}</span>
+                        <div className="p-3 rounded-xl bg-[#0B0D12] dark:bg-[#0B0D12] light:bg-slate-50 border border-white/5 dark:border-white/5 light:border-slate-200">
+                          <span className="text-zinc-500 light:text-slate-400 block">Project Type</span>
+                          <span className="text-zinc-200 dark:text-zinc-200 light:text-slate-900 font-semibold">{inq.project_type}</span>
                         </div>
-                        <div className="p-3 rounded-xl bg-[#0B0D12] border border-white/5">
-                          <span className="text-zinc-500 block">Budget Range</span>
-                          <span className="text-zinc-200 font-semibold">{inq.budget_range}</span>
+                        <div className="p-3 rounded-xl bg-[#0B0D12] dark:bg-[#0B0D12] light:bg-slate-50 border border-white/5 dark:border-white/5 light:border-slate-200">
+                          <span className="text-zinc-500 light:text-slate-400 block">Budget Range</span>
+                          <span className="text-zinc-200 dark:text-zinc-200 light:text-slate-900 font-semibold">{inq.budget_range}</span>
                         </div>
-                        <div className="p-3 rounded-xl bg-[#0B0D12] border border-white/5">
-                          <span className="text-zinc-500 block">Timeframe</span>
-                          <span className="text-zinc-200 font-semibold">{inq.timeframe}</span>
+                        <div className="p-3 rounded-xl bg-[#0B0D12] dark:bg-[#0B0D12] light:bg-slate-50 border border-white/5 dark:border-white/5 light:border-slate-200">
+                          <span className="text-zinc-500 light:text-slate-400 block">Timeframe</span>
+                          <span className="text-zinc-200 dark:text-zinc-200 light:text-slate-900 font-semibold">{inq.timeframe}</span>
                         </div>
-                        <div className="p-3 rounded-xl bg-[#0B0D12] border border-white/5">
-                          <span className="text-zinc-500 block">Submitted At</span>
-                          <span className="text-zinc-400">
+                        <div className="p-3 rounded-xl bg-[#0B0D12] dark:bg-[#0B0D12] light:bg-slate-50 border border-white/5 dark:border-white/5 light:border-slate-200">
+                          <span className="text-zinc-500 light:text-slate-400 block">Submitted At</span>
+                          <span className="text-zinc-400 dark:text-zinc-400 light:text-slate-600">
                             {new Date(inq.created_at).toLocaleDateString()}
                           </span>
                         </div>
                       </div>
 
                       {/* Description */}
-                      <div className="p-4 rounded-xl bg-[#0B0D12] border border-white/5 text-xs text-zinc-300 leading-relaxed">
-                        <span className="text-zinc-500 font-mono block mb-1">Project Scope:</span>
+                      <div className="p-4 rounded-xl bg-[#0B0D12] dark:bg-[#0B0D12] light:bg-slate-50 border border-white/5 dark:border-white/5 light:border-slate-200 text-xs text-zinc-300 dark:text-zinc-300 light:text-slate-700 leading-relaxed">
+                        <span className="text-zinc-500 light:text-slate-400 font-mono block mb-1">Project Scope:</span>
                         {inq.description}
                         {inq.reference_websites && (
-                          <div className="mt-2 text-indigo-400 font-mono">
+                          <div className="mt-2 text-indigo-400 light:text-indigo-600 font-mono">
                             References: {inq.reference_websites}
                           </div>
                         )}
@@ -817,7 +811,7 @@ export const AdminDashboard: React.FC = () => {
                           placeholder="Add internal notes for team..."
                           defaultValue={inq.admin_notes || ''}
                           onBlur={e => updateInquiryStatus(inq.id, inq.status, e.target.value)}
-                          className="w-full px-3 py-2 rounded-xl border border-[#252A36] bg-[#0B0D12] text-xs text-zinc-300 placeholder:text-zinc-600 focus:outline-none focus:border-indigo-500"
+                          className="w-full px-3 py-2 rounded-xl border border-[#252A36] dark:border-[#252A36] light:border-slate-300 bg-[#0B0D12] dark:bg-[#0B0D12] light:bg-white text-xs text-zinc-300 dark:text-zinc-300 light:text-slate-800 placeholder:text-zinc-600 focus:outline-none focus:border-indigo-500"
                         />
                       </div>
                     </div>
@@ -832,20 +826,20 @@ export const AdminDashboard: React.FC = () => {
           {activeTab === 'settings' && (
             <form onSubmit={handleSaveSettings} className="space-y-8 animate-fadeIn">
               {saveSuccess && (
-                <div className="p-4 rounded-xl border border-emerald-500/30 bg-emerald-500/10 text-emerald-300 text-xs flex items-center gap-2">
-                  <CheckCircle className="w-4 h-4 text-emerald-400 shrink-0" />
+                <div className="p-4 rounded-xl border border-emerald-500/30 bg-emerald-500/10 text-emerald-300 light:bg-emerald-50 light:border-emerald-300 light:text-emerald-700 text-xs flex items-center gap-2">
+                  <CheckCircle className="w-4 h-4 text-emerald-400 light:text-emerald-600 shrink-0" />
                   <span>Website settings updated successfully!</span>
                 </div>
               )}
 
               {/* Company Info */}
-              <div className="rounded-2xl border border-[#252A36] bg-[#121620] p-6 space-y-4">
-                <h3 className="text-base font-bold text-white pb-3 border-b border-[#252A36]">
+              <div className="rounded-2xl border border-[#252A36] dark:border-[#252A36] light:border-slate-200 bg-[#121620] dark:bg-[#121620] light:bg-white p-6 space-y-4 shadow-sm">
+                <h3 className="text-base font-bold text-white dark:text-white light:text-slate-900 pb-3 border-b border-[#252A36] dark:border-[#252A36] light:border-slate-200">
                   Company Information
                 </h3>
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                   <div>
-                    <label className="block text-xs font-medium text-zinc-300 mb-1">
+                    <label className="block text-xs font-medium text-zinc-300 dark:text-zinc-300 light:text-slate-700 mb-1">
                       Company Name
                     </label>
                     <input
@@ -854,24 +848,24 @@ export const AdminDashboard: React.FC = () => {
                       onChange={e =>
                         setFormSettings({ ...formSettings, company_name: e.target.value })
                       }
-                      className="w-full px-3 py-2 rounded-xl border border-[#252A36] bg-[#0B0D12] text-xs text-white focus:outline-none focus:border-indigo-500"
+                      className="w-full px-3 py-2 rounded-xl border border-[#252A36] dark:border-[#252A36] light:border-slate-300 bg-[#0B0D12] dark:bg-[#0B0D12] light:bg-slate-50 text-xs text-white dark:text-white light:text-slate-900 focus:outline-none focus:border-indigo-500"
                     />
                   </div>
 
                   <div>
-                    <label className="block text-xs font-medium text-zinc-300 mb-1">Short Name</label>
+                    <label className="block text-xs font-medium text-zinc-300 dark:text-zinc-300 light:text-slate-700 mb-1">Short Name</label>
                     <input
                       type="text"
                       value={formSettings.short_name}
                       onChange={e =>
                         setFormSettings({ ...formSettings, short_name: e.target.value })
                       }
-                      className="w-full px-3 py-2 rounded-xl border border-[#252A36] bg-[#0B0D12] text-xs text-white focus:outline-none focus:border-indigo-500"
+                      className="w-full px-3 py-2 rounded-xl border border-[#252A36] dark:border-[#252A36] light:border-slate-300 bg-[#0B0D12] dark:bg-[#0B0D12] light:bg-slate-50 text-xs text-white dark:text-white light:text-slate-900 focus:outline-none focus:border-indigo-500"
                     />
                   </div>
 
                   <div>
-                    <label className="block text-xs font-medium text-zinc-300 mb-1">
+                    <label className="block text-xs font-medium text-zinc-300 dark:text-zinc-300 light:text-slate-700 mb-1">
                       Studio Tagline
                     </label>
                     <input
@@ -880,13 +874,13 @@ export const AdminDashboard: React.FC = () => {
                       onChange={e =>
                         setFormSettings({ ...formSettings, tagline: e.target.value })
                       }
-                      className="w-full px-3 py-2 rounded-xl border border-[#252A36] bg-[#0B0D12] text-xs text-white focus:outline-none focus:border-indigo-500"
+                      className="w-full px-3 py-2 rounded-xl border border-[#252A36] dark:border-[#252A36] light:border-slate-300 bg-[#0B0D12] dark:bg-[#0B0D12] light:bg-slate-50 text-xs text-white dark:text-white light:text-slate-900 focus:outline-none focus:border-indigo-500"
                     />
                   </div>
                 </div>
 
                 <div>
-                  <label className="block text-xs font-medium text-zinc-300 mb-1">
+                  <label className="block text-xs font-medium text-zinc-300 dark:text-zinc-300 light:text-slate-700 mb-1">
                     Operating Studio Address
                   </label>
                   <input
@@ -895,19 +889,19 @@ export const AdminDashboard: React.FC = () => {
                     onChange={e =>
                       setFormSettings({ ...formSettings, address: e.target.value })
                     }
-                    className="w-full px-3 py-2 rounded-xl border border-[#252A36] bg-[#0B0D12] text-xs text-white focus:outline-none focus:border-indigo-500"
+                    className="w-full px-3 py-2 rounded-xl border border-[#252A36] dark:border-[#252A36] light:border-slate-300 bg-[#0B0D12] dark:bg-[#0B0D12] light:bg-slate-50 text-xs text-white dark:text-white light:text-slate-900 focus:outline-none focus:border-indigo-500"
                   />
                 </div>
               </div>
 
               {/* Contact Channels */}
-              <div className="rounded-2xl border border-[#252A36] bg-[#121620] p-6 space-y-4">
-                <h3 className="text-base font-bold text-white pb-3 border-b border-[#252A36]">
+              <div className="rounded-2xl border border-[#252A36] dark:border-[#252A36] light:border-slate-200 bg-[#121620] dark:bg-[#121620] light:bg-white p-6 space-y-4 shadow-sm">
+                <h3 className="text-base font-bold text-white dark:text-white light:text-slate-900 pb-3 border-b border-[#252A36] dark:border-[#252A36] light:border-slate-200">
                   Contact Details
                 </h3>
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                   <div>
-                    <label className="block text-xs font-medium text-zinc-300 mb-1">
+                    <label className="block text-xs font-medium text-zinc-300 dark:text-zinc-300 light:text-slate-700 mb-1">
                       Contact Email
                     </label>
                     <input
@@ -916,12 +910,12 @@ export const AdminDashboard: React.FC = () => {
                       onChange={e =>
                         setFormSettings({ ...formSettings, contact_email: e.target.value })
                       }
-                      className="w-full px-3 py-2 rounded-xl border border-[#252A36] bg-[#0B0D12] text-xs text-white focus:outline-none focus:border-indigo-500"
+                      className="w-full px-3 py-2 rounded-xl border border-[#252A36] dark:border-[#252A36] light:border-slate-300 bg-[#0B0D12] dark:bg-[#0B0D12] light:bg-slate-50 text-xs text-white dark:text-white light:text-slate-900 focus:outline-none focus:border-indigo-500"
                     />
                   </div>
 
                   <div>
-                    <label className="block text-xs font-medium text-zinc-300 mb-1">
+                    <label className="block text-xs font-medium text-zinc-300 dark:text-zinc-300 light:text-slate-700 mb-1">
                       Phone Number
                     </label>
                     <input
@@ -930,12 +924,12 @@ export const AdminDashboard: React.FC = () => {
                       onChange={e =>
                         setFormSettings({ ...formSettings, phone_number: e.target.value })
                       }
-                      className="w-full px-3 py-2 rounded-xl border border-[#252A36] bg-[#0B0D12] text-xs text-white focus:outline-none focus:border-indigo-500"
+                      className="w-full px-3 py-2 rounded-xl border border-[#252A36] dark:border-[#252A36] light:border-slate-300 bg-[#0B0D12] dark:bg-[#0B0D12] light:bg-slate-50 text-xs text-white dark:text-white light:text-slate-900 focus:outline-none focus:border-indigo-500"
                     />
                   </div>
 
                   <div>
-                    <label className="block text-xs font-medium text-zinc-300 mb-1">
+                    <label className="block text-xs font-medium text-zinc-300 dark:text-zinc-300 light:text-slate-700 mb-1">
                       WhatsApp Number
                     </label>
                     <input
@@ -944,20 +938,20 @@ export const AdminDashboard: React.FC = () => {
                       onChange={e =>
                         setFormSettings({ ...formSettings, whatsapp_number: e.target.value })
                       }
-                      className="w-full px-3 py-2 rounded-xl border border-[#252A36] bg-[#0B0D12] text-xs text-white focus:outline-none focus:border-indigo-500"
+                      className="w-full px-3 py-2 rounded-xl border border-[#252A36] dark:border-[#252A36] light:border-slate-300 bg-[#0B0D12] dark:bg-[#0B0D12] light:bg-slate-50 text-xs text-white dark:text-white light:text-slate-900 focus:outline-none focus:border-indigo-500"
                     />
                   </div>
                 </div>
               </div>
 
               {/* Social Channels */}
-              <div className="rounded-2xl border border-[#252A36] bg-[#121620] p-6 space-y-4">
-                <h3 className="text-base font-bold text-white pb-3 border-b border-[#252A36]">
+              <div className="rounded-2xl border border-[#252A36] dark:border-[#252A36] light:border-slate-200 bg-[#121620] dark:bg-[#121620] light:bg-white p-6 space-y-4 shadow-sm">
+                <h3 className="text-base font-bold text-white dark:text-white light:text-slate-900 pb-3 border-b border-[#252A36] dark:border-[#252A36] light:border-slate-200">
                   Social Media URLs
                 </h3>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-xs font-medium text-zinc-300 mb-1">
+                    <label className="block text-xs font-medium text-zinc-300 dark:text-zinc-300 light:text-slate-700 mb-1">
                       X (Twitter) URL
                     </label>
                     <input
@@ -966,12 +960,12 @@ export const AdminDashboard: React.FC = () => {
                       onChange={e =>
                         setFormSettings({ ...formSettings, twitter_url: e.target.value })
                       }
-                      className="w-full px-3 py-2 rounded-xl border border-[#252A36] bg-[#0B0D12] text-xs text-white focus:outline-none focus:border-indigo-500"
+                      className="w-full px-3 py-2 rounded-xl border border-[#252A36] dark:border-[#252A36] light:border-slate-300 bg-[#0B0D12] dark:bg-[#0B0D12] light:bg-slate-50 text-xs text-white dark:text-white light:text-slate-900 focus:outline-none focus:border-indigo-500"
                     />
                   </div>
 
                   <div>
-                    <label className="block text-xs font-medium text-zinc-300 mb-1">
+                    <label className="block text-xs font-medium text-zinc-300 dark:text-zinc-300 light:text-slate-700 mb-1">
                       LinkedIn URL
                     </label>
                     <input
@@ -980,12 +974,12 @@ export const AdminDashboard: React.FC = () => {
                       onChange={e =>
                         setFormSettings({ ...formSettings, linkedin_url: e.target.value })
                       }
-                      className="w-full px-3 py-2 rounded-xl border border-[#252A36] bg-[#0B0D12] text-xs text-white focus:outline-none focus:border-indigo-500"
+                      className="w-full px-3 py-2 rounded-xl border border-[#252A36] dark:border-[#252A36] light:border-slate-300 bg-[#0B0D12] dark:bg-[#0B0D12] light:bg-slate-50 text-xs text-white dark:text-white light:text-slate-900 focus:outline-none focus:border-indigo-500"
                     />
                   </div>
 
                   <div>
-                    <label className="block text-xs font-medium text-zinc-300 mb-1">
+                    <label className="block text-xs font-medium text-zinc-300 dark:text-zinc-300 light:text-slate-700 mb-1">
                       GitHub URL
                     </label>
                     <input
@@ -994,12 +988,12 @@ export const AdminDashboard: React.FC = () => {
                       onChange={e =>
                         setFormSettings({ ...formSettings, github_url: e.target.value })
                       }
-                      className="w-full px-3 py-2 rounded-xl border border-[#252A36] bg-[#0B0D12] text-xs text-white focus:outline-none focus:border-indigo-500"
+                      className="w-full px-3 py-2 rounded-xl border border-[#252A36] dark:border-[#252A36] light:border-slate-300 bg-[#0B0D12] dark:bg-[#0B0D12] light:bg-slate-50 text-xs text-white dark:text-white light:text-slate-900 focus:outline-none focus:border-indigo-500"
                     />
                   </div>
 
                   <div>
-                    <label className="block text-xs font-medium text-zinc-300 mb-1">
+                    <label className="block text-xs font-medium text-zinc-300 dark:text-zinc-300 light:text-slate-700 mb-1">
                       Dribbble URL
                     </label>
                     <input
@@ -1008,20 +1002,20 @@ export const AdminDashboard: React.FC = () => {
                       onChange={e =>
                         setFormSettings({ ...formSettings, dribbble_url: e.target.value })
                       }
-                      className="w-full px-3 py-2 rounded-xl border border-[#252A36] bg-[#0B0D12] text-xs text-white focus:outline-none focus:border-indigo-500"
+                      className="w-full px-3 py-2 rounded-xl border border-[#252A36] dark:border-[#252A36] light:border-slate-300 bg-[#0B0D12] dark:bg-[#0B0D12] light:bg-slate-50 text-xs text-white dark:text-white light:text-slate-900 focus:outline-none focus:border-indigo-500"
                     />
                   </div>
                 </div>
               </div>
 
               {/* Hero Section Texts */}
-              <div className="rounded-2xl border border-[#252A36] bg-[#121620] p-6 space-y-4">
-                <h3 className="text-base font-bold text-white pb-3 border-b border-[#252A36]">
+              <div className="rounded-2xl border border-[#252A36] dark:border-[#252A36] light:border-slate-200 bg-[#121620] dark:bg-[#121620] light:bg-white p-6 space-y-4 shadow-sm">
+                <h3 className="text-base font-bold text-white dark:text-white light:text-slate-900 pb-3 border-b border-[#252A36] dark:border-[#252A36] light:border-slate-200">
                   Hero Section Configuration
                 </h3>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-xs font-medium text-zinc-300 mb-1">
+                    <label className="block text-xs font-medium text-zinc-300 dark:text-zinc-300 light:text-slate-700 mb-1">
                       Badge Text
                     </label>
                     <input
@@ -1030,12 +1024,12 @@ export const AdminDashboard: React.FC = () => {
                       onChange={e =>
                         setFormSettings({ ...formSettings, hero_badge: e.target.value })
                       }
-                      className="w-full px-3 py-2 rounded-xl border border-[#252A36] bg-[#0B0D12] text-xs text-white focus:outline-none focus:border-indigo-500"
+                      className="w-full px-3 py-2 rounded-xl border border-[#252A36] dark:border-[#252A36] light:border-slate-300 bg-[#0B0D12] dark:bg-[#0B0D12] light:bg-slate-50 text-xs text-white dark:text-white light:text-slate-900 focus:outline-none focus:border-indigo-500"
                     />
                   </div>
 
                   <div>
-                    <label className="block text-xs font-medium text-zinc-300 mb-1">
+                    <label className="block text-xs font-medium text-zinc-300 dark:text-zinc-300 light:text-slate-700 mb-1">
                       Primary CTA Text
                     </label>
                     <input
@@ -1044,13 +1038,13 @@ export const AdminDashboard: React.FC = () => {
                       onChange={e =>
                         setFormSettings({ ...formSettings, primary_cta_text: e.target.value })
                       }
-                      className="w-full px-3 py-2 rounded-xl border border-[#252A36] bg-[#0B0D12] text-xs text-white focus:outline-none focus:border-indigo-500"
+                      className="w-full px-3 py-2 rounded-xl border border-[#252A36] dark:border-[#252A36] light:border-slate-300 bg-[#0B0D12] dark:bg-[#0B0D12] light:bg-slate-50 text-xs text-white dark:text-white light:text-slate-900 focus:outline-none focus:border-indigo-500"
                     />
                   </div>
                 </div>
 
                 <div>
-                  <label className="block text-xs font-medium text-zinc-300 mb-1">
+                  <label className="block text-xs font-medium text-zinc-300 dark:text-zinc-300 light:text-slate-700 mb-1">
                     Main Heading Title
                   </label>
                   <input
@@ -1059,12 +1053,12 @@ export const AdminDashboard: React.FC = () => {
                     onChange={e =>
                       setFormSettings({ ...formSettings, hero_title: e.target.value })
                     }
-                    className="w-full px-3 py-2 rounded-xl border border-[#252A36] bg-[#0B0D12] text-xs text-white focus:outline-none focus:border-indigo-500"
+                    className="w-full px-3 py-2 rounded-xl border border-[#252A36] dark:border-[#252A36] light:border-slate-300 bg-[#0B0D12] dark:bg-[#0B0D12] light:bg-slate-50 text-xs text-white dark:text-white light:text-slate-900 focus:outline-none focus:border-indigo-500"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-xs font-medium text-zinc-300 mb-1">
+                  <label className="block text-xs font-medium text-zinc-300 dark:text-zinc-300 light:text-slate-700 mb-1">
                     Hero Supporting Description
                   </label>
                   <textarea
@@ -1073,18 +1067,18 @@ export const AdminDashboard: React.FC = () => {
                     onChange={e =>
                       setFormSettings({ ...formSettings, hero_description: e.target.value })
                     }
-                    className="w-full px-3 py-2 rounded-xl border border-[#252A36] bg-[#0B0D12] text-xs text-white focus:outline-none focus:border-indigo-500"
+                    className="w-full px-3 py-2 rounded-xl border border-[#252A36] dark:border-[#252A36] light:border-slate-300 bg-[#0B0D12] dark:bg-[#0B0D12] light:bg-slate-50 text-xs text-white dark:text-white light:text-slate-900 focus:outline-none focus:border-indigo-500"
                   />
                 </div>
               </div>
 
               {/* SEO & Footer */}
-              <div className="rounded-2xl border border-[#252A36] bg-[#121620] p-6 space-y-4">
-                <h3 className="text-base font-bold text-white pb-3 border-b border-[#252A36]">
+              <div className="rounded-2xl border border-[#252A36] dark:border-[#252A36] light:border-slate-200 bg-[#121620] dark:bg-[#121620] light:bg-white p-6 space-y-4 shadow-sm">
+                <h3 className="text-base font-bold text-white dark:text-white light:text-slate-900 pb-3 border-b border-[#252A36] dark:border-[#252A36] light:border-slate-200">
                   SEO &amp; Footer Notes
                 </h3>
                 <div>
-                  <label className="block text-xs font-medium text-zinc-300 mb-1">
+                  <label className="block text-xs font-medium text-zinc-300 dark:text-zinc-300 light:text-slate-700 mb-1">
                     Meta Title Template
                   </label>
                   <input
@@ -1093,12 +1087,12 @@ export const AdminDashboard: React.FC = () => {
                     onChange={e =>
                       setFormSettings({ ...formSettings, meta_title: e.target.value })
                     }
-                    className="w-full px-3 py-2 rounded-xl border border-[#252A36] bg-[#0B0D12] text-xs text-white focus:outline-none focus:border-indigo-500"
+                    className="w-full px-3 py-2 rounded-xl border border-[#252A36] dark:border-[#252A36] light:border-slate-300 bg-[#0B0D12] dark:bg-[#0B0D12] light:bg-slate-50 text-xs text-white dark:text-white light:text-slate-900 focus:outline-none focus:border-indigo-500"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-xs font-medium text-zinc-300 mb-1">
+                  <label className="block text-xs font-medium text-zinc-300 dark:text-zinc-300 light:text-slate-700 mb-1">
                     Meta Description
                   </label>
                   <textarea
@@ -1107,12 +1101,12 @@ export const AdminDashboard: React.FC = () => {
                     onChange={e =>
                       setFormSettings({ ...formSettings, meta_description: e.target.value })
                     }
-                    className="w-full px-3 py-2 rounded-xl border border-[#252A36] bg-[#0B0D12] text-xs text-white focus:outline-none focus:border-indigo-500"
+                    className="w-full px-3 py-2 rounded-xl border border-[#252A36] dark:border-[#252A36] light:border-slate-300 bg-[#0B0D12] dark:bg-[#0B0D12] light:bg-slate-50 text-xs text-white dark:text-white light:text-slate-900 focus:outline-none focus:border-indigo-500"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-xs font-medium text-zinc-300 mb-1">
+                  <label className="block text-xs font-medium text-zinc-300 dark:text-zinc-300 light:text-slate-700 mb-1">
                     Footer Statement
                   </label>
                   <input
@@ -1121,7 +1115,7 @@ export const AdminDashboard: React.FC = () => {
                     onChange={e =>
                       setFormSettings({ ...formSettings, footer_text: e.target.value })
                     }
-                    className="w-full px-3 py-2 rounded-xl border border-[#252A36] bg-[#0B0D12] text-xs text-white focus:outline-none focus:border-indigo-500"
+                    className="w-full px-3 py-2 rounded-xl border border-[#252A36] dark:border-[#252A36] light:border-slate-300 bg-[#0B0D12] dark:bg-[#0B0D12] light:bg-slate-50 text-xs text-white dark:text-white light:text-slate-900 focus:outline-none focus:border-indigo-500"
                   />
                 </div>
               </div>
@@ -1143,13 +1137,13 @@ export const AdminDashboard: React.FC = () => {
           {/* ========================================================================= */}
           {activeTab === 'content' && (
             <div className="space-y-6 animate-fadeIn">
-              <div className="flex items-center gap-2 border-b border-[#252A36] pb-3">
+              <div className="flex items-center gap-2 border-b border-[#252A36] dark:border-[#252A36] light:border-slate-200 pb-3">
                 <button
                   onClick={() => setContentSubTab('services')}
                   className={`px-3 py-1.5 rounded-lg text-xs font-semibold ${
                     contentSubTab === 'services'
                       ? 'bg-indigo-600 text-white'
-                      : 'text-zinc-400 hover:text-white'
+                      : 'text-zinc-400 dark:text-zinc-400 light:text-slate-600 hover:text-white dark:hover:text-white light:hover:text-slate-900'
                   }`}
                 >
                   Services ({services.length})
@@ -1159,7 +1153,7 @@ export const AdminDashboard: React.FC = () => {
                   className={`px-3 py-1.5 rounded-lg text-xs font-semibold ${
                     contentSubTab === 'faqs'
                       ? 'bg-indigo-600 text-white'
-                      : 'text-zinc-400 hover:text-white'
+                      : 'text-zinc-400 dark:text-zinc-400 light:text-slate-600 hover:text-white dark:hover:text-white light:hover:text-slate-900'
                   }`}
                 >
                   FAQs ({faqs.length})
@@ -1169,7 +1163,7 @@ export const AdminDashboard: React.FC = () => {
                   className={`px-3 py-1.5 rounded-lg text-xs font-semibold ${
                     contentSubTab === 'testimonials'
                       ? 'bg-indigo-600 text-white'
-                      : 'text-zinc-400 hover:text-white'
+                      : 'text-zinc-400 dark:text-zinc-400 light:text-slate-600 hover:text-white dark:hover:text-white light:hover:text-slate-900'
                   }`}
                 >
                   Testimonials ({testimonials.length})
@@ -1182,22 +1176,22 @@ export const AdminDashboard: React.FC = () => {
                   {services.map(svc => (
                     <div
                       key={svc.id}
-                      className="p-5 rounded-2xl border border-[#252A36] bg-[#121620] flex items-center justify-between gap-4"
+                      className="p-5 rounded-2xl border border-[#252A36] dark:border-[#252A36] light:border-slate-200 bg-[#121620] dark:bg-[#121620] light:bg-white flex items-center justify-between gap-4 shadow-sm"
                     >
                       <div>
                         <div className="flex items-center gap-2">
-                          <h4 className="text-sm font-bold text-white">{svc.title}</h4>
-                          <span className="text-xs font-mono text-zinc-400">({svc.category})</span>
+                          <h4 className="text-sm font-bold text-white dark:text-white light:text-slate-900">{svc.title}</h4>
+                          <span className="text-xs font-mono text-zinc-400 dark:text-zinc-400 light:text-slate-500">({svc.category})</span>
                         </div>
-                        <p className="text-xs text-zinc-400 mt-1 max-w-xl">{svc.summary}</p>
+                        <p className="text-xs text-zinc-400 dark:text-zinc-400 light:text-slate-600 mt-1 max-w-xl">{svc.summary}</p>
                       </div>
 
                       <button
                         onClick={() => updateService(svc.id, { is_active: !svc.is_active })}
                         className={`px-3 py-1 rounded-full text-[10px] font-mono uppercase tracking-wider border ${
                           svc.is_active
-                            ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-400'
-                            : 'bg-zinc-800 border-zinc-700 text-zinc-400'
+                            ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-400 light:bg-emerald-100 light:border-emerald-300 light:text-emerald-700'
+                            : 'bg-zinc-800 border-zinc-700 text-zinc-400 light:bg-slate-100 light:border-slate-200 light:text-slate-600'
                         }`}
                       >
                         {svc.is_active ? 'Active' : 'Disabled'}
@@ -1211,8 +1205,8 @@ export const AdminDashboard: React.FC = () => {
               {contentSubTab === 'faqs' && (
                 <div className="space-y-6">
                   {/* New FAQ Form */}
-                  <div className="p-5 rounded-2xl border border-[#252A36] bg-[#121620] space-y-3">
-                    <h4 className="text-xs font-mono uppercase tracking-wider text-indigo-400">
+                  <div className="p-5 rounded-2xl border border-[#252A36] dark:border-[#252A36] light:border-slate-200 bg-[#121620] dark:bg-[#121620] light:bg-white space-y-3 shadow-sm">
+                    <h4 className="text-xs font-mono uppercase tracking-wider text-indigo-400 light:text-indigo-600">
                       Add New FAQ Item
                     </h4>
                     <input
@@ -1220,14 +1214,14 @@ export const AdminDashboard: React.FC = () => {
                       placeholder="Question..."
                       value={newFaqQ}
                       onChange={e => setNewFaqQ(e.target.value)}
-                      className="w-full px-3 py-2 rounded-xl border border-[#252A36] bg-[#0B0D12] text-xs text-white focus:outline-none focus:border-indigo-500"
+                      className="w-full px-3 py-2 rounded-xl border border-[#252A36] dark:border-[#252A36] light:border-slate-300 bg-[#0B0D12] dark:bg-[#0B0D12] light:bg-slate-50 text-xs text-white dark:text-white light:text-slate-900 focus:outline-none focus:border-indigo-500"
                     />
                     <textarea
                       rows={2}
                       placeholder="Answer..."
                       value={newFaqA}
                       onChange={e => setNewFaqA(e.target.value)}
-                      className="w-full px-3 py-2 rounded-xl border border-[#252A36] bg-[#0B0D12] text-xs text-white focus:outline-none focus:border-indigo-500"
+                      className="w-full px-3 py-2 rounded-xl border border-[#252A36] dark:border-[#252A36] light:border-slate-300 bg-[#0B0D12] dark:bg-[#0B0D12] light:bg-slate-50 text-xs text-white dark:text-white light:text-slate-900 focus:outline-none focus:border-indigo-500"
                     />
                     <button
                       onClick={() => {
@@ -1254,15 +1248,15 @@ export const AdminDashboard: React.FC = () => {
                     {faqs.map(f => (
                       <div
                         key={f.id}
-                        className="p-4 rounded-xl border border-[#252A36] bg-[#121620] flex items-start justify-between gap-4"
+                        className="p-4 rounded-xl border border-[#252A36] dark:border-[#252A36] light:border-slate-200 bg-[#121620] dark:bg-[#121620] light:bg-white flex items-start justify-between gap-4 shadow-sm"
                       >
                         <div>
-                          <div className="text-sm font-bold text-white">{f.question}</div>
-                          <div className="text-xs text-zinc-400 mt-1">{f.answer}</div>
+                          <div className="text-sm font-bold text-white dark:text-white light:text-slate-900">{f.question}</div>
+                          <div className="text-xs text-zinc-400 dark:text-zinc-400 light:text-slate-600 mt-1">{f.answer}</div>
                         </div>
                         <button
                           onClick={() => deleteFaq(f.id)}
-                          className="p-1.5 rounded-lg border border-zinc-800 text-zinc-500 hover:text-rose-400 hover:border-rose-500 transition-colors"
+                          className="p-1.5 rounded-lg border border-zinc-800 dark:border-zinc-800 light:border-slate-200 text-zinc-500 hover:text-rose-400 hover:border-rose-500 transition-colors"
                         >
                           <Trash2 className="w-3.5 h-3.5" />
                         </button>
@@ -1276,8 +1270,8 @@ export const AdminDashboard: React.FC = () => {
               {contentSubTab === 'testimonials' && (
                 <div className="space-y-6">
                   {/* New Testimonial Form */}
-                  <div className="p-5 rounded-2xl border border-[#252A36] bg-[#121620] space-y-3">
-                    <h4 className="text-xs font-mono uppercase tracking-wider text-indigo-400">
+                  <div className="p-5 rounded-2xl border border-[#252A36] dark:border-[#252A36] light:border-slate-200 bg-[#121620] dark:bg-[#121620] light:bg-white space-y-3 shadow-sm">
+                    <h4 className="text-xs font-mono uppercase tracking-wider text-indigo-400 light:text-indigo-600">
                       Add Client Testimonial
                     </h4>
                     <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
@@ -1286,21 +1280,21 @@ export const AdminDashboard: React.FC = () => {
                         placeholder="Client Name..."
                         value={newTestName}
                         onChange={e => setNewTestName(e.target.value)}
-                        className="w-full px-3 py-2 rounded-xl border border-[#252A36] bg-[#0B0D12] text-xs text-white focus:outline-none focus:border-indigo-500"
+                        className="w-full px-3 py-2 rounded-xl border border-[#252A36] dark:border-[#252A36] light:border-slate-300 bg-[#0B0D12] dark:bg-[#0B0D12] light:bg-slate-50 text-xs text-white dark:text-white light:text-slate-900 focus:outline-none focus:border-indigo-500"
                       />
                       <input
                         type="text"
                         placeholder="Role / Title..."
                         value={newTestRole}
                         onChange={e => setNewTestRole(e.target.value)}
-                        className="w-full px-3 py-2 rounded-xl border border-[#252A36] bg-[#0B0D12] text-xs text-white focus:outline-none focus:border-indigo-500"
+                        className="w-full px-3 py-2 rounded-xl border border-[#252A36] dark:border-[#252A36] light:border-slate-300 bg-[#0B0D12] dark:bg-[#0B0D12] light:bg-slate-50 text-xs text-white dark:text-white light:text-slate-900 focus:outline-none focus:border-indigo-500"
                       />
                       <input
                         type="text"
                         placeholder="Company Name..."
                         value={newTestComp}
                         onChange={e => setNewTestComp(e.target.value)}
-                        className="w-full px-3 py-2 rounded-xl border border-[#252A36] bg-[#0B0D12] text-xs text-white focus:outline-none focus:border-indigo-500"
+                        className="w-full px-3 py-2 rounded-xl border border-[#252A36] dark:border-[#252A36] light:border-slate-300 bg-[#0B0D12] dark:bg-[#0B0D12] light:bg-slate-50 text-xs text-white dark:text-white light:text-slate-900 focus:outline-none focus:border-indigo-500"
                       />
                     </div>
                     <textarea
@@ -1308,7 +1302,7 @@ export const AdminDashboard: React.FC = () => {
                       placeholder="Quote..."
                       value={newTestQuote}
                       onChange={e => setNewTestQuote(e.target.value)}
-                      className="w-full px-3 py-2 rounded-xl border border-[#252A36] bg-[#0B0D12] text-xs text-white focus:outline-none focus:border-indigo-500"
+                      className="w-full px-3 py-2 rounded-xl border border-[#252A36] dark:border-[#252A36] light:border-slate-300 bg-[#0B0D12] dark:bg-[#0B0D12] light:bg-slate-50 text-xs text-white dark:text-white light:text-slate-900 focus:outline-none focus:border-indigo-500"
                     />
                     <button
                       onClick={() => {
@@ -1338,16 +1332,16 @@ export const AdminDashboard: React.FC = () => {
                     {testimonials.map(t => (
                       <div
                         key={t.id}
-                        className="p-4 rounded-xl border border-[#252A36] bg-[#121620] flex items-center justify-between gap-4"
+                        className="p-4 rounded-xl border border-[#252A36] dark:border-[#252A36] light:border-slate-200 bg-[#121620] dark:bg-[#121620] light:bg-white flex items-center justify-between gap-4 shadow-sm"
                       >
                         <div>
-                          <div className="text-sm font-bold text-white">
+                          <div className="text-sm font-bold text-white dark:text-white light:text-slate-900">
                             {t.client_name} &bull;{' '}
-                            <span className="text-xs font-normal text-zinc-400">
+                            <span className="text-xs font-normal text-zinc-400 dark:text-zinc-400 light:text-slate-500">
                               {t.role_title}, {t.company_name}
                             </span>
                           </div>
-                          <div className="text-xs text-zinc-300 italic mt-1">&ldquo;{t.quote}&rdquo;</div>
+                          <div className="text-xs text-zinc-300 dark:text-zinc-300 light:text-slate-700 italic mt-1">&ldquo;{t.quote}&rdquo;</div>
                         </div>
 
                         <div className="flex items-center gap-2">
@@ -1357,8 +1351,8 @@ export const AdminDashboard: React.FC = () => {
                             }
                             className={`p-1.5 rounded-lg border ${
                               t.is_featured
-                                ? 'border-amber-500/30 bg-amber-500/10 text-amber-400'
-                                : 'border-zinc-800 text-zinc-600'
+                                ? 'border-amber-500/30 bg-amber-500/10 text-amber-400 light:bg-amber-50 light:border-amber-300 light:text-amber-600'
+                                : 'border-zinc-800 dark:border-zinc-800 light:border-slate-200 text-zinc-600 dark:text-zinc-600 light:text-slate-400'
                             }`}
                           >
                             <Star className="w-3.5 h-3.5 fill-current" />
@@ -1366,7 +1360,7 @@ export const AdminDashboard: React.FC = () => {
 
                           <button
                             onClick={() => deleteTestimonial(t.id)}
-                            className="p-1.5 rounded-lg border border-zinc-800 text-zinc-500 hover:text-rose-400 hover:border-rose-500"
+                            className="p-1.5 rounded-lg border border-zinc-800 dark:border-zinc-800 light:border-slate-200 text-zinc-500 hover:text-rose-400 hover:border-rose-500"
                           >
                             <Trash2 className="w-3.5 h-3.5" />
                           </button>
@@ -1383,16 +1377,16 @@ export const AdminDashboard: React.FC = () => {
           {/* TAB 6: SUPABASE CONNECTION GUIDE */}
           {/* ========================================================================= */}
           {activeTab === 'database' && (
-            <div className="rounded-2xl border border-[#252A36] bg-[#121620] p-8 space-y-6 animate-fadeIn">
-              <div className="flex items-center gap-3 pb-4 border-b border-[#252A36]">
-                <div className="w-10 h-10 rounded-xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 flex items-center justify-center">
+            <div className="rounded-2xl border border-[#252A36] dark:border-[#252A36] light:border-slate-200 bg-[#121620] dark:bg-[#121620] light:bg-white p-8 space-y-6 shadow-sm animate-fadeIn">
+              <div className="flex items-center gap-3 pb-4 border-b border-[#252A36] dark:border-[#252A36] light:border-slate-200">
+                <div className="w-10 h-10 rounded-xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 light:text-emerald-600 flex items-center justify-center">
                   <Database className="w-5 h-5" />
                 </div>
                 <div>
-                  <h3 className="text-lg font-bold text-white">
+                  <h3 className="text-lg font-bold text-white dark:text-white light:text-slate-900">
                     Supabase PostgreSQL Connection Center
                   </h3>
-                  <p className="text-xs text-zinc-400">
+                  <p className="text-xs text-zinc-400 dark:text-zinc-400 light:text-slate-500">
                     Step-by-step instructions to connect your new Supabase database instance.
                   </p>
                 </div>
@@ -1402,8 +1396,8 @@ export const AdminDashboard: React.FC = () => {
               <div
                 className={`p-5 rounded-xl border ${
                   isConfigured
-                    ? 'border-emerald-500/30 bg-emerald-500/10 text-emerald-300'
-                    : 'border-amber-500/30 bg-amber-500/10 text-amber-200'
+                    ? 'border-emerald-500/30 bg-emerald-500/10 text-emerald-300 light:bg-emerald-50 light:border-emerald-300 light:text-emerald-800'
+                    : 'border-amber-500/30 bg-amber-500/10 text-amber-200 light:bg-amber-50 light:border-amber-300 light:text-amber-800'
                 }`}
               >
                 <div className="text-sm font-bold flex items-center gap-2">
@@ -1417,7 +1411,7 @@ export const AdminDashboard: React.FC = () => {
                       : 'Running in Local Storage Preview Mode (Waiting for Credentials)'}
                   </span>
                 </div>
-                <p className="text-xs mt-1 text-zinc-300">
+                <p className="text-xs mt-1 text-zinc-300 dark:text-zinc-300 light:text-slate-700">
                   {isConfigured
                     ? 'Your application is reading and writing directly to your Supabase PostgreSQL database tables.'
                     : 'The website is fully functional in interactive demo mode using cached storage. When you are ready, provide your Supabase URL and Anon Key to activate live cloud database sync.'}
@@ -1426,39 +1420,39 @@ export const AdminDashboard: React.FC = () => {
 
               {/* Instructions Steps */}
               <div className="space-y-4">
-                <h4 className="text-xs font-mono uppercase tracking-wider text-indigo-400">
+                <h4 className="text-xs font-mono uppercase tracking-wider text-indigo-400 light:text-indigo-600">
                   How to Connect in 2 Minutes:
                 </h4>
 
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs">
-                  <div className="p-4 rounded-xl border border-white/5 bg-[#0B0D12] space-y-2">
-                    <span className="font-mono text-indigo-400 font-bold">Step 1</span>
-                    <div className="font-bold text-white">Create Supabase Project</div>
-                    <p className="text-zinc-400">
-                      Sign in to <span className="text-indigo-300">supabase.com</span> and create a new project named &ldquo;Kinetic Studio&rdquo;.
+                  <div className="p-4 rounded-xl border border-white/5 dark:border-white/5 light:border-slate-200 bg-[#0B0D12] dark:bg-[#0B0D12] light:bg-slate-50 space-y-2">
+                    <span className="font-mono text-indigo-400 light:text-indigo-600 font-bold">Step 1</span>
+                    <div className="font-bold text-white dark:text-white light:text-slate-900">Create Supabase Project</div>
+                    <p className="text-zinc-400 dark:text-zinc-400 light:text-slate-600">
+                      Sign in to <span className="text-indigo-300 light:text-indigo-600">supabase.com</span> and create a new project named &ldquo;Kinetic Studio&rdquo;.
                     </p>
                   </div>
 
-                  <div className="p-4 rounded-xl border border-white/5 bg-[#0B0D12] space-y-2">
-                    <span className="font-mono text-indigo-400 font-bold">Step 2</span>
-                    <div className="font-bold text-white">Run SQL Migration</div>
-                    <p className="text-zinc-400">
-                      Open Supabase SQL Editor and execute the schema located at <span className="text-indigo-300 font-mono">supabase/schema.sql</span> and <span className="text-indigo-300 font-mono">seed.sql</span>.
+                  <div className="p-4 rounded-xl border border-white/5 dark:border-white/5 light:border-slate-200 bg-[#0B0D12] dark:bg-[#0B0D12] light:bg-slate-50 space-y-2">
+                    <span className="font-mono text-indigo-400 light:text-indigo-600 font-bold">Step 2</span>
+                    <div className="font-bold text-white dark:text-white light:text-slate-900">Run SQL Migration</div>
+                    <p className="text-zinc-400 dark:text-zinc-400 light:text-slate-600">
+                      Open Supabase SQL Editor and execute the schema located at <span className="text-indigo-300 light:text-indigo-600 font-mono">supabase/schema.sql</span> and <span className="text-indigo-300 light:text-indigo-600 font-mono">seed.sql</span>.
                     </p>
                   </div>
 
-                  <div className="p-4 rounded-xl border border-white/5 bg-[#0B0D12] space-y-2">
-                    <span className="font-mono text-indigo-400 font-bold">Step 3</span>
-                    <div className="font-bold text-white">Paste Environment Keys</div>
-                    <p className="text-zinc-400">
-                      Create or edit <span className="text-indigo-300 font-mono">.env.local</span> in the project root with your project URL and public anon key.
+                  <div className="p-4 rounded-xl border border-white/5 dark:border-white/5 light:border-slate-200 bg-[#0B0D12] dark:bg-[#0B0D12] light:bg-slate-50 space-y-2">
+                    <span className="font-mono text-indigo-400 light:text-indigo-600 font-bold">Step 3</span>
+                    <div className="font-bold text-white dark:text-white light:text-slate-900">Paste Environment Keys</div>
+                    <p className="text-zinc-400 dark:text-zinc-400 light:text-slate-600">
+                      Create or edit <span className="text-indigo-300 light:text-indigo-600 font-mono">.env.local</span> in the project root with your project URL and public anon key.
                     </p>
                   </div>
                 </div>
               </div>
 
               {/* File reference snippet */}
-              <div className="p-4 rounded-xl bg-[#0B0D12] border border-white/5 space-y-2">
+              <div className="p-4 rounded-xl bg-[#0B0D12] dark:bg-[#0B0D12] light:bg-slate-900 border border-white/5 space-y-2">
                 <div className="text-xs font-mono text-zinc-400 flex items-center justify-between">
                   <span>.env.local contents:</span>
                 </div>
@@ -1477,14 +1471,14 @@ VITE_SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6...`}
       {/* ========================================================================= */}
       {isProjectModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md overflow-y-auto animate-fadeIn">
-          <div className="w-full max-w-3xl rounded-3xl border border-[#252A36] bg-[#121620] p-6 sm:p-8 space-y-6 my-8 max-h-[90vh] overflow-y-auto">
-            <div className="flex items-center justify-between pb-4 border-b border-[#252A36]">
-              <h3 className="text-xl font-bold text-white">
+          <div className="w-full max-w-3xl rounded-3xl border border-[#252A36] dark:border-[#252A36] light:border-slate-200 bg-[#121620] dark:bg-[#121620] light:bg-white p-6 sm:p-8 space-y-6 my-8 max-h-[90vh] overflow-y-auto shadow-2xl">
+            <div className="flex items-center justify-between pb-4 border-b border-[#252A36] dark:border-[#252A36] light:border-slate-200">
+              <h3 className="text-xl font-bold text-white dark:text-white light:text-slate-900">
                 {editingProject ? 'Edit Project' : 'Create New Project'}
               </h3>
               <button
                 onClick={() => setIsProjectModalOpen(false)}
-                className="text-zinc-400 hover:text-white text-sm"
+                className="text-zinc-400 hover:text-white dark:hover:text-white light:hover:text-slate-900 text-sm"
               >
                 ✕
               </button>
@@ -1493,7 +1487,7 @@ VITE_SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6...`}
             <form onSubmit={handleSaveProject} className="space-y-4 text-xs">
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-zinc-300 mb-1 font-medium">Project Title *</label>
+                  <label className="block text-zinc-300 dark:text-zinc-300 light:text-slate-700 mb-1 font-medium">Project Title *</label>
                   <input
                     type="text"
                     required
@@ -1508,25 +1502,25 @@ VITE_SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6...`}
                           .replace(/ +/g, '-'),
                       })
                     }
-                    className="w-full px-3 py-2 rounded-xl border border-[#252A36] bg-[#0B0D12] text-white focus:outline-none focus:border-indigo-500"
+                    className="w-full px-3 py-2 rounded-xl border border-[#252A36] dark:border-[#252A36] light:border-slate-300 bg-[#0B0D12] dark:bg-[#0B0D12] light:bg-slate-50 text-white dark:text-white light:text-slate-900 focus:outline-none focus:border-indigo-500"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-zinc-300 mb-1 font-medium">URL Slug *</label>
+                  <label className="block text-zinc-300 dark:text-zinc-300 light:text-slate-700 mb-1 font-medium">URL Slug *</label>
                   <input
                     type="text"
                     required
                     value={projectForm.slug || ''}
                     onChange={e => setProjectForm({ ...projectForm, slug: e.target.value })}
-                    className="w-full px-3 py-2 rounded-xl border border-[#252A36] bg-[#0B0D12] text-white focus:outline-none focus:border-indigo-500 font-mono"
+                    className="w-full px-3 py-2 rounded-xl border border-[#252A36] dark:border-[#252A36] light:border-slate-300 bg-[#0B0D12] dark:bg-[#0B0D12] light:bg-slate-50 text-white dark:text-white light:text-slate-900 focus:outline-none focus:border-indigo-500 font-mono"
                   />
                 </div>
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-zinc-300 mb-1 font-medium">Category *</label>
+                  <label className="block text-zinc-300 dark:text-zinc-300 light:text-slate-700 mb-1 font-medium">Category *</label>
                   <select
                     value={projectForm.category}
                     onChange={e =>
@@ -1535,7 +1529,7 @@ VITE_SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6...`}
                         category: e.target.value as ProjectCategory,
                       })
                     }
-                    className="w-full px-3 py-2 rounded-xl border border-[#252A36] bg-[#0B0D12] text-white focus:outline-none focus:border-indigo-500"
+                    className="w-full px-3 py-2 rounded-xl border border-[#252A36] dark:border-[#252A36] light:border-slate-300 bg-[#0B0D12] dark:bg-[#0B0D12] light:bg-slate-50 text-white dark:text-white light:text-slate-900 focus:outline-none focus:border-indigo-500"
                   >
                     <option value="Business Websites">Business Websites</option>
                     <option value="Custom Web Development">Custom Web Development</option>
@@ -1547,95 +1541,95 @@ VITE_SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6...`}
                 </div>
 
                 <div>
-                  <label className="block text-zinc-300 mb-1 font-medium">Client Name *</label>
+                  <label className="block text-zinc-300 dark:text-zinc-300 light:text-slate-700 mb-1 font-medium">Client Name *</label>
                   <input
                     type="text"
                     required
                     value={projectForm.client_name || ''}
                     onChange={e => setProjectForm({ ...projectForm, client_name: e.target.value })}
-                    className="w-full px-3 py-2 rounded-xl border border-[#252A36] bg-[#0B0D12] text-white focus:outline-none focus:border-indigo-500"
+                    className="w-full px-3 py-2 rounded-xl border border-[#252A36] dark:border-[#252A36] light:border-slate-300 bg-[#0B0D12] dark:bg-[#0B0D12] light:bg-slate-50 text-white dark:text-white light:text-slate-900 focus:outline-none focus:border-indigo-500"
                   />
                 </div>
               </div>
 
               <div>
-                <label className="block text-zinc-300 mb-1 font-medium">Subtitle / Punchline</label>
+                <label className="block text-zinc-300 dark:text-zinc-300 light:text-slate-700 mb-1 font-medium">Subtitle / Punchline</label>
                 <input
                   type="text"
                   value={projectForm.subtitle || ''}
                   onChange={e => setProjectForm({ ...projectForm, subtitle: e.target.value })}
-                  className="w-full px-3 py-2 rounded-xl border border-[#252A36] bg-[#0B0D12] text-white focus:outline-none focus:border-indigo-500"
+                  className="w-full px-3 py-2 rounded-xl border border-[#252A36] dark:border-[#252A36] light:border-slate-300 bg-[#0B0D12] dark:bg-[#0B0D12] light:bg-slate-50 text-white dark:text-white light:text-slate-900 focus:outline-none focus:border-indigo-500"
                 />
               </div>
 
               <div>
-                <label className="block text-zinc-300 mb-1 font-medium">Summary (Short)</label>
+                <label className="block text-zinc-300 dark:text-zinc-300 light:text-slate-700 mb-1 font-medium">Summary (Short)</label>
                 <textarea
                   rows={2}
                   value={projectForm.summary || ''}
                   onChange={e => setProjectForm({ ...projectForm, summary: e.target.value })}
-                  className="w-full px-3 py-2 rounded-xl border border-[#252A36] bg-[#0B0D12] text-white focus:outline-none focus:border-indigo-500"
+                  className="w-full px-3 py-2 rounded-xl border border-[#252A36] dark:border-[#252A36] light:border-slate-300 bg-[#0B0D12] dark:bg-[#0B0D12] light:bg-slate-50 text-white dark:text-white light:text-slate-900 focus:outline-none focus:border-indigo-500"
                 />
               </div>
 
               <div>
-                <label className="block text-zinc-300 mb-1 font-medium">Detailed Description</label>
+                <label className="block text-zinc-300 dark:text-zinc-300 light:text-slate-700 mb-1 font-medium">Detailed Description</label>
                 <textarea
                   rows={3}
                   value={projectForm.description || ''}
                   onChange={e => setProjectForm({ ...projectForm, description: e.target.value })}
-                  className="w-full px-3 py-2 rounded-xl border border-[#252A36] bg-[#0B0D12] text-white focus:outline-none focus:border-indigo-500"
+                  className="w-full px-3 py-2 rounded-xl border border-[#252A36] dark:border-[#252A36] light:border-slate-300 bg-[#0B0D12] dark:bg-[#0B0D12] light:bg-slate-50 text-white dark:text-white light:text-slate-900 focus:outline-none focus:border-indigo-500"
                 />
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                 <div>
-                  <label className="block text-zinc-300 mb-1 font-medium">The Challenge</label>
+                  <label className="block text-zinc-300 dark:text-zinc-300 light:text-slate-700 mb-1 font-medium">The Challenge</label>
                   <textarea
                     rows={2}
                     value={projectForm.challenge || ''}
                     onChange={e => setProjectForm({ ...projectForm, challenge: e.target.value })}
-                    className="w-full px-3 py-2 rounded-xl border border-[#252A36] bg-[#0B0D12] text-white focus:outline-none focus:border-indigo-500"
+                    className="w-full px-3 py-2 rounded-xl border border-[#252A36] dark:border-[#252A36] light:border-slate-300 bg-[#0B0D12] dark:bg-[#0B0D12] light:bg-slate-50 text-white dark:text-white light:text-slate-900 focus:outline-none focus:border-indigo-500"
                   />
                 </div>
                 <div>
-                  <label className="block text-zinc-300 mb-1 font-medium">The Solution</label>
+                  <label className="block text-zinc-300 dark:text-zinc-300 light:text-slate-700 mb-1 font-medium">The Solution</label>
                   <textarea
                     rows={2}
                     value={projectForm.solution || ''}
                     onChange={e => setProjectForm({ ...projectForm, solution: e.target.value })}
-                    className="w-full px-3 py-2 rounded-xl border border-[#252A36] bg-[#0B0D12] text-white focus:outline-none focus:border-indigo-500"
+                    className="w-full px-3 py-2 rounded-xl border border-[#252A36] dark:border-[#252A36] light:border-slate-300 bg-[#0B0D12] dark:bg-[#0B0D12] light:bg-slate-50 text-white dark:text-white light:text-slate-900 focus:outline-none focus:border-indigo-500"
                   />
                 </div>
                 <div>
-                  <label className="block text-zinc-300 mb-1 font-medium">The Results</label>
+                  <label className="block text-zinc-300 dark:text-zinc-300 light:text-slate-700 mb-1 font-medium">The Results</label>
                   <textarea
                     rows={2}
                     value={projectForm.results || ''}
                     onChange={e => setProjectForm({ ...projectForm, results: e.target.value })}
-                    className="w-full px-3 py-2 rounded-xl border border-[#252A36] bg-[#0B0D12] text-white focus:outline-none focus:border-indigo-500"
+                    className="w-full px-3 py-2 rounded-xl border border-[#252A36] dark:border-[#252A36] light:border-slate-300 bg-[#0B0D12] dark:bg-[#0B0D12] light:bg-slate-50 text-white dark:text-white light:text-slate-900 focus:outline-none focus:border-indigo-500"
                   />
                 </div>
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-zinc-300 mb-1 font-medium">Thumbnail Image URL</label>
+                  <label className="block text-zinc-300 dark:text-zinc-300 light:text-slate-700 mb-1 font-medium">Thumbnail Image URL</label>
                   <input
                     type="url"
                     value={projectForm.thumbnail_url || ''}
                     onChange={e => setProjectForm({ ...projectForm, thumbnail_url: e.target.value })}
-                    className="w-full px-3 py-2 rounded-xl border border-[#252A36] bg-[#0B0D12] text-white focus:outline-none focus:border-indigo-500 font-mono"
+                    className="w-full px-3 py-2 rounded-xl border border-[#252A36] dark:border-[#252A36] light:border-slate-300 bg-[#0B0D12] dark:bg-[#0B0D12] light:bg-slate-50 text-white dark:text-white light:text-slate-900 focus:outline-none focus:border-indigo-500 font-mono"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-zinc-300 mb-1 font-medium">Live Website URL</label>
+                  <label className="block text-zinc-300 dark:text-zinc-300 light:text-slate-700 mb-1 font-medium">Live Website URL</label>
                   <input
                     type="url"
                     value={projectForm.live_url || ''}
                     onChange={e => setProjectForm({ ...projectForm, live_url: e.target.value })}
-                    className="w-full px-3 py-2 rounded-xl border border-[#252A36] bg-[#0B0D12] text-white focus:outline-none focus:border-indigo-500 font-mono"
+                    className="w-full px-3 py-2 rounded-xl border border-[#252A36] dark:border-[#252A36] light:border-slate-300 bg-[#0B0D12] dark:bg-[#0B0D12] light:bg-slate-50 text-white dark:text-white light:text-slate-900 focus:outline-none focus:border-indigo-500 font-mono"
                   />
                 </div>
               </div>
@@ -1646,9 +1640,9 @@ VITE_SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6...`}
                     type="checkbox"
                     checked={projectForm.is_published}
                     onChange={e => setProjectForm({ ...projectForm, is_published: e.target.checked })}
-                    className="rounded border-[#252A36] text-indigo-600 focus:ring-0"
+                    className="rounded border-[#252A36] dark:border-[#252A36] light:border-slate-300 text-indigo-600 focus:ring-0"
                   />
-                  <span className="text-zinc-200">Published to public site</span>
+                  <span className="text-zinc-200 dark:text-zinc-200 light:text-slate-800">Published to public site</span>
                 </label>
 
                 <label className="flex items-center gap-2 cursor-pointer">
@@ -1656,17 +1650,17 @@ VITE_SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6...`}
                     type="checkbox"
                     checked={projectForm.is_featured}
                     onChange={e => setProjectForm({ ...projectForm, is_featured: e.target.checked })}
-                    className="rounded border-[#252A36] text-purple-600 focus:ring-0"
+                    className="rounded border-[#252A36] dark:border-[#252A36] light:border-slate-300 text-purple-600 focus:ring-0"
                   />
-                  <span className="text-zinc-200">Featured on Homepage</span>
+                  <span className="text-zinc-200 dark:text-zinc-200 light:text-slate-800">Featured on Homepage</span>
                 </label>
               </div>
 
-              <div className="flex justify-end gap-3 pt-4 border-t border-[#252A36]">
+              <div className="flex justify-end gap-3 pt-4 border-t border-[#252A36] dark:border-[#252A36] light:border-slate-200">
                 <button
                   type="button"
                   onClick={() => setIsProjectModalOpen(false)}
-                  className="px-4 py-2 rounded-xl border border-[#252A36] text-zinc-400 hover:text-white"
+                  className="px-4 py-2 rounded-xl border border-[#252A36] dark:border-[#252A36] light:border-slate-200 text-zinc-400 dark:text-zinc-400 light:text-slate-600 hover:text-white dark:hover:text-white light:hover:text-slate-900"
                 >
                   Cancel
                 </button>

@@ -157,7 +157,7 @@ export const FeaturedProjects: React.FC = () => {
                         href={project.live_url}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="text-xs font-mono text-zinc-400 hover:text-zinc-200 transition-colors flex items-center gap-1"
+                        className="text-xs font-mono text-zinc-400 dark:text-zinc-400 light:text-slate-500 hover:text-zinc-200 dark:hover:text-zinc-200 light:hover:text-slate-900 transition-colors flex items-center gap-1"
                       >
                         <span>Live Preview</span>
                         <ExternalLink className="w-3 h-3" />

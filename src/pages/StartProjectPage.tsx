@@ -176,22 +176,22 @@ export const StartProjectPage: React.FC = () => {
                 </p>
               </div>
 
-              <div className="p-4 rounded-xl bg-white/[0.02] border border-white/5 max-w-md mx-auto text-xs font-mono text-zinc-400 space-y-1">
-                <div>Project Type: <span className="text-zinc-200">{projectType}</span></div>
-                <div>Target Timeframe: <span className="text-zinc-200">{timeframe}</span></div>
+              <div className="p-4 rounded-xl bg-white/[0.02] dark:bg-white/[0.02] light:bg-slate-50 border border-white/5 dark:border-white/5 light:border-slate-200 max-w-md mx-auto text-xs font-mono text-zinc-400 dark:text-zinc-400 light:text-slate-600 space-y-1">
+                <div>Project Type: <span className="text-zinc-200 dark:text-zinc-200 light:text-slate-900 font-semibold">{projectType}</span></div>
+                <div>Target Timeframe: <span className="text-zinc-200 dark:text-zinc-200 light:text-slate-900 font-semibold">{timeframe}</span></div>
                 <div>Status: <span className="text-emerald-400 font-semibold">Active In Queue</span></div>
               </div>
 
               <div className="pt-4 flex flex-wrap items-center justify-center gap-4">
                 <Link
                   to="/"
-                  className="px-6 py-3 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-semibold text-sm transition-all"
+                  className="px-6 py-3 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-semibold text-sm transition-all shadow-md shadow-indigo-500/20"
                 >
                   Return to Homepage
                 </Link>
                 <Link
                   to="/work"
-                  className="px-6 py-3 rounded-xl border border-[#252A36] bg-[#121620] text-zinc-300 hover:text-white text-sm transition-all"
+                  className="px-6 py-3 rounded-xl border border-[#252A36] dark:border-[#252A36] light:border-slate-200 bg-[#121620] dark:bg-[#121620] light:bg-white text-zinc-300 dark:text-zinc-300 light:text-slate-700 hover:text-white dark:hover:text-white light:hover:text-slate-900 text-sm transition-all"
                 >
                   Explore Our Work
                 </Link>
@@ -294,8 +294,8 @@ export const StartProjectPage: React.FC = () => {
                       onClick={() => setProjectType(type)}
                       className={`p-3 rounded-xl border text-xs font-medium text-left transition-all ${
                         projectType === type
-                          ? 'border-indigo-500 bg-indigo-500/15 text-indigo-300 shadow-md shadow-indigo-500/10'
-                          : 'border-[#252A36] dark:border-[#252A36] light:border-slate-200 bg-[#0B0D12] dark:bg-[#0B0D12] light:bg-slate-50 text-zinc-400 hover:text-white hover:border-zinc-700'
+                          ? 'border-indigo-500 bg-indigo-500/15 text-indigo-300 dark:text-indigo-300 light:text-indigo-600 shadow-md shadow-indigo-500/10 font-semibold'
+                          : 'border-[#252A36] dark:border-[#252A36] light:border-slate-200 bg-[#0B0D12] dark:bg-[#0B0D12] light:bg-slate-50 text-zinc-400 dark:text-zinc-400 light:text-slate-600 hover:text-white dark:hover:text-white light:hover:text-slate-900 hover:border-zinc-700 dark:hover:border-zinc-700 light:hover:border-slate-300'
                       }`}
                     >
                       {type}
@@ -361,8 +361,8 @@ export const StartProjectPage: React.FC = () => {
                         onClick={() => setBudgetRange(opt)}
                         className={`p-2.5 rounded-xl border text-xs font-medium text-center transition-all ${
                           budgetRange === opt
-                            ? 'border-indigo-500 bg-indigo-500/20 text-indigo-300'
-                            : 'border-[#252A36] dark:border-[#252A36] light:border-slate-200 bg-[#0B0D12] text-zinc-400 hover:text-white'
+                            ? 'border-indigo-500 bg-indigo-500/20 text-indigo-300 dark:text-indigo-300 light:text-indigo-700 font-semibold'
+                            : 'border-[#252A36] dark:border-[#252A36] light:border-slate-200 bg-[#0B0D12] dark:bg-[#0B0D12] light:bg-slate-50 text-zinc-400 dark:text-zinc-400 light:text-slate-600 hover:text-white dark:hover:text-white light:hover:text-slate-900'
                         }`}
                       >
                         {opt}
@@ -384,8 +384,8 @@ export const StartProjectPage: React.FC = () => {
                         onClick={() => setTimeframe(opt)}
                         className={`p-2.5 rounded-xl border text-xs font-medium text-center transition-all ${
                           timeframe === opt
-                            ? 'border-purple-500 bg-purple-500/20 text-purple-300'
-                            : 'border-[#252A36] dark:border-[#252A36] light:border-slate-200 bg-[#0B0D12] text-zinc-400 hover:text-white'
+                            ? 'border-purple-500 bg-purple-500/20 text-purple-300 dark:text-purple-300 light:text-purple-700 font-semibold'
+                            : 'border-[#252A36] dark:border-[#252A36] light:border-slate-200 bg-[#0B0D12] dark:bg-[#0B0D12] light:bg-slate-50 text-zinc-400 dark:text-zinc-400 light:text-slate-600 hover:text-white dark:hover:text-white light:hover:text-slate-900'
                         }`}
                       >
                         {opt}

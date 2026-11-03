@@ -61,7 +61,7 @@ export const ProjectDetailPage: React.FC = () => {
           <div className="mb-8">
             <button
               onClick={() => navigate('/work')}
-              className="inline-flex items-center gap-2 text-xs font-mono text-zinc-400 hover:text-white transition-colors"
+              className="inline-flex items-center gap-2 text-xs font-mono text-zinc-400 dark:text-zinc-400 light:text-slate-600 hover:text-white dark:hover:text-white light:hover:text-slate-900 transition-colors"
             >
               <ArrowLeft className="w-3.5 h-3.5" />
               <span>Back to All Projects</span>
@@ -71,15 +71,15 @@ export const ProjectDetailPage: React.FC = () => {
           {/* Header Info */}
           <div className="space-y-6 mb-12">
             <div className="flex flex-wrap items-center gap-3">
-              <span className="px-3 py-1 rounded-full text-xs font-mono uppercase tracking-wider bg-indigo-500/10 border border-indigo-500/20 text-indigo-300">
+              <span className="px-3 py-1 rounded-full text-xs font-mono uppercase tracking-wider bg-indigo-500/10 border border-indigo-500/20 text-indigo-300 dark:text-indigo-300 light:text-indigo-700">
                 {project.category}
               </span>
-              <span className="text-xs font-mono text-zinc-400 flex items-center gap-1.5">
+              <span className="text-xs font-mono text-zinc-400 dark:text-zinc-400 light:text-slate-500 flex items-center gap-1.5">
                 <Calendar className="w-3.5 h-3.5 text-indigo-400" />
                 <span>Completed {project.completion_date}</span>
               </span>
-              <span className="text-xs font-mono text-zinc-400">
-                Client: <strong className="text-zinc-200">{project.client_name}</strong>
+              <span className="text-xs font-mono text-zinc-400 dark:text-zinc-400 light:text-slate-500">
+                Client: <strong className="text-zinc-200 dark:text-zinc-200 light:text-slate-800">{project.client_name}</strong>
               </span>
             </div>
 
@@ -110,7 +110,7 @@ export const ProjectDetailPage: React.FC = () => {
                   href={project.github_url}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex items-center gap-2 px-5 py-3 rounded-xl text-sm font-medium border border-[#252A36] bg-[#121620] text-zinc-300 hover:text-white hover:border-zinc-600 transition-all"
+                  className="inline-flex items-center gap-2 px-5 py-3 rounded-xl text-sm font-medium border border-[#252A36] dark:border-[#252A36] light:border-slate-200 bg-[#121620] dark:bg-[#121620] light:bg-slate-100 text-zinc-300 dark:text-zinc-300 light:text-slate-700 hover:text-white dark:hover:text-white light:hover:text-slate-900 transition-all"
                 >
                   <GithubIcon className="w-4 h-4" />
                   <span>View Repository</span>
@@ -119,7 +119,7 @@ export const ProjectDetailPage: React.FC = () => {
 
               <Link
                 to={`/start-project?projectType=${encodeURIComponent(project.category)}`}
-                className="inline-flex items-center gap-2 px-6 py-3 rounded-xl text-sm font-semibold border border-purple-500/30 bg-purple-500/10 text-purple-300 hover:bg-purple-500/20 transition-all"
+                className="inline-flex items-center gap-2 px-6 py-3 rounded-xl text-sm font-semibold border border-purple-500/30 bg-purple-500/10 text-purple-300 dark:text-purple-300 light:text-purple-700 light:border-purple-200 hover:bg-purple-500/20 transition-all"
               >
                 <Sparkles className="w-4 h-4" />
                 <span>Build Something Similar</span>
@@ -128,7 +128,7 @@ export const ProjectDetailPage: React.FC = () => {
           </div>
 
           {/* Main Hero Media */}
-          <div className="relative aspect-[16/9] rounded-3xl overflow-hidden border border-[#252A36] bg-zinc-950 shadow-2xl mb-16">
+          <div className="relative aspect-[16/9] rounded-3xl overflow-hidden border border-[#252A36] dark:border-[#252A36] light:border-slate-200 bg-zinc-950 light:bg-slate-100 shadow-2xl mb-16">
             <img
               src={project.thumbnail_url}
               alt={project.title}
@@ -150,8 +150,8 @@ export const ProjectDetailPage: React.FC = () => {
               </section>
 
               {project.challenge && (
-                <section className="p-8 rounded-2xl border border-rose-500/20 bg-rose-500/[0.03] space-y-3">
-                  <div className="text-xs font-mono font-bold uppercase tracking-wider text-rose-400">
+                <section className="p-8 rounded-2xl border border-rose-500/20 bg-rose-500/[0.03] light:bg-rose-50/50 light:border-rose-200 space-y-3">
+                  <div className="text-xs font-mono font-bold uppercase tracking-wider text-rose-400 light:text-rose-600">
                     The Engineering Challenge
                   </div>
                   <h3 className="text-xl font-bold text-white dark:text-white light:text-slate-900">
@@ -164,8 +164,8 @@ export const ProjectDetailPage: React.FC = () => {
               )}
 
               {project.solution && (
-                <section className="p-8 rounded-2xl border border-indigo-500/20 bg-indigo-500/[0.03] space-y-3">
-                  <div className="text-xs font-mono font-bold uppercase tracking-wider text-indigo-400">
+                <section className="p-8 rounded-2xl border border-indigo-500/20 bg-indigo-500/[0.03] light:bg-indigo-50/50 light:border-indigo-200 space-y-3">
+                  <div className="text-xs font-mono font-bold uppercase tracking-wider text-indigo-400 light:text-indigo-600">
                     Our Solution &amp; Architecture
                   </div>
                   <h3 className="text-xl font-bold text-white dark:text-white light:text-slate-900">
@@ -178,8 +178,8 @@ export const ProjectDetailPage: React.FC = () => {
               )}
 
               {project.results && (
-                <section className="p-8 rounded-2xl border border-emerald-500/20 bg-emerald-500/[0.03] space-y-3">
-                  <div className="text-xs font-mono font-bold uppercase tracking-wider text-emerald-400">
+                <section className="p-8 rounded-2xl border border-emerald-500/20 bg-emerald-500/[0.03] light:bg-emerald-50/50 light:border-emerald-200 space-y-3">
+                  <div className="text-xs font-mono font-bold uppercase tracking-wider text-emerald-400 light:text-emerald-600">
                     Outcomes &amp; Impact
                   </div>
                   <h3 className="text-xl font-bold text-white dark:text-white light:text-slate-900">
@@ -201,7 +201,7 @@ export const ProjectDetailPage: React.FC = () => {
                     {project.screenshots.slice(1).map((shot, idx) => (
                       <div
                         key={idx}
-                        className="rounded-2xl overflow-hidden border border-[#252A36] aspect-[16/10] bg-zinc-950"
+                        className="rounded-2xl overflow-hidden border border-[#252A36] dark:border-[#252A36] light:border-slate-200 aspect-[16/10] bg-zinc-950 light:bg-slate-100"
                       >
                         <img
                           src={shot}
@@ -218,9 +218,9 @@ export const ProjectDetailPage: React.FC = () => {
 
             {/* Right 4 Cols: Meta Sidebar */}
             <div className="lg:col-span-4 space-y-6">
-              <div className="p-6 rounded-2xl border border-[#252A36] bg-[#121620]/80 dark:bg-[#121620]/80 light:bg-white space-y-6">
+              <div className="p-6 rounded-2xl border border-[#252A36] dark:border-[#252A36] light:border-slate-200 bg-[#121620]/80 dark:bg-[#121620]/80 light:bg-white space-y-6 shadow-lg light:shadow-slate-100">
                 <div>
-                  <div className="text-xs font-mono uppercase tracking-wider text-zinc-400 mb-1">
+                  <div className="text-xs font-mono uppercase tracking-wider text-zinc-400 dark:text-zinc-400 light:text-slate-500 mb-1">
                     Client Identity
                   </div>
                   <div className="text-base font-bold text-white dark:text-white light:text-slate-900">
@@ -229,16 +229,16 @@ export const ProjectDetailPage: React.FC = () => {
                 </div>
 
                 <div>
-                  <div className="text-xs font-mono uppercase tracking-wider text-zinc-400 mb-1">
+                  <div className="text-xs font-mono uppercase tracking-wider text-zinc-400 dark:text-zinc-400 light:text-slate-500 mb-1">
                     Project Category
                   </div>
-                  <div className="text-sm font-semibold text-indigo-400">
+                  <div className="text-sm font-semibold text-indigo-400 light:text-indigo-600">
                     {project.category}
                   </div>
                 </div>
 
                 <div>
-                  <div className="text-xs font-mono uppercase tracking-wider text-zinc-400 mb-1">
+                  <div className="text-xs font-mono uppercase tracking-wider text-zinc-400 dark:text-zinc-400 light:text-slate-500 mb-1">
                     Delivery Date
                   </div>
                   <div className="text-sm text-zinc-300 dark:text-zinc-300 light:text-slate-700">
@@ -246,8 +246,8 @@ export const ProjectDetailPage: React.FC = () => {
                   </div>
                 </div>
 
-                <div className="pt-4 border-t border-white/5">
-                  <div className="text-xs font-mono uppercase tracking-wider text-zinc-400 mb-3 flex items-center gap-2">
+                <div className="pt-4 border-t border-white/5 dark:border-white/5 light:border-slate-200">
+                  <div className="text-xs font-mono uppercase tracking-wider text-zinc-400 dark:text-zinc-400 light:text-slate-500 mb-3 flex items-center gap-2">
                     <Code2 className="w-3.5 h-3.5 text-indigo-400" />
                     <span>Technologies Deployed</span>
                   </div>
@@ -255,7 +255,7 @@ export const ProjectDetailPage: React.FC = () => {
                     {project.technologies.map((tech, idx) => (
                       <span
                         key={idx}
-                        className="text-xs font-mono px-2.5 py-1 rounded bg-white/[0.04] dark:bg-white/[0.04] light:bg-slate-100 border border-white/5 text-zinc-200 dark:text-zinc-200 light:text-slate-800"
+                        className="text-xs font-mono px-2.5 py-1 rounded bg-white/[0.04] dark:bg-white/[0.04] light:bg-slate-100 border border-white/5 dark:border-white/5 light:border-slate-200 text-zinc-200 dark:text-zinc-200 light:text-slate-800"
                       >
                         {tech}
                       </span>
@@ -263,7 +263,7 @@ export const ProjectDetailPage: React.FC = () => {
                   </div>
                 </div>
 
-                <div className="pt-4 border-t border-white/5 space-y-2">
+                <div className="pt-4 border-t border-white/5 dark:border-white/5 light:border-slate-200 space-y-2">
                   <Link
                     to="/start-project"
                     className="w-full flex items-center justify-center gap-2 px-5 py-3 rounded-xl text-sm font-semibold text-white bg-indigo-600 hover:bg-indigo-500 shadow-md shadow-indigo-500/20 transition-all"
@@ -277,15 +277,15 @@ export const ProjectDetailPage: React.FC = () => {
           </div>
 
           {/* Next / Prev Project Pagination */}
-          <div className="pt-8 border-t border-[#252A36] flex items-center justify-between">
+          <div className="pt-8 border-t border-[#252A36] dark:border-[#252A36] light:border-slate-200 flex items-center justify-between">
             {prevProject ? (
               <Link
                 to={`/work/${prevProject.slug}`}
-                className="inline-flex items-center gap-2 text-sm text-zinc-400 hover:text-white transition-colors"
+                className="inline-flex items-center gap-2 text-sm text-zinc-400 dark:text-zinc-400 light:text-slate-600 hover:text-white dark:hover:text-white light:hover:text-slate-900 transition-colors"
               >
                 <ArrowLeft className="w-4 h-4" />
                 <span>
-                  Previous: <strong className="text-zinc-200">{prevProject.title}</strong>
+                  Previous: <strong className="text-zinc-200 dark:text-zinc-200 light:text-slate-800">{prevProject.title}</strong>
                 </span>
               </Link>
             ) : (
@@ -295,10 +295,10 @@ export const ProjectDetailPage: React.FC = () => {
             {nextProject ? (
               <Link
                 to={`/work/${nextProject.slug}`}
-                className="inline-flex items-center gap-2 text-sm text-zinc-400 hover:text-white transition-colors"
+                className="inline-flex items-center gap-2 text-sm text-zinc-400 dark:text-zinc-400 light:text-slate-600 hover:text-white dark:hover:text-white light:hover:text-slate-900 transition-colors"
               >
                 <span>
-                  Next: <strong className="text-zinc-200">{nextProject.title}</strong>
+                  Next: <strong className="text-zinc-200 dark:text-zinc-200 light:text-slate-800">{nextProject.title}</strong>
                 </span>
                 <ArrowRight className="w-4 h-4" />
               </Link>

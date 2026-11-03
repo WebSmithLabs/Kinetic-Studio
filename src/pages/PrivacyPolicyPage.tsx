@@ -29,7 +29,7 @@ export const PrivacyPolicyPage: React.FC = () => {
             </p>
           </div>
 
-          <div className="rounded-3xl border border-[#252A36] bg-[#121620]/70 dark:bg-[#121620]/70 light:bg-white p-8 sm:p-12 space-y-8 text-zinc-300 dark:text-zinc-300 light:text-slate-700 text-sm leading-relaxed">
+          <div className="rounded-3xl border border-[#252A36] dark:border-[#252A36] light:border-slate-200 bg-[#121620]/70 dark:bg-[#121620]/70 light:bg-white p-8 sm:p-12 space-y-8 text-zinc-300 dark:text-zinc-300 light:text-slate-700 text-sm leading-relaxed shadow-xl light:shadow-slate-100">
             <section className="space-y-3">
               <h2 className="text-lg font-bold text-white dark:text-white light:text-slate-900">
                 1. Overview &amp; Commitment

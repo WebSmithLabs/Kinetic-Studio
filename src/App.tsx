@@ -46,7 +46,7 @@ const AppLayout: React.FC = () => {
   const isAdminRoute = location.pathname.startsWith('/admin');
 
   return (
-    <div className="flex flex-col min-h-screen bg-[#0B0D12] dark:bg-[#0B0D12] light:bg-white text-white dark:text-white light:text-slate-900 transition-colors">
+    <div className="flex flex-col min-h-screen bg-[#0B0D12] dark:bg-[#0B0D12] light:bg-[#FAFAFC] text-white dark:text-white light:text-slate-900 transition-colors">
       <ScrollToTop />
       <Navbar />
       <div className="flex-grow">

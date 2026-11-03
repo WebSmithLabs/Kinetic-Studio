@@ -16,7 +16,7 @@ export const HeroSection: React.FC = () => {
       <div className="absolute inset-0 kinetic-grid opacity-70 pointer-events-none" />
 
       {/* Radial Vignette */}
-      <div className="absolute inset-0 bg-radial-gradient from-transparent via-[#0B0D12]/60 to-[#0B0D12] dark:via-[#0B0D12]/60 dark:to-[#0B0D12] light:via-white/50 light:to-white pointer-events-none" />
+      <div className="absolute inset-0 bg-radial-gradient from-transparent via-[#0B0D12]/60 to-[#0B0D12] dark:via-[#0B0D12]/60 dark:to-[#0B0D12] light:via-slate-50/60 light:to-[#FAFAFC] pointer-events-none" />
 
       <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-8 items-center">
@@ -180,7 +180,7 @@ export const HeroSection: React.FC = () => {
                 </div>
 
                 {/* Floating pill badge */}
-                <div className="absolute -bottom-4 -left-4 px-3.5 py-1.5 rounded-xl border border-indigo-500/30 bg-[#0B0D12]/95 backdrop-blur-md text-[11px] font-mono text-indigo-300 flex items-center gap-2 shadow-xl">
+                <div className="absolute -bottom-4 -left-4 px-3.5 py-1.5 rounded-xl border border-indigo-500/30 light:border-indigo-200 bg-[#0B0D12]/95 dark:bg-[#0B0D12]/95 light:bg-white text-[11px] font-mono text-indigo-300 dark:text-indigo-300 light:text-indigo-700 flex items-center gap-2 shadow-xl">
                   <span className="w-2 h-2 rounded-full bg-indigo-400 animate-pulse"></span>
                   <span>Turning Ideas Into Digital Experiences</span>
                 </div>

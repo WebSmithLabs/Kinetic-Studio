@@ -59,8 +59,8 @@ export const FaqSection: React.FC = () => {
                   key={faq.id}
                   className={`rounded-2xl border transition-all duration-200 overflow-hidden ${
                     isOpen
-                      ? 'border-indigo-500/50 bg-[#121620] dark:bg-[#121620] light:bg-white shadow-lg'
-                      : 'border-[#252A36] dark:border-[#252A36] light:border-slate-200 bg-[#0E1118]/70 dark:bg-[#0E1118]/70 light:bg-white/80 hover:border-zinc-700'
+                      ? 'border-indigo-500/50 bg-[#121620] dark:bg-[#121620] light:bg-white shadow-lg light:shadow-slate-100'
+                      : 'border-[#252A36] dark:border-[#252A36] light:border-slate-200 bg-[#0E1118]/70 dark:bg-[#0E1118]/70 light:bg-white dark:hover:border-zinc-700 light:hover:border-indigo-300'
                   }`}
                 >
                   <button
@@ -72,8 +72,8 @@ export const FaqSection: React.FC = () => {
                       {faq.question}
                     </span>
                     <div
-                      className={`w-7 h-7 rounded-lg border border-white/5 flex items-center justify-center shrink-0 transition-transform duration-300 ${
-                        isOpen ? 'rotate-180 bg-indigo-500/20 text-indigo-400' : 'text-zinc-400'
+                      className={`w-7 h-7 rounded-lg border border-white/5 dark:border-white/5 light:border-slate-200 flex items-center justify-center shrink-0 transition-transform duration-300 ${
+                        isOpen ? 'rotate-180 bg-indigo-500/20 text-indigo-400' : 'text-zinc-400 dark:text-zinc-400 light:text-slate-500'
                       }`}
                     >
                       <ChevronDown className="w-4 h-4" />

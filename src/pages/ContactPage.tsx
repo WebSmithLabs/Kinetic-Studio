@@ -174,7 +174,7 @@ export const ContactPage: React.FC = () => {
                       href={settings.twitter_url}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-white/5 bg-white/[0.02] text-xs text-zinc-300 hover:text-white hover:border-indigo-500/30 transition-all"
+                      className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-white/5 dark:border-white/5 light:border-slate-200 bg-white/[0.02] dark:bg-white/[0.02] light:bg-slate-50 text-xs text-zinc-300 dark:text-zinc-300 light:text-slate-700 hover:text-white dark:hover:text-white light:hover:text-indigo-600 hover:border-indigo-500/30 light:hover:border-indigo-300 transition-all"
                     >
                       <TwitterIcon className="w-3.5 h-3.5" />
                       <span>X / Twitter</span>
@@ -185,7 +185,7 @@ export const ContactPage: React.FC = () => {
                       href={settings.linkedin_url}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-white/5 bg-white/[0.02] text-xs text-zinc-300 hover:text-white hover:border-indigo-500/30 transition-all"
+                      className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-white/5 dark:border-white/5 light:border-slate-200 bg-white/[0.02] dark:bg-white/[0.02] light:bg-slate-50 text-xs text-zinc-300 dark:text-zinc-300 light:text-slate-700 hover:text-white dark:hover:text-white light:hover:text-indigo-600 hover:border-indigo-500/30 light:hover:border-indigo-300 transition-all"
                     >
                       <LinkedinIcon className="w-3.5 h-3.5" />
                       <span>LinkedIn</span>
@@ -196,7 +196,7 @@ export const ContactPage: React.FC = () => {
                       href={settings.github_url}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-white/5 bg-white/[0.02] text-xs text-zinc-300 hover:text-white hover:border-indigo-500/30 transition-all"
+                      className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-white/5 dark:border-white/5 light:border-slate-200 bg-white/[0.02] dark:bg-white/[0.02] light:bg-slate-50 text-xs text-zinc-300 dark:text-zinc-300 light:text-slate-700 hover:text-white dark:hover:text-white light:hover:text-indigo-600 hover:border-indigo-500/30 light:hover:border-indigo-300 transition-all"
                     >
                       <GithubIcon className="w-3.5 h-3.5" />
                       <span>GitHub</span>
@@ -207,7 +207,7 @@ export const ContactPage: React.FC = () => {
                       href={settings.instagram_url}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-white/5 bg-white/[0.02] text-xs text-zinc-300 hover:text-white hover:border-indigo-500/30 transition-all"
+                      className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-white/5 dark:border-white/5 light:border-slate-200 bg-white/[0.02] dark:bg-white/[0.02] light:bg-slate-50 text-xs text-zinc-300 dark:text-zinc-300 light:text-slate-700 hover:text-white dark:hover:text-white light:hover:text-indigo-600 hover:border-indigo-500/30 light:hover:border-indigo-300 transition-all"
                     >
                       <InstagramIcon className="w-3.5 h-3.5" />
                       <span>Instagram</span>
@@ -218,7 +218,7 @@ export const ContactPage: React.FC = () => {
                       href={settings.dribbble_url}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-white/5 bg-white/[0.02] text-xs text-zinc-300 hover:text-white hover:border-indigo-500/30 transition-all"
+                      className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-white/5 dark:border-white/5 light:border-slate-200 bg-white/[0.02] dark:bg-white/[0.02] light:bg-slate-50 text-xs text-zinc-300 dark:text-zinc-300 light:text-slate-700 hover:text-white dark:hover:text-white light:hover:text-indigo-600 hover:border-indigo-500/30 light:hover:border-indigo-300 transition-all"
                     >
                       <DribbbleIcon className="w-3.5 h-3.5" />
                       <span>Dribbble</span>
@@ -245,8 +245,8 @@ export const ContactPage: React.FC = () => {
                 {submitted ? (
                   <div className="p-8 rounded-2xl border border-emerald-500/30 bg-emerald-500/5 text-center space-y-4 animate-fadeIn">
                     <CheckCircle2 className="w-12 h-12 text-emerald-400 mx-auto" />
-                    <h3 className="text-xl font-bold text-white">Message Sent Successfully</h3>
-                    <p className="text-sm text-zinc-300 max-w-sm mx-auto">
+                    <h3 className="text-xl font-bold text-white dark:text-white light:text-slate-900">Message Sent Successfully</h3>
+                    <p className="text-sm text-zinc-300 dark:text-zinc-300 light:text-slate-600 max-w-sm mx-auto">
                       Thank you for contacting Kinetic Studio. Our team will review your message and
                       reply promptly.
                     </p>
@@ -277,7 +277,7 @@ export const ContactPage: React.FC = () => {
                           placeholder="Your Name"
                           value={name}
                           onChange={e => setName(e.target.value)}
-                          className="w-full px-4 py-2.5 rounded-xl border border-[#252A36] bg-[#0B0D12] text-sm text-white placeholder:text-zinc-500 focus:outline-none focus:border-indigo-500"
+                          className="w-full px-4 py-2.5 rounded-xl border border-[#252A36] dark:border-[#252A36] light:border-slate-300 bg-[#0B0D12] dark:bg-[#0B0D12] light:bg-slate-50 text-sm text-white dark:text-white light:text-slate-900 placeholder:text-zinc-500 focus:outline-none focus:border-indigo-500"
                         />
                       </div>
 
@@ -291,7 +291,7 @@ export const ContactPage: React.FC = () => {
                           placeholder="you@company.com"
                           value={email}
                           onChange={e => setEmail(e.target.value)}
-                          className="w-full px-4 py-2.5 rounded-xl border border-[#252A36] bg-[#0B0D12] text-sm text-white placeholder:text-zinc-500 focus:outline-none focus:border-indigo-500"
+                          className="w-full px-4 py-2.5 rounded-xl border border-[#252A36] dark:border-[#252A36] light:border-slate-300 bg-[#0B0D12] dark:bg-[#0B0D12] light:bg-slate-50 text-sm text-white dark:text-white light:text-slate-900 placeholder:text-zinc-500 focus:outline-none focus:border-indigo-500"
                         />
                       </div>
                     </div>
@@ -305,7 +305,7 @@ export const ContactPage: React.FC = () => {
                         placeholder="Inquiry or partnership topic"
                         value={subject}
                         onChange={e => setSubject(e.target.value)}
-                        className="w-full px-4 py-2.5 rounded-xl border border-[#252A36] bg-[#0B0D12] text-sm text-white placeholder:text-zinc-500 focus:outline-none focus:border-indigo-500"
+                        className="w-full px-4 py-2.5 rounded-xl border border-[#252A36] dark:border-[#252A36] light:border-slate-300 bg-[#0B0D12] dark:bg-[#0B0D12] light:bg-slate-50 text-sm text-white dark:text-white light:text-slate-900 placeholder:text-zinc-500 focus:outline-none focus:border-indigo-500"
                       />
                     </div>
 
@@ -319,7 +319,7 @@ export const ContactPage: React.FC = () => {
                         placeholder="How can Kinetic Studio assist your organization?"
                         value={message}
                         onChange={e => setMessage(e.target.value)}
-                        className="w-full px-4 py-2.5 rounded-xl border border-[#252A36] bg-[#0B0D12] text-sm text-white placeholder:text-zinc-500 focus:outline-none focus:border-indigo-500"
+                        className="w-full px-4 py-2.5 rounded-xl border border-[#252A36] dark:border-[#252A36] light:border-slate-300 bg-[#0B0D12] dark:bg-[#0B0D12] light:bg-slate-50 text-sm text-white dark:text-white light:text-slate-900 placeholder:text-zinc-500 focus:outline-none focus:border-indigo-500"
                       />
                     </div>
 

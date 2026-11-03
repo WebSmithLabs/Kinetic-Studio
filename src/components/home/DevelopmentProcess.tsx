@@ -97,15 +97,15 @@ export const DevelopmentProcess: React.FC = () => {
                 className={`cursor-pointer rounded-2xl border p-7 transition-all duration-300 relative flex flex-col justify-between ${
                   isSelected
                     ? 'border-indigo-500 bg-[#121620] dark:bg-[#121620] light:bg-white shadow-xl shadow-indigo-500/10 -translate-y-1'
-                    : 'border-[#252A36] dark:border-[#252A36] light:border-slate-200 bg-[#0E1118]/80 dark:bg-[#0E1118]/80 light:bg-white/80 hover:border-zinc-700 hover:bg-[#121620]'
+                    : 'border-[#252A36] dark:border-[#252A36] light:border-slate-200 bg-[#0E1118]/80 dark:bg-[#0E1118]/80 light:bg-white dark:hover:border-zinc-700 light:hover:border-indigo-300 dark:hover:bg-[#121620] light:hover:bg-slate-50'
                 }`}
               >
                 <div>
                   <div className="flex items-center justify-between mb-5">
-                    <span className="font-mono text-2xl font-extrabold tracking-tight text-indigo-400/80">
+                    <span className="font-mono text-2xl font-extrabold tracking-tight text-indigo-400 dark:text-indigo-400 light:text-indigo-600">
                       {step.number}
                     </span>
-                    <div className="w-10 h-10 rounded-xl bg-white/[0.04] dark:bg-white/[0.04] light:bg-slate-100 border border-white/5 flex items-center justify-center">
+                    <div className="w-10 h-10 rounded-xl bg-white/[0.04] dark:bg-white/[0.04] light:bg-indigo-50 border border-white/5 dark:border-white/5 light:border-indigo-100 flex items-center justify-center">
                       {step.icon}
                     </div>
                   </div>

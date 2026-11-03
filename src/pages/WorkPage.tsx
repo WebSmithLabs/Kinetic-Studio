@@ -208,10 +208,10 @@ export const WorkPage: React.FC = () => {
               ))}
             </div>
           ) : (
-            <div className="text-center py-24 rounded-3xl border border-[#252A36] bg-[#121620]/40 p-12 space-y-3">
-              <Filter className="w-8 h-8 text-zinc-500 mx-auto" />
-              <h3 className="text-lg font-bold text-white">No projects found</h3>
-              <p className="text-sm text-zinc-400">
+            <div className="text-center py-24 rounded-3xl border border-[#252A36] dark:border-[#252A36] light:border-slate-200 bg-[#121620]/40 dark:bg-[#121620]/40 light:bg-white p-12 space-y-3 shadow-sm">
+              <Filter className="w-8 h-8 text-zinc-500 light:text-slate-400 mx-auto" />
+              <h3 className="text-lg font-bold text-white dark:text-white light:text-slate-900">No projects found</h3>
+              <p className="text-sm text-zinc-400 dark:text-zinc-400 light:text-slate-600">
                 Try selecting another category or clearing your search query.
               </p>
               <button
