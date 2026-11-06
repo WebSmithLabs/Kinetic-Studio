@@ -108,7 +108,7 @@ CREATE TABLE IF NOT EXISTS public.inquiries (
     budget_range TEXT NOT NULL,
     timeframe TEXT NOT NULL,
     reference_websites TEXT,
-    status TEXT NOT NULL DEFAULT 'new' CHECK (status IN ('new', 'reviewing', 'contacted', 'converted', 'archived')),
+    status TEXT NOT NULL DEFAULT 'new' CHECK (status IN ('new', 'reviewed', 'accepted', 'contacted', 'ongoing', 'finished', 'advance_payment_completed', 'payment_completed', 'archived')),
     admin_notes TEXT DEFAULT '',
     ip_address TEXT,
     created_at TIMESTAMPTZ NOT NULL DEFAULT now(),

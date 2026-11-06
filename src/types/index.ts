@@ -6,7 +6,16 @@ export type ProjectCategory =
   | 'Landing Pages'
   | 'Experimental Projects';
 
-export type InquiryStatus = 'new' | 'reviewing' | 'contacted' | 'converted' | 'archived';
+export type InquiryStatus = 
+  | 'new' 
+  | 'reviewed' 
+  | 'accepted' 
+  | 'contacted' 
+  | 'ongoing' 
+  | 'finished' 
+  | 'advance_payment_completed' 
+  | 'payment_completed' 
+  | 'archived';
 
 export type ProjectType =
   | 'Business Website'

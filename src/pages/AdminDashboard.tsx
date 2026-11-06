@@ -852,9 +852,13 @@ export const AdminDashboard: React.FC = () => {
                   >
                     <option value="all">All Inquiries</option>
                     <option value="new">New</option>
-                    <option value="reviewing">In Review</option>
+                    <option value="reviewed">Reviewed</option>
+                    <option value="accepted">Accepted</option>
                     <option value="contacted">Contacted</option>
-                    <option value="converted">Converted</option>
+                    <option value="ongoing">Ongoing</option>
+                    <option value="finished">Finished</option>
+                    <option value="advance_payment_completed">Advance Payment Completed</option>
+                    <option value="payment_completed">Payment Completed</option>
                     <option value="archived">Archived</option>
                   </select>
                 </div>
@@ -904,19 +908,31 @@ export const AdminDashboard: React.FC = () => {
                             className={`px-3 py-1.5 rounded-xl text-xs font-mono font-semibold uppercase tracking-wider border ${
                               inq.status === 'new'
                                 ? 'bg-rose-500/10 border-rose-500/30 text-rose-300 light:bg-rose-100 light:border-rose-300 light:text-rose-700'
-                                : inq.status === 'reviewing'
+                                : inq.status === 'reviewed'
                                 ? 'bg-amber-500/10 border-amber-500/30 text-amber-300 light:bg-amber-100 light:border-amber-300 light:text-amber-700'
+                                : inq.status === 'accepted'
+                                ? 'bg-indigo-500/10 border-indigo-500/30 text-indigo-300 light:bg-indigo-100 light:border-indigo-300 light:text-indigo-700'
                                 : inq.status === 'contacted'
                                 ? 'bg-cyan-500/10 border-cyan-500/30 text-cyan-300 light:bg-cyan-100 light:border-cyan-300 light:text-cyan-700'
-                                : inq.status === 'converted'
+                                : inq.status === 'ongoing'
+                                ? 'bg-blue-500/10 border-blue-500/30 text-blue-300 light:bg-blue-100 light:border-blue-300 light:text-blue-700'
+                                : inq.status === 'finished'
                                 ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-300 light:bg-emerald-100 light:border-emerald-300 light:text-emerald-700'
+                                : inq.status === 'advance_payment_completed'
+                                ? 'bg-purple-500/10 border-purple-500/30 text-purple-300 light:bg-purple-100 light:border-purple-300 light:text-purple-700'
+                                : inq.status === 'payment_completed'
+                                ? 'bg-green-500/10 border-green-500/30 text-green-300 light:bg-green-100 light:border-green-300 light:text-green-700'
                                 : 'bg-zinc-800 border-zinc-700 text-zinc-400 light:bg-slate-100 light:border-slate-200 light:text-slate-600'
                             }`}
                           >
                             <option value="new">New</option>
-                            <option value="reviewing">In Review</option>
+                            <option value="reviewed">Reviewed</option>
+                            <option value="accepted">Accepted</option>
                             <option value="contacted">Contacted</option>
-                            <option value="converted">Converted</option>
+                            <option value="ongoing">Ongoing</option>
+                            <option value="finished">Finished</option>
+                            <option value="advance_payment_completed">Advance Payment Completed</option>
+                            <option value="payment_completed">Payment Completed</option>
                             <option value="archived">Archived</option>
                           </select>
 
