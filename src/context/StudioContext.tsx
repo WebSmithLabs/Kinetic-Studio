@@ -863,6 +863,13 @@ export const StudioProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     });
 
     if (error) {
+      // Check if error is due to email not confirmed
+      if (error.message.includes('Email not confirmed')) {
+        return { 
+          success: false, 
+          error: 'Please check your email and confirm your account before signing in.' 
+        };
+      }
       return { success: false, error: error.message };
     }
 
@@ -905,24 +912,31 @@ export const StudioProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     }
 
     if (data.user) {
-      if (data.session) {
-        await syncUser(data.user);
-        return { success: true };
+      // Check if email confirmation is required
+      if (data.user.email_confirmed_at) {
+        // Email already confirmed, create session
+        if (data.session) {
+          await syncUser(data.user);
+          return { success: true };
+        }
+
+        // Try to sign in immediately
+        const signInRes = await client.auth.signInWithPassword({
+          email: trimmedEmail,
+          password,
+        });
+
+        if (signInRes.data?.user) {
+          await syncUser(signInRes.data.user);
+          return { success: true };
+        }
       }
 
-      // Auto-confirmed via trigger: sign in immediately to get active session
-      const signInRes = await client.auth.signInWithPassword({
-        email: trimmedEmail,
-        password,
-      });
-
-      if (signInRes.data?.user) {
-        await syncUser(signInRes.data.user);
-        return { success: true };
-      }
-
-      await syncUser(data.user);
-      return { success: true };
+      // Email confirmation required
+      return {
+        success: true,
+        error: 'Account created! Please check your email for confirmation before signing in.',
+      };
     }
 
     return {

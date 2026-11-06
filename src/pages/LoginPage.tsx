@@ -87,9 +87,16 @@ export const LoginPage: React.FC = () => {
       setIsLoading(false);
 
       if (res.success) {
-        // Automatically authenticated; navigate directly to target destination
-        const destination = redirectTo || (ADMIN_EMAILS.includes(email.toLowerCase()) ? '/admin' : '/');
-        navigate(destination, { replace: true });
+        // Check if email confirmation is required
+        if (res.error && res.error.includes('check your email')) {
+          setSuccessMessage(res.error);
+          setMode('login');
+          setErrorMessage('');
+        } else {
+          // Automatically authenticated; navigate directly to target destination
+          const destination = redirectTo || (ADMIN_EMAILS.includes(email.toLowerCase()) ? '/admin' : '/');
+          navigate(destination, { replace: true });
+        }
       } else {
         setErrorMessage(res.error || 'Registration failed.');
       }
