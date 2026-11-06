@@ -1,7 +1,7 @@
 @import "tailwindcss";
 
-@custom-variant light (&:where(.light, .light *));
-@custom-variant dark (&:where(.dark, .dark *));
+@variant light (&:where(.light, .light *));
+@variant dark (&:where(.dark, .dark *));
 
 @layer base {
   :root {
@@ -147,6 +147,16 @@ html.light .kinetic-grid {
     linear-gradient(to bottom, rgba(99, 102, 241, 0.06) 1px, transparent 1px);
 }
 
+/* Hero Vignette */
+.hero-vignette {
+  background: radial-gradient(ellipse at center, transparent 0%, rgba(11, 13, 18, 0.6) 60%, #0B0D12 100%);
+}
+
+html.light .hero-vignette {
+  background: radial-gradient(ellipse at center, transparent 0%, rgba(248, 250, 252, 0.6) 60%, #FAFAFC 100%);
+}
+
+/* Glow Card System — Premium Light & Dark Mode */
 .glow-card {
   position: relative;
   transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
@@ -168,10 +178,38 @@ html.light .kinetic-grid {
   transition: opacity 0.3s ease;
 }
 
-html.light .glow-card::before {
-  background: linear-gradient(135deg, rgba(79, 70, 229, 0.25), rgba(124, 58, 237, 0.1), transparent 70%);
-}
-
 .glow-card:hover::before {
   opacity: 1;
+}
+
+/* In light mode: Zero dark mask glow, pristine crisp elevated cards */
+html.light .glow-card::before {
+  display: none !important;
+}
+
+html.light .glow-card {
+  box-shadow: 0 4px 20px -2px rgba(15, 23, 42, 0.05);
+}
+
+html.light .glow-card:hover {
+  border-color: rgba(99, 102, 241, 0.4) !important;
+  box-shadow: 0 12px 30px -4px rgba(99, 102, 241, 0.12), 0 4px 12px -2px rgba(99, 102, 241, 0.06) !important;
+}
+
+/* Light Theme Button & Interactive Overrides (Prevents dark mouse hover artifacts) */
+html.light body {
+  background-color: #FAFAFC !important;
+  color: #0F172A !important;
+}
+
+html.light .shadow-2xl {
+  box-shadow: 0 20px 40px -15px rgba(15, 23, 42, 0.08) !important;
+}
+
+html.light .shadow-xl {
+  box-shadow: 0 12px 28px -5px rgba(15, 23, 42, 0.06) !important;
+}
+
+html.light .shadow-lg {
+  box-shadow: 0 8px 20px -4px rgba(15, 23, 42, 0.05) !important;
 }

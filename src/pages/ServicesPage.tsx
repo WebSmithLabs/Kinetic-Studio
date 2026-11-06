@@ -56,8 +56,8 @@ export const ServicesPage: React.FC = () => {
     <>
       <SEO
         title="Services & Capabilities"
-        description="Comprehensive web engineering, custom web applications, UI/UX design systems, product showcase platforms, and digital solutions by Kinetic Studio."
-        canonical="https://kineticstudio.co/services"
+        description="Comprehensive web engineering, custom web applications, UI/UX design systems, product showcase platforms, and digital solutions by Web Smith Labs."
+        canonical="https://websmithlabs.com/services"
       />
 
       <div className="pt-32 pb-24 text-left">
@@ -66,14 +66,13 @@ export const ServicesPage: React.FC = () => {
           <div className="max-w-3xl space-y-4">
             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-indigo-500/30 bg-indigo-500/10 text-xs font-mono font-semibold text-indigo-300">
               <Layers className="w-3.5 h-3.5" />
-              <span>STUDIO SERVICES &amp; PRACTICES</span>
+              <span>SERVICES</span>
             </div>
             <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold text-white dark:text-white light:text-slate-900 tracking-tight leading-tight">
               End-to-End Digital Engineering for Modern Businesses.
             </h1>
             <p className="text-lg sm:text-xl text-zinc-400 dark:text-zinc-400 light:text-slate-600 leading-relaxed">
-              We design, architect, and deploy bespoke websites and custom digital solutions. Every
-              deliverable is custom-tailored to communicate authority, convert users, and scale without friction.
+              Bespoke websites, high-speed web applications, and digital platforms built to convert and scale.
             </p>
           </div>
         </div>
@@ -96,7 +95,7 @@ export const ServicesPage: React.FC = () => {
                         {renderIcon(service.icon)}
                       </div>
                       <span className="text-xs font-mono font-bold tracking-widest text-indigo-400 uppercase">
-                        0{index + 1} &bull; {service.category}
+                        {service.category}
                       </span>
                     </div>
 

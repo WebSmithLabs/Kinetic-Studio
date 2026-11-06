@@ -30,21 +30,21 @@ export const FeaturedProjects: React.FC = () => {
         <div className="flex flex-col md:flex-row md:items-end justify-between mb-12 gap-6 text-left">
           <div className="space-y-3 max-w-2xl">
             <div className="text-xs font-mono font-semibold uppercase tracking-widest text-indigo-400">
-              02 // SELECTED WORK
+              FEATURED WORK
             </div>
             <h2 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-white dark:text-white light:text-slate-900 tracking-tight">
-              Crafted digital platforms that drive results.
+              Selected projects &amp; case studies.
             </h2>
             <p className="text-zinc-400 dark:text-zinc-400 light:text-slate-600 text-base sm:text-lg">
-              Explore our recent business websites, custom web apps, and digital experiences.
+              Recent business websites, custom web apps, and digital experiences.
             </p>
           </div>
 
           <Link
             to="/work"
-            className="inline-flex items-center gap-2 text-sm font-semibold text-indigo-400 hover:text-indigo-300 group shrink-0"
+            className="inline-flex items-center gap-2 text-sm font-semibold text-indigo-600 dark:text-indigo-400 hover:text-indigo-700 dark:hover:text-indigo-300 group shrink-0"
           >
-            <span>Explore All Projects ({projects.filter(p => p.is_published).length})</span>
+            <span>View All Projects</span>
             <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
           </Link>
         </div>
@@ -58,7 +58,7 @@ export const FeaturedProjects: React.FC = () => {
               className={`px-4 py-2 rounded-xl text-xs font-medium whitespace-nowrap transition-all duration-200 ${
                 selectedCategory === cat
                   ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-500/25 border border-indigo-400/40'
-                  : 'bg-[#121620] dark:bg-[#121620] light:bg-white text-zinc-400 dark:text-zinc-400 light:text-slate-600 border border-[#252A36] dark:border-[#252A36] light:border-slate-200 hover:text-white dark:hover:text-white light:hover:text-slate-900'
+                  : 'bg-[#121620] dark:bg-[#121620] light:bg-white text-zinc-400 dark:text-zinc-400 light:text-slate-600 border border-[#252A36] dark:border-[#252A36] light:border-slate-200 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-[#181D2A] hover:border-slate-300 dark:hover:border-zinc-700'
               }`}
             >
               {cat}
@@ -120,7 +120,7 @@ export const FeaturedProjects: React.FC = () => {
                     </div>
                   </div>
 
-                  <h3 className="text-2xl font-bold text-white dark:text-white light:text-slate-900 group-hover:text-indigo-300 transition-colors mb-2">
+                  <h3 className="text-2xl font-bold text-white dark:text-white light:text-slate-900 group-hover:text-indigo-600 dark:group-hover:text-indigo-300 transition-colors mb-2">
                     <Link to={`/work/${project.slug}`}>{project.title}</Link>
                   </h3>
 
@@ -146,7 +146,7 @@ export const FeaturedProjects: React.FC = () => {
                   <div className="pt-4 border-t border-[#252A36]/60 dark:border-[#252A36]/60 light:border-slate-100 flex items-center justify-between">
                     <Link
                       to={`/work/${project.slug}`}
-                      className="inline-flex items-center gap-2 text-sm font-semibold text-indigo-400 hover:text-indigo-300 transition-colors"
+                      className="inline-flex items-center gap-2 text-sm font-semibold text-indigo-600 dark:text-indigo-400 hover:text-indigo-700 dark:hover:text-indigo-300 transition-colors"
                     >
                       <span>Read Case Study</span>
                       <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />

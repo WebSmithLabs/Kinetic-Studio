@@ -30,7 +30,7 @@ export const NotFoundPage: React.FC = () => {
             </Link>
             <Link
               to="/work"
-              className="inline-flex items-center gap-2 px-6 py-3 rounded-xl border border-[#252A36] dark:border-[#252A36] light:border-slate-300 bg-[#121620] dark:bg-[#121620] light:bg-slate-100 text-zinc-300 dark:text-zinc-300 light:text-slate-700 hover:text-white dark:hover:text-white light:hover:text-slate-900 text-sm transition-all"
+              className="inline-flex items-center gap-2 px-6 py-3 rounded-xl border border-[#252A36] dark:border-[#252A36] light:border-slate-300 bg-[#121620] dark:bg-[#121620] light:bg-slate-100 text-zinc-300 dark:text-zinc-300 light:text-slate-700 hover:bg-slate-200 dark:hover:bg-[#181D2A] hover:text-slate-900 dark:hover:text-white text-sm transition-all"
             >
               <Compass className="w-4 h-4" />
               <span>Explore Projects</span>

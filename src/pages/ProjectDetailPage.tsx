@@ -52,7 +52,7 @@ export const ProjectDetailPage: React.FC = () => {
         title={`${project.title} | Case Study`}
         description={project.summary}
         image={project.thumbnail_url}
-        canonical={`https://kineticstudio.co/work/${project.slug}`}
+        canonical={`https://websmithlabs.com/work/${project.slug}`}
       />
 
       <article className="pt-32 pb-24 text-left">
@@ -110,7 +110,7 @@ export const ProjectDetailPage: React.FC = () => {
                   href={project.github_url}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex items-center gap-2 px-5 py-3 rounded-xl text-sm font-medium border border-[#252A36] dark:border-[#252A36] light:border-slate-200 bg-[#121620] dark:bg-[#121620] light:bg-slate-100 text-zinc-300 dark:text-zinc-300 light:text-slate-700 hover:text-white dark:hover:text-white light:hover:text-slate-900 transition-all"
+                  className="inline-flex items-center gap-2 px-5 py-3 rounded-xl text-sm font-medium border border-[#252A36] dark:border-[#252A36] light:border-slate-200 bg-[#121620] dark:bg-[#121620] light:bg-slate-100 text-zinc-300 dark:text-zinc-300 light:text-slate-700 hover:bg-slate-200 dark:hover:bg-[#181D2A] hover:text-slate-900 dark:hover:text-white transition-all"
                 >
                   <GithubIcon className="w-4 h-4" />
                   <span>View Repository</span>

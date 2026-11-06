@@ -67,9 +67,9 @@ export const ContactPage: React.FC = () => {
   return (
     <>
       <SEO
-        title="Contact Us | Kinetic Studio"
-        description="Get in touch with Kinetic Studio. Discuss your business website, custom web development project, or technical consultation."
-        canonical="https://kineticstudio.co/contact"
+        title="Contact Us | Web Smith Labs"
+        description="Get in touch with Web Smith Labs. Discuss your business website, custom web development project, or technical consultation."
+        canonical="https://websmithlabs.com/contact"
       />
 
       <div className="pt-32 pb-24 text-left">
@@ -78,14 +78,13 @@ export const ContactPage: React.FC = () => {
           <div className="max-w-3xl space-y-4 mb-16">
             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-indigo-500/30 bg-indigo-500/10 text-xs font-mono font-semibold text-indigo-300">
               <MessageSquare className="w-3.5 h-3.5" />
-              <span>DIRECT COMMUNICATIONS</span>
+              <span>CONTACT</span>
             </div>
             <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold text-white dark:text-white light:text-slate-900 tracking-tight leading-tight">
               Let&rsquo;s Start a Conversation.
             </h1>
             <p className="text-lg sm:text-xl text-zinc-400 dark:text-zinc-400 light:text-slate-600 leading-relaxed">
-              Have an inquiry, technical question, or prospective partnership? Reach out directly to our
-              lead engineering and design team.
+              Have a project in mind, technical question, or prospective partnership? Reach out to our team.
             </p>
           </div>
 
@@ -103,7 +102,7 @@ export const ContactPage: React.FC = () => {
                 {settings.contact_email ? (
                   <a
                     href={`mailto:${settings.contact_email}`}
-                    className="text-lg font-bold text-white dark:text-white light:text-slate-900 hover:text-indigo-400 transition-colors block"
+                    className="text-lg font-bold text-white dark:text-white light:text-slate-900 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors block"
                   >
                     {settings.contact_email}
                   </a>
@@ -247,7 +246,7 @@ export const ContactPage: React.FC = () => {
                     <CheckCircle2 className="w-12 h-12 text-emerald-400 mx-auto" />
                     <h3 className="text-xl font-bold text-white dark:text-white light:text-slate-900">Message Sent Successfully</h3>
                     <p className="text-sm text-zinc-300 dark:text-zinc-300 light:text-slate-600 max-w-sm mx-auto">
-                      Thank you for contacting Kinetic Studio. Our team will review your message and
+                      Thank you for contacting Web Smith Labs. Our team will review your message and
                       reply promptly.
                     </p>
                     <button
@@ -316,7 +315,7 @@ export const ContactPage: React.FC = () => {
                       <textarea
                         required
                         rows={5}
-                        placeholder="How can Kinetic Studio assist your organization?"
+                        placeholder="How can Web Smith Labs assist your organization?"
                         value={message}
                         onChange={e => setMessage(e.target.value)}
                         className="w-full px-4 py-2.5 rounded-xl border border-[#252A36] dark:border-[#252A36] light:border-slate-300 bg-[#0B0D12] dark:bg-[#0B0D12] light:bg-slate-50 text-sm text-white dark:text-white light:text-slate-900 placeholder:text-zinc-500 focus:outline-none focus:border-indigo-500"

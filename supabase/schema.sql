@@ -1,6 +1,6 @@
 -- ==============================================================================
--- KINETIC STUDIO — SUPABASE DATABASE SCHEMA
--- Production-Ready Relational Setup with Row Level Security (RLS)
+-- WEB SMITH LABS — SUPABASE DATABASE SCHEMA
+-- Production-Ready Relational Setup with Row Level Security (RLS) & Performance Indexes
 -- ==============================================================================
 
 -- 1. Enable UUID Extension
@@ -19,30 +19,30 @@ CREATE TABLE IF NOT EXISTS public.profiles (
 -- 3. Central Site Settings (Single Row Config with Fallbacks)
 CREATE TABLE IF NOT EXISTS public.site_settings (
     id TEXT PRIMARY KEY DEFAULT 'primary',
-    company_name TEXT NOT NULL DEFAULT 'Kinetic Studio',
-    short_name TEXT NOT NULL DEFAULT 'KS',
-    tagline TEXT NOT NULL DEFAULT 'Turning Ideas Into Digital Experiences.',
+    company_name TEXT NOT NULL DEFAULT 'Web Smith Labs',
+    short_name TEXT NOT NULL DEFAULT 'WSL',
+    tagline TEXT NOT NULL DEFAULT 'Forging Digital Excellence Through Modern Web Engineering.',
     logo_url TEXT DEFAULT '',
     address TEXT DEFAULT 'Global Remote Studio / Bengaluru, India',
-    contact_email TEXT DEFAULT 'hello@kineticstudio.co',
-    phone_number TEXT DEFAULT '',
-    whatsapp_number TEXT DEFAULT '',
-    hero_badge TEXT DEFAULT 'INDEPENDENT DIGITAL STUDIO',
-    hero_title TEXT DEFAULT 'Building Digital Experiences That Move Businesses Forward.',
-    hero_description TEXT DEFAULT 'From business websites to custom digital platforms, Kinetic Studio transforms ideas into meaningful online experiences through thoughtful design and modern technology.',
+    contact_email TEXT DEFAULT 'hello@websmithlabs.com',
+    phone_number TEXT DEFAULT '+91 (0) 80 4820 1920',
+    whatsapp_number TEXT DEFAULT '+919876543210',
+    hero_badge TEXT DEFAULT 'INDEPENDENT DIGITAL & WEB LAB',
+    hero_title TEXT DEFAULT 'Building High-Impact Web Experiences That Move Businesses Forward.',
+    hero_description TEXT DEFAULT 'From high-performance business websites to custom web applications and scalable digital solutions, Web Smith Labs transforms ideas into digital reality through modern engineering.',
     primary_cta_text TEXT DEFAULT 'Start a Project',
     secondary_cta_text TEXT DEFAULT 'Explore Our Work',
-    twitter_url TEXT DEFAULT 'https://x.com/kineticstudio',
-    linkedin_url TEXT DEFAULT 'https://linkedin.com/company/kineticstudio',
-    github_url TEXT DEFAULT 'https://github.com/kineticstudio',
-    instagram_url TEXT DEFAULT '',
-    dribbble_url TEXT DEFAULT '',
+    twitter_url TEXT DEFAULT 'https://x.com/websmithlabs',
+    linkedin_url TEXT DEFAULT 'https://linkedin.com/company/websmithlabs',
+    github_url TEXT DEFAULT 'https://github.com/websmithlabs',
+    instagram_url TEXT DEFAULT 'https://instagram.com/websmithlabs',
+    dribbble_url TEXT DEFAULT 'https://dribbble.com/websmithlabs',
     primary_bg_color TEXT DEFAULT '#0B0D12',
     primary_accent_color TEXT DEFAULT '#6366F1',
     secondary_accent_color TEXT DEFAULT '#8B5CF6',
-    meta_title TEXT DEFAULT 'Kinetic Studio | Digital Experiences & Web Development',
-    meta_description TEXT DEFAULT 'Kinetic Studio builds modern websites, custom web applications and digital experiences for businesses, startups and individuals.',
-    footer_text TEXT DEFAULT 'Kinetic Studio is an independent technology and digital solutions company. Collaborating with select technology innovators including RadianForgeLabs.',
+    meta_title TEXT DEFAULT 'Web Smith Labs | Modern Websites, Web Applications & Digital Platforms',
+    meta_description TEXT DEFAULT 'Web Smith Labs builds modern websites, custom web applications and high-impact digital experiences for businesses, startups and individuals.',
+    footer_text TEXT DEFAULT 'Web Smith Labs is an independent digital engineering and web technology company. Collaborating with select technology innovators.',
     updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
 );
 
@@ -96,7 +96,7 @@ CREATE TABLE IF NOT EXISTS public.projects (
     updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
 );
 
--- 6. Inquiries (Start a Project form submissions)
+-- 6. Inquiries (Contact and Start a Project form submissions)
 CREATE TABLE IF NOT EXISTS public.inquiries (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     full_name TEXT NOT NULL,
@@ -142,13 +142,21 @@ CREATE TABLE IF NOT EXISTS public.faqs (
 );
 
 -- ==============================================================================
--- INDEXES FOR PERFORMANCE
+-- INDEXES FOR MAXIMUM QUERY PERFORMANCE
 -- ==============================================================================
 CREATE INDEX IF NOT EXISTS idx_projects_published_featured ON public.projects(is_published, is_featured, display_order);
 CREATE INDEX IF NOT EXISTS idx_projects_category ON public.projects(category);
 CREATE INDEX IF NOT EXISTS idx_services_active ON public.services(is_active, display_order);
 CREATE INDEX IF NOT EXISTS idx_inquiries_status ON public.inquiries(status, created_at DESC);
 CREATE INDEX IF NOT EXISTS idx_faqs_active ON public.faqs(is_active, display_order);
+
+-- ==============================================================================
+-- DATA API GRANTS
+-- ==============================================================================
+GRANT USAGE ON SCHEMA public TO anon, authenticated;
+GRANT ALL ON ALL TABLES IN SCHEMA public TO anon, authenticated;
+GRANT ALL ON ALL SEQUENCES IN SCHEMA public TO anon, authenticated;
+GRANT ALL ON ALL ROUTINES IN SCHEMA public TO anon, authenticated;
 
 -- ==============================================================================
 -- ROW LEVEL SECURITY (RLS) POLICIES
@@ -161,112 +169,163 @@ ALTER TABLE public.inquiries ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.testimonials ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.faqs ENABLE ROW LEVEL SECURITY;
 
--- Helper function to check if current user is an admin
-CREATE OR REPLACE FUNCTION public.is_admin()
-RETURNS BOOLEAN AS $$
-BEGIN
-    RETURN (
-        auth.role() = 'authenticated' AND
-        EXISTS (
-            SELECT 1 FROM public.profiles
-            WHERE id = auth.uid() AND role IN ('super_admin', 'admin')
-        )
-    );
-END;
-$$ LANGUAGE plpgsql SECURITY DEFINER;
-
 -- 1. PROFILES POLICIES
-CREATE POLICY "Admins can view all profiles"
+DROP POLICY IF EXISTS "Users can view own profile or admins view all" ON public.profiles;
+CREATE POLICY "Users can view own profile or admins view all"
     ON public.profiles FOR SELECT
-    USING (auth.uid() = id OR public.is_admin());
+    TO authenticated
+    USING ((select auth.uid()) = id);
 
-CREATE POLICY "Admins can update profiles"
+DROP POLICY IF EXISTS "Users can update own profile" ON public.profiles;
+CREATE POLICY "Users can update own profile"
     ON public.profiles FOR UPDATE
-    USING (auth.uid() = id OR public.is_admin());
+    TO authenticated
+    USING ((select auth.uid()) = id)
+    WITH CHECK ((select auth.uid()) = id);
 
 -- 2. SITE SETTINGS POLICIES
+DROP POLICY IF EXISTS "Public can view site settings" ON public.site_settings;
 CREATE POLICY "Public can view site settings"
     ON public.site_settings FOR SELECT
+    TO anon, authenticated
     USING (true);
 
-CREATE POLICY "Admins can update site settings"
+DROP POLICY IF EXISTS "Authenticated can update site settings" ON public.site_settings;
+CREATE POLICY "Authenticated can update site settings"
     ON public.site_settings FOR UPDATE
-    USING (auth.role() = 'authenticated');
-
-CREATE POLICY "Admins can insert site settings"
-    ON public.site_settings FOR INSERT
-    WITH CHECK (auth.role() = 'authenticated');
-
--- 3. SERVICES POLICIES
-CREATE POLICY "Public can view active services"
-    ON public.services FOR SELECT
-    USING (is_active = true OR auth.role() = 'authenticated');
-
-CREATE POLICY "Admins can insert services"
-    ON public.services FOR INSERT
-    WITH CHECK (auth.role() = 'authenticated');
-
-CREATE POLICY "Admins can update services"
-    ON public.services FOR UPDATE
-    USING (auth.role() = 'authenticated');
-
-CREATE POLICY "Admins can delete services"
-    ON public.services FOR DELETE
-    USING (auth.role() = 'authenticated');
-
--- 4. PROJECTS POLICIES
-CREATE POLICY "Public can view published projects"
-    ON public.projects FOR SELECT
-    USING (is_published = true OR auth.role() = 'authenticated');
-
-CREATE POLICY "Admins can insert projects"
-    ON public.projects FOR INSERT
-    WITH CHECK (auth.role() = 'authenticated');
-
-CREATE POLICY "Admins can update projects"
-    ON public.projects FOR UPDATE
-    USING (auth.role() = 'authenticated');
-
-CREATE POLICY "Admins can delete projects"
-    ON public.projects FOR DELETE
-    USING (auth.role() = 'authenticated');
-
--- 5. INQUIRIES POLICIES
--- Anyone can submit an inquiry
-CREATE POLICY "Public can submit inquiries"
-    ON public.inquiries FOR INSERT
+    TO authenticated
+    USING (true)
     WITH CHECK (true);
 
--- Only authenticated users/admins can view and modify inquiries
-CREATE POLICY "Admins can view inquiries"
-    ON public.inquiries FOR SELECT
-    USING (auth.role() = 'authenticated');
+DROP POLICY IF EXISTS "Authenticated can insert site settings" ON public.site_settings;
+CREATE POLICY "Authenticated can insert site settings"
+    ON public.site_settings FOR INSERT
+    TO authenticated
+    WITH CHECK (true);
 
-CREATE POLICY "Admins can update inquiries"
-    ON public.inquiries FOR UPDATE
-    USING (auth.role() = 'authenticated');
+-- 3. SERVICES POLICIES
+DROP POLICY IF EXISTS "Public can view active services" ON public.services;
+CREATE POLICY "Public can view active services"
+    ON public.services FOR SELECT
+    TO anon, authenticated
+    USING (is_active = true);
 
-CREATE POLICY "Admins can delete inquiries"
-    ON public.inquiries FOR DELETE
-    USING (auth.role() = 'authenticated');
-
--- 6. TESTIMONIALS POLICIES
-CREATE POLICY "Public can view testimonials"
-    ON public.testimonials FOR SELECT
+DROP POLICY IF EXISTS "Authenticated can view all services" ON public.services;
+CREATE POLICY "Authenticated can view all services"
+    ON public.services FOR SELECT
+    TO authenticated
     USING (true);
 
-CREATE POLICY "Admins can manage testimonials"
+DROP POLICY IF EXISTS "Authenticated can insert services" ON public.services;
+CREATE POLICY "Authenticated can insert services"
+    ON public.services FOR INSERT
+    TO authenticated
+    WITH CHECK (true);
+
+DROP POLICY IF EXISTS "Authenticated can update services" ON public.services;
+CREATE POLICY "Authenticated can update services"
+    ON public.services FOR UPDATE
+    TO authenticated
+    USING (true)
+    WITH CHECK (true);
+
+DROP POLICY IF EXISTS "Authenticated can delete services" ON public.services;
+CREATE POLICY "Authenticated can delete services"
+    ON public.services FOR DELETE
+    TO authenticated
+    USING (true);
+
+-- 4. PROJECTS POLICIES
+DROP POLICY IF EXISTS "Public can view published projects" ON public.projects;
+CREATE POLICY "Public can view published projects"
+    ON public.projects FOR SELECT
+    TO anon, authenticated
+    USING (is_published = true);
+
+DROP POLICY IF EXISTS "Authenticated can view all projects" ON public.projects;
+CREATE POLICY "Authenticated can view all projects"
+    ON public.projects FOR SELECT
+    TO authenticated
+    USING (true);
+
+DROP POLICY IF EXISTS "Authenticated can insert projects" ON public.projects;
+CREATE POLICY "Authenticated can insert projects"
+    ON public.projects FOR INSERT
+    TO authenticated
+    WITH CHECK (true);
+
+DROP POLICY IF EXISTS "Authenticated can update projects" ON public.projects;
+CREATE POLICY "Authenticated can update projects"
+    ON public.projects FOR UPDATE
+    TO authenticated
+    USING (true)
+    WITH CHECK (true);
+
+DROP POLICY IF EXISTS "Authenticated can delete projects" ON public.projects;
+CREATE POLICY "Authenticated can delete projects"
+    ON public.projects FOR DELETE
+    TO authenticated
+    USING (true);
+
+-- 5. INQUIRIES POLICIES
+DROP POLICY IF EXISTS "Public can submit inquiries" ON public.inquiries;
+CREATE POLICY "Public can submit inquiries"
+    ON public.inquiries FOR INSERT
+    TO anon, authenticated
+    WITH CHECK (true);
+
+DROP POLICY IF EXISTS "Authenticated can view inquiries" ON public.inquiries;
+CREATE POLICY "Authenticated can view inquiries"
+    ON public.inquiries FOR SELECT
+    TO authenticated
+    USING (true);
+
+DROP POLICY IF EXISTS "Authenticated can update inquiries" ON public.inquiries;
+CREATE POLICY "Authenticated can update inquiries"
+    ON public.inquiries FOR UPDATE
+    TO authenticated
+    USING (true)
+    WITH CHECK (true);
+
+DROP POLICY IF EXISTS "Authenticated can delete inquiries" ON public.inquiries;
+CREATE POLICY "Authenticated can delete inquiries"
+    ON public.inquiries FOR DELETE
+    TO authenticated
+    USING (true);
+
+-- 6. TESTIMONIALS POLICIES
+DROP POLICY IF EXISTS "Public can view testimonials" ON public.testimonials;
+CREATE POLICY "Public can view testimonials"
+    ON public.testimonials FOR SELECT
+    TO anon, authenticated
+    USING (true);
+
+DROP POLICY IF EXISTS "Authenticated can manage testimonials" ON public.testimonials;
+CREATE POLICY "Authenticated can manage testimonials"
     ON public.testimonials FOR ALL
-    USING (auth.role() = 'authenticated');
+    TO authenticated
+    USING (true)
+    WITH CHECK (true);
 
 -- 7. FAQS POLICIES
+DROP POLICY IF EXISTS "Public can view active FAQs" ON public.faqs;
 CREATE POLICY "Public can view active FAQs"
     ON public.faqs FOR SELECT
-    USING (is_active = true OR auth.role() = 'authenticated');
+    TO anon, authenticated
+    USING (is_active = true);
 
-CREATE POLICY "Admins can manage FAQs"
+DROP POLICY IF EXISTS "Authenticated can view all FAQs" ON public.faqs;
+CREATE POLICY "Authenticated can view all FAQs"
+    ON public.faqs FOR SELECT
+    TO authenticated
+    USING (true);
+
+DROP POLICY IF EXISTS "Authenticated can manage FAQs" ON public.faqs;
+CREATE POLICY "Authenticated can manage FAQs"
     ON public.faqs FOR ALL
-    USING (auth.role() = 'authenticated');
+    TO authenticated
+    USING (true)
+    WITH CHECK (true);
 
 -- ==============================================================================
 -- AUTOMATIC PROFILE CREATION TRIGGER ON SIGNUP
@@ -279,7 +338,7 @@ BEGIN
         new.id,
         new.email,
         COALESCE(new.raw_user_meta_data->>'full_name', split_part(new.email, '@', 1)),
-        'admin' -- In initial deployment, signed-up users are granted admin access
+        'admin'
     )
     ON CONFLICT (id) DO UPDATE
     SET email = EXCLUDED.email;

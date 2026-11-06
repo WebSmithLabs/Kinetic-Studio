@@ -43,14 +43,13 @@ export const TechStackSection: React.FC = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="max-w-3xl mb-16 text-left space-y-3">
           <div className="text-xs font-mono font-semibold uppercase tracking-widest text-indigo-400">
-            05 // MODERN TOOLING
+            TECHNOLOGIES
           </div>
           <h2 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-white dark:text-white light:text-slate-900 tracking-tight">
-            Built on robust, open, modern foundations.
+            Built on modern, open foundations.
           </h2>
           <p className="text-zinc-400 dark:text-zinc-400 light:text-slate-600 text-base sm:text-lg leading-relaxed">
-            We avoid proprietary site builder lock-in. Every website is built on an industry-standard,
-            developer-friendly tech stack you own 100%.
+            Industry-standard tools, frameworks, and cloud infrastructure you own 100%.
           </p>
         </div>
 

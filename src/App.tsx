@@ -37,6 +37,9 @@ const TermsPage = lazy(() =>
 const AdminDashboard = lazy(() =>
   import('./pages/AdminDashboard').then(m => ({ default: m.AdminDashboard }))
 );
+const LoginPage = lazy(() =>
+  import('./pages/LoginPage').then(m => ({ default: m.LoginPage }))
+);
 const NotFoundPage = lazy(() =>
   import('./pages/NotFoundPage').then(m => ({ default: m.NotFoundPage }))
 );
@@ -62,6 +65,7 @@ const AppLayout: React.FC = () => {
             <Route path="/privacy-policy" element={<PrivacyPolicyPage />} />
             <Route path="/terms" element={<TermsPage />} />
             <Route path="/admin" element={<AdminDashboard />} />
+            <Route path="/login" element={<LoginPage />} />
             <Route path="*" element={<NotFoundPage />} />
           </Routes>
         </Suspense>

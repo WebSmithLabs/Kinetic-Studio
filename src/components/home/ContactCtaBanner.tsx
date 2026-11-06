@@ -17,16 +17,15 @@ export const ContactCtaBanner: React.FC = () => {
           <div className="relative z-10 max-w-3xl text-left space-y-6">
             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-indigo-500/30 bg-indigo-500/10 text-xs font-mono font-semibold text-indigo-300">
               <Sparkles className="w-3.5 h-3.5" />
-              <span>READY TO ELEVATE YOUR DIGITAL PRESENCE?</span>
+              <span>START A PROJECT</span>
             </div>
 
             <h2 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-white dark:text-white light:text-slate-900 tracking-tight leading-tight">
-              Let&rsquo;s turn your vision into an exceptional digital reality.
+              Let&rsquo;s build something exceptional.
             </h2>
 
             <p className="text-zinc-400 dark:text-zinc-400 light:text-slate-600 text-base sm:text-lg leading-relaxed max-w-2xl">
-              Whether you need a high-converting corporate website, a bespoke interactive web application,
-              or a long-term engineering partnership, Kinetic Studio is ready to build.
+              From high-performance business websites to custom web platforms, {settings.company_name} is ready to build.
             </p>
 
             <div className="flex flex-wrap items-center gap-4 pt-4">
@@ -40,7 +39,7 @@ export const ContactCtaBanner: React.FC = () => {
 
               <Link
                 to="/contact"
-                className="inline-flex items-center gap-2 px-7 py-4 rounded-xl font-medium border border-[#252A36] dark:border-[#252A36] light:border-slate-300 bg-[#121620]/80 dark:bg-[#121620]/80 light:bg-white text-zinc-200 dark:text-zinc-200 light:text-slate-700 hover:text-white dark:hover:text-white light:hover:text-slate-900 hover:border-indigo-500/40 transition-all text-base"
+                className="inline-flex items-center gap-2 px-7 py-4 rounded-xl font-medium border border-[#252A36] dark:border-[#252A36] light:border-slate-300 bg-[#121620]/80 dark:bg-[#121620]/80 light:bg-white text-zinc-200 dark:text-zinc-200 light:text-slate-800 hover:bg-slate-100 dark:hover:bg-[#181D2A] hover:text-slate-900 dark:hover:text-white hover:border-indigo-400 dark:hover:border-indigo-500/40 transition-all text-base"
               >
                 <MessageSquare className="w-4 h-4 text-indigo-400" />
                 <span>Contact Studio</span>

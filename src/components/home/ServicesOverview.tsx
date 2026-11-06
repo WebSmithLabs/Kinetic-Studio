@@ -45,22 +45,21 @@ export const ServicesOverview: React.FC = () => {
         <div className="flex flex-col md:flex-row md:items-end justify-between mb-16 gap-6">
           <div className="space-y-3 max-w-2xl text-left">
             <div className="text-xs font-mono font-semibold uppercase tracking-widest text-indigo-400">
-              01 // CORE CAPABILITIES
+              SERVICES
             </div>
             <h2 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-white dark:text-white light:text-slate-900 tracking-tight">
               Engineered for impact, crafted for scale.
             </h2>
             <p className="text-zinc-400 dark:text-zinc-400 light:text-slate-600 text-base sm:text-lg leading-relaxed">
-              We replace sluggish generic templates with tailor-made digital experiences, bespoke
-              platforms, and modern cloud architectures.
+              Tailor-made digital experiences, bespoke web platforms, and modern cloud architectures.
             </p>
           </div>
 
           <Link
             to="/services"
-            className="inline-flex items-center gap-2 text-sm font-semibold text-indigo-400 hover:text-indigo-300 group shrink-0"
+            className="inline-flex items-center gap-2 text-sm font-semibold text-indigo-600 dark:text-indigo-400 hover:text-indigo-700 dark:hover:text-indigo-300 group shrink-0"
           >
-            <span>View All Capabilities &amp; Deliverables</span>
+            <span>View All Services</span>
             <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
           </Link>
         </div>
@@ -75,7 +74,7 @@ export const ServicesOverview: React.FC = () => {
               <div>
                 {/* Card Top: Icon & Category */}
                 <div className="flex items-center justify-between mb-5">
-                  <div className="w-12 h-12 rounded-xl bg-white/[0.04] dark:bg-white/[0.04] light:bg-slate-100 border border-white/10 dark:border-white/10 light:border-slate-200 flex items-center justify-center group-hover:scale-105 group-hover:border-indigo-500/30 transition-all">
+                  <div className="w-12 h-12 rounded-xl bg-white/[0.04] dark:bg-white/[0.04] light:bg-slate-100 border border-white/10 dark:border-white/10 light:border-slate-200 flex items-center justify-center group-hover:scale-105 group-hover:border-indigo-400 dark:group-hover:border-indigo-500/30 transition-all">
                     {renderIcon(service.icon)}
                   </div>
                   <span className="text-[10px] font-mono tracking-wider uppercase px-2.5 py-1 rounded-full border border-white/10 bg-white/[0.02] dark:border-white/10 dark:bg-white/[0.02] light:border-slate-200 light:bg-slate-50 text-zinc-400 dark:text-zinc-400 light:text-slate-500">
@@ -84,25 +83,12 @@ export const ServicesOverview: React.FC = () => {
                 </div>
 
                 {/* Title & Summary */}
-                <h3 className="text-xl font-bold text-white dark:text-white light:text-slate-900 group-hover:text-indigo-300 transition-colors mb-2.5">
+                <h3 className="text-xl font-bold text-white dark:text-white light:text-slate-900 group-hover:text-indigo-600 dark:group-hover:text-indigo-300 transition-colors mb-2.5">
                   {service.title}
                 </h3>
                 <p className="text-zinc-400 dark:text-zinc-400 light:text-slate-600 text-sm leading-relaxed mb-6">
                   {service.summary}
                 </p>
-
-                {/* Key Deliverables Highlights */}
-                <div className="space-y-2 mb-6 pt-2 border-t border-[#252A36]/60 dark:border-[#252A36]/60 light:border-slate-100">
-                  <div className="text-[11px] font-mono text-zinc-400 dark:text-zinc-400 light:text-slate-500 uppercase tracking-wider mb-2">
-                    Key Deliverables:
-                  </div>
-                  {service.deliverables.slice(0, 3).map((item, idx) => (
-                    <div key={idx} className="flex items-start gap-2 text-xs text-zinc-300 dark:text-zinc-300 light:text-slate-700">
-                      <Check className="w-3.5 h-3.5 text-indigo-400 shrink-0 mt-0.5" />
-                      <span>{item}</span>
-                    </div>
-                  ))}
-                </div>
               </div>
 
               {/* Card Footer: Technologies & CTA */}
@@ -125,7 +111,7 @@ export const ServicesOverview: React.FC = () => {
 
                 <Link
                   to={`/start-project?service=${encodeURIComponent(service.title)}`}
-                  className="inline-flex items-center gap-1 text-xs font-semibold text-indigo-400 group-hover:text-indigo-300 transition-colors"
+                  className="inline-flex items-center gap-1 text-xs font-semibold text-indigo-600 dark:text-indigo-400 group-hover:text-indigo-700 dark:group-hover:text-indigo-300 transition-colors"
                 >
                   <span>Request</span>
                   <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform" />

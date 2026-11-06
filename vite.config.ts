@@ -5,6 +5,15 @@ import { defineConfig } from 'vite'
 
 // https://vite.dev/config/
 export default defineConfig({
+  server: {
+    host: true,
+    port: 5173,
+    allowedHosts: [
+      'gage-norm-determine-functional.trycloudflare.com',
+      'drilling-rank-flexible-fountain.trycloudflare.com',
+      '.trycloudflare.com',
+    ],
+  },
   plugins: [
     react(),
     tailwindcss(),

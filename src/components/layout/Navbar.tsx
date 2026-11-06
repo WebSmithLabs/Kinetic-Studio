@@ -1,11 +1,22 @@
 import React, { useState, useEffect } from 'react';
 import { NavLink, Link, useLocation } from 'react-router-dom';
-import { Sun, Moon, ArrowRight, Menu, X, Shield, Sparkles } from 'lucide-react';
+import {
+  Sun,
+  Moon,
+  ArrowRight,
+  Menu,
+  X,
+  Shield,
+  Sparkles,
+  LogIn,
+  LogOut,
+  User,
+} from 'lucide-react';
 import { Logo } from '../common/Logo';
 import { useStudio } from '../../context/StudioContext';
 
 export const Navbar: React.FC = () => {
-  const { theme, toggleTheme, isAdmin, settings } = useStudio();
+  const { theme, toggleTheme, currentUser, isAdmin, logout, settings } = useStudio();
   const [isScrolled, setIsScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const location = useLocation();
@@ -24,6 +35,7 @@ export const Navbar: React.FC = () => {
   }, [location.pathname]);
 
   const navLinks = [
+    { name: 'Home', href: '/' },
     { name: 'Services', href: '/services' },
     { name: 'Our Work', href: '/work' },
     { name: 'About Us', href: '/about' },
@@ -39,21 +51,22 @@ export const Navbar: React.FC = () => {
       }`}
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between">
+        <div className="flex items-center justify-between gap-4">
           {/* Logo */}
           <Logo size="md" />
 
           {/* Desktop Navigation Links */}
-          <nav className="hidden md:flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-white/5 bg-white/[0.02] dark:border-white/5 dark:bg-white/[0.02] light:border-slate-200 light:bg-slate-50/80 backdrop-blur-md">
+          <nav className="hidden md:flex items-center gap-1 px-3 py-1.5 rounded-full border border-white/5 bg-white/[0.02] dark:border-white/5 dark:bg-white/[0.02] light:border-slate-200 light:bg-slate-50/80 backdrop-blur-md">
             {navLinks.map(link => (
               <NavLink
                 key={link.name}
                 to={link.href}
+                end={link.href === '/'}
                 className={({ isActive }) =>
-                  `px-4 py-1.5 text-sm font-medium rounded-full transition-all duration-200 ${
+                  `px-3.5 py-1.5 text-xs lg:text-sm font-medium rounded-full transition-all duration-200 ${
                     isActive
-                      ? 'text-white dark:text-white light:text-indigo-600 bg-indigo-500/15 dark:bg-indigo-500/20 light:bg-indigo-50 border border-indigo-500/30 font-semibold'
-                      : 'text-zinc-400 dark:text-zinc-400 light:text-slate-600 hover:text-white dark:hover:text-white light:hover:text-slate-900 hover:bg-white/5 light:hover:bg-slate-100'
+                      ? 'text-white dark:text-white light:text-indigo-600 bg-indigo-500/15 dark:bg-indigo-500/20 light:bg-indigo-50 border border-indigo-500/30 font-semibold shadow-sm'
+                      : 'text-zinc-400 dark:text-zinc-400 light:text-slate-600 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-white/5'
                   }`
                 }
               >
@@ -69,7 +82,7 @@ export const Navbar: React.FC = () => {
               onClick={toggleTheme}
               aria-label="Toggle visual theme"
               title={theme === 'dark' ? 'Switch to White Theme' : 'Switch to Dark Theme'}
-              className="flex items-center gap-1.5 px-3 py-2 rounded-xl border border-[#252A36] dark:border-[#252A36] light:border-slate-200 bg-[#121620]/60 dark:bg-[#121620]/60 light:bg-slate-100 text-zinc-300 dark:text-zinc-300 light:text-slate-700 hover:border-indigo-500/40 hover:text-indigo-400 transition-all duration-200 focus:outline-none text-xs font-mono"
+              className="flex items-center gap-1.5 px-3 py-2 rounded-xl border border-[#252A36] dark:border-[#252A36] light:border-slate-200 bg-[#121620]/60 dark:bg-[#121620]/60 light:bg-slate-100 text-zinc-300 dark:text-zinc-300 light:text-slate-700 hover:bg-slate-200 dark:hover:bg-[#181D2A] hover:border-indigo-400 dark:hover:border-indigo-500/40 hover:text-indigo-600 dark:hover:text-indigo-400 transition-all duration-200 focus:outline-none text-xs font-mono"
             >
               {theme === 'dark' ? (
                 <>
@@ -84,15 +97,46 @@ export const Navbar: React.FC = () => {
               )}
             </button>
 
-            {/* Admin Badge if authenticated */}
-            {isAdmin && (
+            {/* Auth Button or User Profile */}
+            {currentUser ? (
+              <div className="flex items-center gap-2">
+                {isAdmin && (
+                  <Link
+                    to="/admin"
+                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-mono font-medium text-emerald-400 bg-emerald-500/10 border border-emerald-500/30 hover:bg-emerald-500/20 transition-colors"
+                    title="Admin Dashboard"
+                  >
+                    <Shield className="w-3.5 h-3.5" />
+                    <span>Admin</span>
+                  </Link>
+                )}
+                <div
+                  className="flex items-center gap-2 px-2.5 py-1.5 rounded-xl border border-[#252A36] dark:border-[#252A36] light:border-slate-200 bg-[#121620]/60 dark:bg-[#121620]/60 light:bg-slate-50 text-xs"
+                  title={`Signed in as ${currentUser.email}`}
+                >
+                  <div className="w-6 h-6 rounded-full bg-indigo-600 text-white font-bold flex items-center justify-center text-[10px]">
+                    {(currentUser.full_name || currentUser.email).charAt(0).toUpperCase()}
+                  </div>
+                  <span className="hidden xl:inline text-zinc-300 dark:text-zinc-300 light:text-slate-700 font-medium max-w-[100px] truncate">
+                    {currentUser.full_name || currentUser.email.split('@')[0]}
+                  </span>
+                  <button
+                    onClick={() => logout()}
+                    className="p-1 text-zinc-400 hover:text-rose-400 transition-colors cursor-pointer"
+                    title="Sign Out"
+                    aria-label="Sign Out"
+                  >
+                    <LogOut className="w-3.5 h-3.5" />
+                  </button>
+                </div>
+              </div>
+            ) : (
               <Link
-                to="/admin"
-                className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-mono font-medium text-emerald-400 bg-emerald-500/10 border border-emerald-500/30 hover:bg-emerald-500/20 transition-colors"
-                title="Admin Dashboard"
+                to="/login"
+                className="flex items-center gap-1.5 px-3.5 py-2 text-xs font-semibold rounded-xl text-zinc-300 dark:text-zinc-300 light:text-slate-700 hover:text-white dark:hover:text-white light:hover:text-slate-900 hover:bg-white/5 dark:hover:bg-white/5 light:hover:bg-slate-100 transition-colors"
               >
-                <Shield className="w-3.5 h-3.5" />
-                <span>Admin</span>
+                <LogIn className="w-3.5 h-3.5" />
+                <span>Sign In</span>
               </Link>
             )}
 
@@ -136,10 +180,11 @@ export const Navbar: React.FC = () => {
               <NavLink
                 key={link.name}
                 to={link.href}
+                end={link.href === '/'}
                 className={({ isActive }) =>
                   `px-4 py-3 text-base font-medium rounded-xl transition-colors ${
                     isActive
-                      ? 'text-white dark:text-white light:text-indigo-600 bg-indigo-500/15 dark:bg-indigo-500/20 light:bg-indigo-50 border border-indigo-500/30'
+                      ? 'text-white dark:text-white light:text-indigo-600 bg-indigo-500/15 dark:bg-indigo-500/20 light:bg-indigo-50 border border-indigo-500/30 font-semibold'
                       : 'text-zinc-400 dark:text-zinc-400 light:text-slate-600 hover:text-white dark:hover:text-white light:hover:text-slate-900'
                   }`
                 }
@@ -147,6 +192,39 @@ export const Navbar: React.FC = () => {
                 {link.name}
               </NavLink>
             ))}
+
+            {/* Mobile Auth Section */}
+            {currentUser ? (
+              <div className="p-3.5 rounded-xl bg-indigo-500/10 border border-indigo-500/20 flex items-center justify-between">
+                <div className="flex items-center gap-2.5">
+                  <div className="w-8 h-8 rounded-full bg-indigo-600 text-white font-bold flex items-center justify-center text-xs">
+                    {(currentUser.full_name || currentUser.email).charAt(0).toUpperCase()}
+                  </div>
+                  <div>
+                    <div className="text-xs font-semibold text-white dark:text-white light:text-slate-900">
+                      {currentUser.full_name || 'Client'}
+                    </div>
+                    <div className="text-[10px] text-zinc-400 dark:text-zinc-400 light:text-slate-500 max-w-[170px] truncate">
+                      {currentUser.email}
+                    </div>
+                  </div>
+                </div>
+                <button
+                  onClick={() => logout()}
+                  className="text-xs text-rose-400 hover:text-rose-300 font-medium px-2 py-1"
+                >
+                  Sign Out
+                </button>
+              </div>
+            ) : (
+              <Link
+                to="/login"
+                className="flex items-center justify-center gap-2 px-4 py-3 rounded-xl border border-[#252A36] dark:border-[#252A36] light:border-slate-200 bg-[#121620] dark:bg-[#121620] light:bg-slate-50 text-sm font-semibold text-white dark:text-white light:text-slate-900"
+              >
+                <LogIn className="w-4 h-4" />
+                <span>Sign In / Create Account</span>
+              </Link>
+            )}
 
             {isAdmin && (
               <Link

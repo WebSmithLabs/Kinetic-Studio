@@ -16,38 +16,32 @@ export const WhyChooseUs: React.FC = () => {
     {
       icon: <Code className="w-5 h-5 text-indigo-400" />,
       title: 'Zero Template Bloat',
-      description:
-        'We refuse heavy, generic site builder themes. Every layout, component, and animation is tailored specifically to your brand identity and business objectives.',
+      description: 'Handcrafted components tailored to your brand without slow generic page builders.',
     },
     {
       icon: <Zap className="w-5 h-5 text-purple-400" />,
-      title: 'Sub-Second Performance',
-      description:
-        'Fast websites convert visitors. We optimize Core Web Vitals, asset delivery, and database queries to ensure instantaneous load speeds on all devices.',
+      title: 'Sub-Second Speeds',
+      description: 'Optimized for instant page loads, smooth 60fps motion, and peak Core Web Vitals.',
     },
     {
       icon: <Users2 className="w-5 h-5 text-pink-400" />,
-      title: 'Direct Builder Collaboration',
-      description:
-        'No endless layers of account managers. You collaborate directly with senior designers and full-stack software engineers who write the code.',
+      title: 'Direct Collaboration',
+      description: 'Collaborate directly with the engineers and designers building your product.',
     },
     {
       icon: <Rocket className="w-5 h-5 text-amber-400" />,
-      title: 'Engineered for Future Scale',
-      description:
-        'Built with scalable frameworks like React and Supabase, your website easily expands into full SaaS applications, AI integrations, and mobile platforms.',
+      title: 'Built to Scale',
+      description: 'Modular React & Supabase foundations ready to expand into full web platforms.',
     },
     {
       icon: <ShieldCheck className="w-5 h-5 text-emerald-400" />,
       title: 'Transparent Milestones',
-      description:
-        'Clear project scopes, fixed milestones, continuous staging previews, and transparent pricing. No surprise fees or ambiguous commitments.',
+      description: 'Clear scopes, fixed timelines, staging previews, and straightforward pricing.',
     },
     {
       icon: <Layers className="w-5 h-5 text-cyan-400" />,
-      title: 'Independent Studio Pride',
-      description:
-        'We are an independent studio driven by craft and long-term reputation. We stand firmly behind every digital experience we deploy.',
+      title: 'Independent Craft',
+      description: 'An autonomous studio with meticulous attention to detail in every release.',
     },
   ];
 
@@ -56,14 +50,13 @@ export const WhyChooseUs: React.FC = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="max-w-3xl mb-16 text-left space-y-3">
           <div className="text-xs font-mono font-semibold uppercase tracking-widest text-indigo-400">
-            03 // WHY KINETIC STUDIO
+            WHY WEB SMITH LABS
           </div>
           <h2 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-white dark:text-white light:text-slate-900 tracking-tight">
-            Craftsmanship over shortcuts. Engineering over templates.
+            Craftsmanship over templates.
           </h2>
           <p className="text-zinc-400 dark:text-zinc-400 light:text-slate-600 text-base sm:text-lg leading-relaxed">
-            In an era of mass-produced generic sites, Kinetic Studio stands for distinction,
-            uncompromising speed, and thoughtful digital execution.
+            Distinction, uncompromising speed, and thoughtful digital execution.
           </p>
         </div>
 

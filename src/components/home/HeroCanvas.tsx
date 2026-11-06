@@ -102,15 +102,15 @@ export const HeroCanvas: React.FC = () => {
       ctx.clearRect(0, 0, width, height);
 
       // Render subtle ambient central energy mesh
-      const centerX = width * 0.65;
-      const centerY = height * 0.45;
+      const centerX = width * 0.5;
+      const centerY = height * 0.5;
       const grad = ctx.createRadialGradient(
         centerX,
         centerY,
         10,
         centerX,
         centerY,
-        Math.min(width, height) * 0.45
+        Math.min(width, height) * 0.5
       );
       grad.addColorStop(0, isDark ? 'rgba(99, 102, 241, 0.15)' : 'rgba(79, 70, 229, 0.08)');
       grad.addColorStop(0.5, isDark ? 'rgba(139, 92, 246, 0.06)' : 'rgba(124, 58, 237, 0.04)');

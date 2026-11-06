@@ -20,7 +20,7 @@ import {
 import { useStudio } from '../../context/StudioContext';
 
 export const Footer: React.FC = () => {
-  const { settings } = useStudio();
+  const { settings, services } = useStudio();
 
   const scrollToTop = () => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -37,8 +37,7 @@ export const Footer: React.FC = () => {
           <div className="lg:col-span-2 space-y-5">
             <Logo size="md" />
             <p className="text-zinc-400 dark:text-zinc-400 light:text-slate-600 text-sm leading-relaxed max-w-md">
-              An independent creative technology and digital solutions studio. We transform ideas into
-              meaningful digital experiences through modern engineering, bespoke design, and scalable architecture.
+              {settings.footer_text || settings.hero_description}
             </p>
 
             {/* Studio Availability Status Indicator */}
@@ -84,8 +83,8 @@ export const Footer: React.FC = () => {
                   href={settings.twitter_url}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="p-2 rounded-lg border border-[#252A36] dark:border-[#252A36] light:border-slate-200 bg-[#121620] dark:bg-[#121620] light:bg-white text-zinc-400 hover:text-indigo-400 hover:border-indigo-500/40 transition-colors"
-                  aria-label="Kinetic Studio on X (Twitter)"
+                  className="p-2 rounded-lg border border-[#252A36] dark:border-[#252A36] light:border-slate-200 bg-[#121620] dark:bg-[#121620] light:bg-white text-zinc-400 dark:text-zinc-400 light:text-slate-600 hover:bg-slate-50 dark:hover:bg-[#181D2A] hover:text-indigo-600 dark:hover:text-indigo-400 hover:border-indigo-400 dark:hover:border-indigo-500/40 transition-colors"
+                  aria-label="Web Smith Labs on X (Twitter)"
                 >
                   <TwitterIcon className="w-4 h-4" />
                 </a>
@@ -95,8 +94,8 @@ export const Footer: React.FC = () => {
                   href={settings.linkedin_url}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="p-2 rounded-lg border border-[#252A36] dark:border-[#252A36] light:border-slate-200 bg-[#121620] dark:bg-[#121620] light:bg-white text-zinc-400 hover:text-indigo-400 hover:border-indigo-500/40 transition-colors"
-                  aria-label="Kinetic Studio on LinkedIn"
+                  className="p-2 rounded-lg border border-[#252A36] dark:border-[#252A36] light:border-slate-200 bg-[#121620] dark:bg-[#121620] light:bg-white text-zinc-400 dark:text-zinc-400 light:text-slate-600 hover:bg-slate-50 dark:hover:bg-[#181D2A] hover:text-indigo-600 dark:hover:text-indigo-400 hover:border-indigo-400 dark:hover:border-indigo-500/40 transition-colors"
+                  aria-label="Web Smith Labs on LinkedIn"
                 >
                   <LinkedinIcon className="w-4 h-4" />
                 </a>
@@ -106,8 +105,8 @@ export const Footer: React.FC = () => {
                   href={settings.github_url}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="p-2 rounded-lg border border-[#252A36] dark:border-[#252A36] light:border-slate-200 bg-[#121620] dark:bg-[#121620] light:bg-white text-zinc-400 hover:text-indigo-400 hover:border-indigo-500/40 transition-colors"
-                  aria-label="Kinetic Studio on GitHub"
+                  className="p-2 rounded-lg border border-[#252A36] dark:border-[#252A36] light:border-slate-200 bg-[#121620] dark:bg-[#121620] light:bg-white text-zinc-400 dark:text-zinc-400 light:text-slate-600 hover:bg-slate-50 dark:hover:bg-[#181D2A] hover:text-indigo-600 dark:hover:text-indigo-400 hover:border-indigo-400 dark:hover:border-indigo-500/40 transition-colors"
+                  aria-label="Web Smith Labs on GitHub"
                 >
                   <GithubIcon className="w-4 h-4" />
                 </a>
@@ -117,8 +116,8 @@ export const Footer: React.FC = () => {
                   href={settings.instagram_url}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="p-2 rounded-lg border border-[#252A36] dark:border-[#252A36] light:border-slate-200 bg-[#121620] dark:bg-[#121620] light:bg-white text-zinc-400 hover:text-indigo-400 hover:border-indigo-500/40 transition-colors"
-                  aria-label="Kinetic Studio on Instagram"
+                  className="p-2 rounded-lg border border-[#252A36] dark:border-[#252A36] light:border-slate-200 bg-[#121620] dark:bg-[#121620] light:bg-white text-zinc-400 dark:text-zinc-400 light:text-slate-600 hover:bg-slate-50 dark:hover:bg-[#181D2A] hover:text-indigo-600 dark:hover:text-indigo-400 hover:border-indigo-400 dark:hover:border-indigo-500/40 transition-colors"
+                  aria-label="Web Smith Labs on Instagram"
                 >
                   <InstagramIcon className="w-4 h-4" />
                 </a>
@@ -128,8 +127,8 @@ export const Footer: React.FC = () => {
                   href={settings.dribbble_url}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="p-2 rounded-lg border border-[#252A36] dark:border-[#252A36] light:border-slate-200 bg-[#121620] dark:bg-[#121620] light:bg-white text-zinc-400 hover:text-indigo-400 hover:border-indigo-500/40 transition-colors"
-                  aria-label="Kinetic Studio on Dribbble"
+                  className="p-2 rounded-lg border border-[#252A36] dark:border-[#252A36] light:border-slate-200 bg-[#121620] dark:bg-[#121620] light:bg-white text-zinc-400 dark:text-zinc-400 light:text-slate-600 hover:bg-slate-50 dark:hover:bg-[#181D2A] hover:text-indigo-600 dark:hover:text-indigo-400 hover:border-indigo-400 dark:hover:border-indigo-500/40 transition-colors"
+                  aria-label="Web Smith Labs on Dribbble"
                 >
                   <DribbbleIcon className="w-4 h-4" />
                 </a>
@@ -194,107 +193,64 @@ export const Footer: React.FC = () => {
             </ul>
           </div>
 
-          {/* Col 4: Services */}
+          {/* Col 4: Services — Synced dynamically with database */}
           <div>
             <h4 className="text-xs font-mono font-semibold uppercase tracking-wider text-zinc-300 dark:text-zinc-300 light:text-slate-800 mb-4">
               Services
             </h4>
             <ul className="space-y-2.5 text-sm">
-              <li>
-                <Link
-                  to="/services#business-websites"
-                  className="text-zinc-400 dark:text-zinc-400 light:text-slate-600 hover:text-white dark:hover:text-white light:hover:text-slate-900 transition-colors"
-                >
-                  Business Websites
-                </Link>
-              </li>
-              <li>
-                <Link
-                  to="/services#custom-web-development"
-                  className="text-zinc-400 dark:text-zinc-400 light:text-slate-600 hover:text-white dark:hover:text-white light:hover:text-slate-900 transition-colors"
-                >
-                  Custom Web Development
-                </Link>
-              </li>
-              <li>
-                <Link
-                  to="/services#ui-ux-design"
-                  className="text-zinc-400 dark:text-zinc-400 light:text-slate-600 hover:text-white dark:hover:text-white light:hover:text-slate-900 transition-colors"
-                >
-                  UI/UX Design
-                </Link>
-              </li>
-              <li>
-                <Link
-                  to="/services#product-showcase-websites"
-                  className="text-zinc-400 dark:text-zinc-400 light:text-slate-600 hover:text-white dark:hover:text-white light:hover:text-slate-900 transition-colors"
-                >
-                  Product Showcase Sites
-                </Link>
-              </li>
-              <li>
-                <Link
-                  to="/services#digital-solutions"
-                  className="text-zinc-400 dark:text-zinc-400 light:text-slate-600 hover:text-white dark:hover:text-white light:hover:text-slate-900 transition-colors"
-                >
-                  Digital Solutions
-                </Link>
-              </li>
-              <li>
-                <Link
-                  to="/services#website-maintenance"
-                  className="text-zinc-400 dark:text-zinc-400 light:text-slate-600 hover:text-white dark:hover:text-white light:hover:text-slate-900 transition-colors"
-                >
-                  Website Maintenance
-                </Link>
-              </li>
+              {services.slice(0, 6).map(srv => (
+                <li key={srv.id}>
+                  <Link
+                    to={`/services#${srv.slug}`}
+                    className="text-zinc-400 dark:text-zinc-400 light:text-slate-600 hover:text-white dark:hover:text-white light:hover:text-slate-900 transition-colors"
+                  >
+                    {srv.title}
+                  </Link>
+                </li>
+              ))}
             </ul>
           </div>
 
-          {/* Col 5: Independent Relationship & Admin */}
+          {/* Col 5: Legal & Admin */}
           <div>
             <h4 className="text-xs font-mono font-semibold uppercase tracking-wider text-zinc-300 dark:text-zinc-300 light:text-slate-800 mb-4">
-              Partnership & Governance
+              Legal &amp; Studio
             </h4>
-            <div className="p-3.5 rounded-xl border border-[#252A36] dark:border-[#252A36] light:border-slate-200 bg-[#121620]/60 dark:bg-[#121620]/60 light:bg-white text-xs space-y-2.5">
-              <div className="flex items-center gap-1.5 text-zinc-200 dark:text-zinc-200 light:text-slate-800 font-semibold">
-                <Layers className="w-3.5 h-3.5 text-indigo-400" />
-                <span>Independent Studio</span>
-              </div>
-              <p className="text-zinc-400 dark:text-zinc-400 light:text-slate-600 leading-relaxed text-[11px]">
-                Kinetic Studio is an independent technology company. We collaborate with select technology partners,
-                including RadianForgeLabs, on specialized technical engagements.
-              </p>
-            </div>
-
-            <div className="mt-4 pt-3 border-t border-[#252A36] dark:border-[#252A36] light:border-slate-200 space-y-2 text-xs">
-              <Link
-                to="/privacy-policy"
-                className="block text-zinc-400 dark:text-zinc-400 light:text-slate-600 hover:text-white dark:hover:text-white light:hover:text-slate-900 transition-colors"
-              >
-                Privacy Policy
-              </Link>
-              <Link
-                to="/terms"
-                className="block text-zinc-400 dark:text-zinc-400 light:text-slate-600 hover:text-white dark:hover:text-white light:hover:text-slate-900 transition-colors"
-              >
-                Terms and Conditions
-              </Link>
-              <Link
-                to="/admin"
-                className="inline-flex items-center gap-1 text-zinc-500 hover:text-zinc-300 transition-colors pt-1"
-              >
-                <Shield className="w-3 h-3" />
-                <span>Studio Admin Portal</span>
-              </Link>
-            </div>
+            <ul className="space-y-2.5 text-sm">
+              <li>
+                <Link
+                  to="/privacy-policy"
+                  className="text-zinc-400 dark:text-zinc-400 light:text-slate-600 hover:text-white dark:hover:text-white light:hover:text-slate-900 transition-colors"
+                >
+                  Privacy Policy
+                </Link>
+              </li>
+              <li>
+                <Link
+                  to="/terms"
+                  className="text-zinc-400 dark:text-zinc-400 light:text-slate-600 hover:text-white dark:hover:text-white light:hover:text-slate-900 transition-colors"
+                >
+                  Terms &amp; Conditions
+                </Link>
+              </li>
+              <li>
+                <Link
+                  to="/admin"
+                  className="inline-flex items-center gap-1.5 text-zinc-500 hover:text-indigo-400 transition-colors pt-2"
+                >
+                  <Shield className="w-3.5 h-3.5" />
+                  <span>Admin Portal</span>
+                </Link>
+              </li>
+            </ul>
           </div>
         </div>
 
         {/* Bottom Bar */}
         <div className="pt-8 border-t border-[#252A36] dark:border-[#252A36] light:border-slate-200 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-zinc-500 dark:text-zinc-500 light:text-slate-500">
           <div>
-            &copy; {new Date().getFullYear()} {settings.company_name} (KS). All rights reserved.
+            &copy; {new Date().getFullYear()} {settings.company_name} (WSL). All rights reserved.
           </div>
 
           <div className="flex items-center gap-6">

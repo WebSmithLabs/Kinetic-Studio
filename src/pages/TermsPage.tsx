@@ -9,9 +9,9 @@ export const TermsPage: React.FC = () => {
   return (
     <>
       <SEO
-        title="Terms and Conditions | Kinetic Studio"
-        description="Terms and conditions governing web development and digital solutions provided by Kinetic Studio."
-        canonical="https://kineticstudio.co/terms"
+        title="Terms and Conditions | Web Smith Labs"
+        description="Terms and conditions governing web development and digital solutions provided by Web Smith Labs."
+        canonical="https://websmithlabs.com/terms"
       />
 
       <div className="pt-32 pb-24 text-left">
@@ -25,7 +25,7 @@ export const TermsPage: React.FC = () => {
               Terms &amp; Conditions
             </h1>
             <p className="text-xs font-mono text-zinc-400">
-              Last updated: November 2026 &bull; {settings.company_name} (KS)
+              Last updated: November 2026 &bull; {settings.company_name} (WSL)
             </p>
           </div>
 
@@ -35,7 +35,7 @@ export const TermsPage: React.FC = () => {
                 1. Agreement to Terms
               </h2>
               <p>
-                By visiting our website or engaging Kinetic Studio for digital engineering, website development, UI/UX design, or digital solutions, you agree to comply with and be bound by these Terms and Conditions.
+                By visiting our website or engaging Web Smith Labs for digital engineering, website development, UI/UX design, or digital solutions, you agree to comply with and be bound by these Terms and Conditions.
               </p>
             </section>
 
@@ -62,7 +62,7 @@ export const TermsPage: React.FC = () => {
                 4. Independent Brand Stance
               </h2>
               <p>
-                Kinetic Studio is an independent company. Any collaborations with strategic partners, such as RadianForgeLabs, are executed on a project-by-project basis without creating a joint venture, franchise, or corporate subsidiary relationship.
+                Web Smith Labs is an independent company. Any collaborations with strategic partners are executed on a project-by-project basis without creating a joint venture, franchise, or corporate subsidiary relationship.
               </p>
             </section>
 

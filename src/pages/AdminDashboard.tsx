@@ -22,6 +22,7 @@ import {
 } from 'lucide-react';
 import { useStudio } from '../context/StudioContext';
 import { SEO } from '../components/common/SEO';
+import { GoogleIcon } from '../components/common/SocialIcons';
 import {
   ProjectItem,
   InquiryItem,
@@ -34,11 +35,20 @@ import {
 
 export const AdminDashboard: React.FC = () => {
   const {
+    currentUser,
     adminUser,
     isAdmin,
     loginAdmin,
+    registerAdmin,
     logoutAdmin,
+    loginWithGoogle,
+    logout,
     isConfigured,
+    configuredUrl,
+    connectSupabase,
+    disconnectSupabase,
+    testSupabaseConnection,
+    seedSupabaseDatabase,
     settings,
     updateSettings,
     projects,
@@ -59,10 +69,25 @@ export const AdminDashboard: React.FC = () => {
     deleteTestimonial,
   } = useStudio();
 
+  // Supabase dynamic setup state
+  const [supabaseUrlInput, setSupabaseUrlInput] = useState(configuredUrl || '');
+  const [supabaseKeyInput, setSupabaseKeyInput] = useState('');
+  const [connTesting, setConnTesting] = useState(false);
+  const [connMessage, setConnMessage] = useState<{
+    success: boolean;
+    text: string;
+    tableCounts?: Record<string, number>;
+  } | null>(null);
+  const [seedingLoading, setSeedingLoading] = useState(false);
+  const [seedMessage, setSeedMessage] = useState<{ success: boolean; text: string } | null>(null);
+
   // Auth form state
+  const [authMode, setAuthMode] = useState<'login' | 'register'>('login');
+  const [authName, setAuthName] = useState('');
   const [authEmail, setAuthEmail] = useState('');
   const [authPassword, setAuthPassword] = useState('');
   const [authError, setAuthError] = useState('');
+  const [authSuccess, setAuthSuccess] = useState('');
   const [isLoggingIn, setIsLoggingIn] = useState(false);
 
   // Active Admin Tab
@@ -90,12 +115,12 @@ export const AdminDashboard: React.FC = () => {
     challenge: '',
     solution: '',
     results: '',
-    thumbnail_url: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&w=1200&q=80',
+    thumbnail_url: '',
     screenshots: [],
-    technologies: ['React', 'TypeScript', 'Tailwind CSS'],
+    technologies: [],
     live_url: '',
     github_url: '',
-    completion_date: 'November 2026',
+    completion_date: '',
     is_featured: false,
     is_published: true,
     display_order: 1,
@@ -125,21 +150,37 @@ export const AdminDashboard: React.FC = () => {
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setAuthError('');
+    setAuthSuccess('');
     setIsLoggingIn(true);
     const result = await loginAdmin(authEmail, authPassword);
     setIsLoggingIn(false);
     if (!result.success) {
-      setAuthError(result.error || 'Authentication failed.');
+      setAuthError(result.error || 'Authentication failed. Please verify your credentials.');
     }
   };
 
-  // Quick Demo Login
-  const handleQuickLogin = async () => {
-    setAuthEmail('admin@kineticstudio.co');
-    setAuthPassword('KineticStudio2026!');
+  // Handle Admin Registration
+  const handleRegister = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setAuthError('');
+    setAuthSuccess('');
+    if (!authEmail.trim() || !authPassword.trim()) {
+      setAuthError('Please fill out all required fields.');
+      return;
+    }
+    if (authPassword.length < 6) {
+      setAuthError('Password must be at least 6 characters.');
+      return;
+    }
     setIsLoggingIn(true);
-    await loginAdmin('admin@kineticstudio.co', 'KineticStudio2026!');
+    const result = await registerAdmin(authEmail, authPassword, authName.trim() || 'Admin');
     setIsLoggingIn(false);
+    if (!result.success) {
+      setAuthError(result.error || 'Registration failed.');
+    } else {
+      setAuthSuccess('Administrator account created! You can now sign in.');
+      setAuthMode('login');
+    }
   };
 
   // Handle Settings Save
@@ -179,12 +220,12 @@ export const AdminDashboard: React.FC = () => {
       challenge: '',
       solution: '',
       results: '',
-      thumbnail_url: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&w=1200&q=80',
-      screenshots: ['https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&w=1200&q=80'],
-      technologies: ['React', 'TypeScript', 'Tailwind CSS'],
+      thumbnail_url: '',
+      screenshots: [],
+      technologies: [],
       live_url: '',
       github_url: '',
-      completion_date: 'November 2026',
+      completion_date: '',
       is_featured: false,
       is_published: true,
       display_order: projects.length + 1,
@@ -202,7 +243,7 @@ export const AdminDashboard: React.FC = () => {
   if (!isAdmin) {
     return (
       <>
-        <SEO title="Studio Administration | Sign In" />
+        <SEO title="Studio Administration | Web Smith Labs" />
         <div className="min-h-screen flex items-center justify-center pt-24 pb-16 px-4 bg-[#0B0D12] dark:bg-[#0B0D12] light:bg-[#FAFAFC] transition-colors">
           <div className="w-full max-w-md rounded-3xl border border-[#252A36] dark:border-[#252A36] light:border-slate-200 bg-[#121620] dark:bg-[#121620] light:bg-white p-8 sm:p-10 shadow-2xl text-left space-y-6">
             <div className="text-center space-y-2">
@@ -213,68 +254,190 @@ export const AdminDashboard: React.FC = () => {
                 Studio Admin Access
               </h1>
               <p className="text-xs text-zinc-400 dark:text-zinc-400 light:text-slate-500">
-                Secure administration portal for Kinetic Studio management.
+                Secure administration portal for Web Smith Labs. Connected to Supabase Auth.
               </p>
             </div>
 
-            {authError && (
-              <div className="p-3.5 rounded-xl border border-rose-500/30 bg-rose-500/10 text-rose-300 text-xs flex items-center gap-2">
-                <AlertCircle className="w-4 h-4 text-rose-400 shrink-0" />
-                <span>{authError}</span>
+            {currentUser ? (
+              <div className="space-y-4">
+                <div className="p-4 rounded-2xl bg-amber-500/10 border border-amber-500/20 text-xs text-amber-200 light:text-amber-800 space-y-2">
+                  <div className="font-semibold text-sm text-white dark:text-white light:text-slate-900 flex items-center gap-2">
+                    <AlertCircle className="w-4 h-4 text-amber-400 shrink-0" />
+                    <span>Administrator Privileges Required</span>
+                  </div>
+                  <p>
+                    You are currently signed in as <strong className="font-mono text-white dark:text-white light:text-slate-900">{currentUser.email}</strong>, which does not possess studio administrator authorization.
+                  </p>
+                  <p className="text-[11px] text-zinc-400 dark:text-zinc-400 light:text-slate-600">
+                    Designated admin accounts (<span className="font-mono text-indigo-400">websmithlaps@gmail.com</span>) are granted immediate full access upon signing in.
+                  </p>
+                </div>
+
+                <div className="flex flex-col gap-2.5 pt-2">
+                  <button
+                    type="button"
+                    onClick={async () => {
+                      await logout();
+                    }}
+                    className="w-full py-2.5 px-4 rounded-xl text-xs font-semibold text-white bg-indigo-600 hover:bg-indigo-500 transition-all text-center cursor-pointer shadow-md shadow-indigo-500/20"
+                  >
+                    Sign Out & Switch Account
+                  </button>
+                  <a
+                    href="/"
+                    className="w-full py-2.5 px-4 rounded-xl text-xs font-semibold text-zinc-400 hover:text-white dark:hover:text-white light:text-slate-600 light:hover:text-slate-900 border border-[#252A36] dark:border-[#252A36] light:border-slate-300 text-center transition-all"
+                  >
+                    Return to Homepage
+                  </a>
+                </div>
               </div>
+            ) : (
+              <>
+                {/* Google Sign In Button */}
+                <button
+                  type="button"
+                  onClick={async () => {
+                    await loginWithGoogle('/admin');
+                  }}
+                  className="w-full flex items-center justify-center gap-2.5 px-4 py-2.5 rounded-xl border border-[#252A36] dark:border-[#252A36] light:border-slate-300 bg-[#0B0D12] dark:bg-[#0B0D12] light:bg-white text-xs font-semibold text-white dark:text-white light:text-slate-800 hover:bg-[#181D2A] dark:hover:bg-[#181D2A] light:hover:bg-slate-50 transition-all shadow-sm cursor-pointer"
+                >
+                  <GoogleIcon className="w-4 h-4 shrink-0" />
+                  <span>Sign in with Google</span>
+                </button>
+
+                {/* Divider */}
+                <div className="relative my-2">
+                  <div className="absolute inset-0 flex items-center">
+                    <div className="w-full border-t border-[#252A36] dark:border-[#252A36] light:border-slate-200" />
+                  </div>
+                  <div className="relative flex justify-center text-[10px] uppercase tracking-wider font-mono">
+                    <span className="px-2.5 bg-[#121620] dark:bg-[#121620] light:bg-white text-zinc-500">
+                      Or with email
+                    </span>
+                  </div>
+                </div>
+
+                {/* Auth Mode Toggle */}
+                <div className="grid grid-cols-2 p-1 bg-[#0B0D12] dark:bg-[#0B0D12] light:bg-slate-100 rounded-xl border border-[#252A36] dark:border-[#252A36] light:border-slate-200">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setAuthMode('login');
+                      setAuthError('');
+                      setAuthSuccess('');
+                    }}
+                    className={`py-2 text-xs font-semibold rounded-lg transition-all ${
+                      authMode === 'login'
+                        ? 'bg-indigo-600 text-white shadow-sm'
+                        : 'text-zinc-400 hover:text-white dark:text-zinc-400 dark:hover:text-white light:text-slate-600 light:hover:text-slate-900'
+                    }`}
+                  >
+                    Sign In
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setAuthMode('register');
+                      setAuthError('');
+                      setAuthSuccess('');
+                    }}
+                    className={`py-2 text-xs font-semibold rounded-lg transition-all ${
+                      authMode === 'register'
+                        ? 'bg-indigo-600 text-white shadow-sm'
+                        : 'text-zinc-400 hover:text-white dark:text-zinc-400 dark:hover:text-white light:text-slate-600 light:hover:text-slate-900'
+                    }`}
+                  >
+                    Register Admin
+                  </button>
+                </div>
+
+                {authError && (
+                  <div className="p-3.5 rounded-xl border border-rose-500/30 bg-rose-500/10 text-rose-300 text-xs flex items-center gap-2">
+                    <AlertCircle className="w-4 h-4 text-rose-400 shrink-0" />
+                    <span>{authError}</span>
+                  </div>
+                )}
+
+                {authSuccess && (
+                  <div className="p-3.5 rounded-xl border border-emerald-500/30 bg-emerald-500/10 text-emerald-300 text-xs flex items-center gap-2">
+                    <CheckCircle className="w-4 h-4 text-emerald-400 shrink-0" />
+                    <span>{authSuccess}</span>
+                  </div>
+                )}
+
+                <form onSubmit={authMode === 'login' ? handleLogin : handleRegister} className="space-y-4">
+                  {authMode === 'register' && (
+                    <div>
+                      <label className="block text-xs font-medium text-zinc-300 dark:text-zinc-300 light:text-slate-700 mb-1">
+                        Administrator Full Name
+                      </label>
+                      <input
+                        type="text"
+                        required
+                        placeholder="Studio Lead"
+                        value={authName}
+                        onChange={e => setAuthName(e.target.value)}
+                        className="w-full px-4 py-2.5 rounded-xl border border-[#252A36] dark:border-[#252A36] light:border-slate-300 bg-[#0B0D12] dark:bg-[#0B0D12] light:bg-slate-50 text-sm text-white dark:text-white light:text-slate-900 placeholder:text-zinc-600 dark:placeholder:text-zinc-600 light:placeholder:text-slate-400 focus:outline-none focus:border-indigo-500"
+                      />
+                    </div>
+                  )}
+
+                  <div>
+                    <label className="block text-xs font-medium text-zinc-300 dark:text-zinc-300 light:text-slate-700 mb-1">
+                      Administrator Email
+                    </label>
+                    <input
+                      type="email"
+                      required
+                      placeholder="websmithlaps@gmail.com"
+                      value={authEmail}
+                      onChange={e => setAuthEmail(e.target.value)}
+                      className="w-full px-4 py-2.5 rounded-xl border border-[#252A36] dark:border-[#252A36] light:border-slate-300 bg-[#0B0D12] dark:bg-[#0B0D12] light:bg-slate-50 text-sm text-white dark:text-white light:text-slate-900 placeholder:text-zinc-600 dark:placeholder:text-zinc-600 light:placeholder:text-slate-400 focus:outline-none focus:border-indigo-500"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-xs font-medium text-zinc-300 dark:text-zinc-300 light:text-slate-700 mb-1">
+                      Secure Password {authMode === 'register' && <span className="text-zinc-500 text-[10px]">(min 6 chars)</span>}
+                    </label>
+                    <input
+                      type="password"
+                      required
+                      placeholder="••••••••••••"
+                      value={authPassword}
+                      onChange={e => setAuthPassword(e.target.value)}
+                      className="w-full px-4 py-2.5 rounded-xl border border-[#252A36] dark:border-[#252A36] light:border-slate-300 bg-[#0B0D12] dark:bg-[#0B0D12] light:bg-slate-50 text-sm text-white dark:text-white light:text-slate-900 placeholder:text-zinc-600 dark:placeholder:text-zinc-600 light:placeholder:text-slate-400 focus:outline-none focus:border-indigo-500"
+                    />
+                  </div>
+
+                  <button
+                    type="submit"
+                    disabled={isLoggingIn}
+                    className="w-full py-3 px-4 rounded-xl text-sm font-semibold text-white bg-indigo-600 hover:bg-indigo-500 transition-all flex items-center justify-center gap-2 shadow-lg shadow-indigo-500/20 disabled:opacity-50 cursor-pointer"
+                  >
+                    {isLoggingIn
+                      ? authMode === 'login'
+                        ? 'Authenticating...'
+                        : 'Creating Admin Account...'
+                      : authMode === 'login'
+                      ? 'Sign In to Dashboard'
+                      : 'Register Administrator'}
+                  </button>
+                </form>
+
+                <div className="pt-2 text-center space-y-2">
+                  <div className="p-2.5 rounded-xl bg-indigo-500/5 border border-indigo-500/15 text-[11px] text-zinc-400 text-left flex items-start gap-2">
+                    <Shield className="w-3.5 h-3.5 text-indigo-400 shrink-0 mt-0.5" />
+                    <span>
+                      Designated Admin: <span className="text-indigo-300 font-mono font-medium">websmithlaps@gmail.com</span> receives instant administrator permissions.
+                    </span>
+                  </div>
+                  <span className="text-[11px] text-zinc-500 block">
+                    Authentication powered by Supabase Auth &bull; Web Smith Labs
+                  </span>
+                </div>
+              </>
             )}
-
-            <form onSubmit={handleLogin} className="space-y-4">
-              <div>
-                <label className="block text-xs font-medium text-zinc-300 dark:text-zinc-300 light:text-slate-700 mb-1">
-                  Administrator Email
-                </label>
-                <input
-                  type="email"
-                  required
-                  placeholder="admin@kineticstudio.co"
-                  value={authEmail}
-                  onChange={e => setAuthEmail(e.target.value)}
-                  className="w-full px-4 py-2.5 rounded-xl border border-[#252A36] dark:border-[#252A36] light:border-slate-300 bg-[#0B0D12] dark:bg-[#0B0D12] light:bg-slate-50 text-sm text-white dark:text-white light:text-slate-900 placeholder:text-zinc-600 dark:placeholder:text-zinc-600 light:placeholder:text-slate-400 focus:outline-none focus:border-indigo-500"
-                />
-              </div>
-
-              <div>
-                <label className="block text-xs font-medium text-zinc-300 dark:text-zinc-300 light:text-slate-700 mb-1">
-                  Secure Password
-                </label>
-                <input
-                  type="password"
-                  required
-                  placeholder="••••••••••••"
-                  value={authPassword}
-                  onChange={e => setAuthPassword(e.target.value)}
-                  className="w-full px-4 py-2.5 rounded-xl border border-[#252A36] dark:border-[#252A36] light:border-slate-300 bg-[#0B0D12] dark:bg-[#0B0D12] light:bg-slate-50 text-sm text-white dark:text-white light:text-slate-900 placeholder:text-zinc-600 dark:placeholder:text-zinc-600 light:placeholder:text-slate-400 focus:outline-none focus:border-indigo-500"
-                />
-              </div>
-
-              <button
-                type="submit"
-                disabled={isLoggingIn}
-                className="w-full py-3 px-4 rounded-xl text-sm font-semibold text-white bg-indigo-600 hover:bg-indigo-500 transition-all flex items-center justify-center gap-2 shadow-lg shadow-indigo-500/20 disabled:opacity-50"
-              >
-                {isLoggingIn ? 'Authenticating...' : 'Sign In to Dashboard'}
-              </button>
-            </form>
-
-            <div className="pt-4 border-t border-[#252A36] dark:border-[#252A36] light:border-slate-200 text-center space-y-3">
-              <div className="text-[11px] text-zinc-400 dark:text-zinc-400 light:text-slate-500">
-                Preview Mode active. You can sign in immediately:
-              </div>
-              <button
-                type="button"
-                onClick={handleQuickLogin}
-                className="w-full py-2.5 px-3 rounded-xl border border-indigo-500/30 dark:border-indigo-500/30 light:border-indigo-200 bg-indigo-500/10 hover:bg-indigo-500/20 text-xs font-mono text-indigo-300 dark:text-indigo-300 light:text-indigo-700 transition-colors flex items-center justify-center gap-2"
-              >
-                <Sparkles className="w-3.5 h-3.5" />
-                <span>Instant Sign-In with Demo Credentials</span>
-              </button>
-            </div>
           </div>
         </div>
       </>
@@ -289,7 +452,7 @@ export const AdminDashboard: React.FC = () => {
 
   return (
     <>
-      <SEO title="Studio Administration | Kinetic Studio" />
+      <SEO title="Studio Administration | Web Smith Labs" />
 
       <div className="min-h-screen pt-28 pb-20 bg-[#0B0D12] dark:bg-[#0B0D12] light:bg-[#FAFAFC] text-left transition-colors">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -510,7 +673,7 @@ export const AdminDashboard: React.FC = () => {
 
                     <button
                       onClick={() => setActiveTab('settings')}
-                      className="w-full py-3 px-4 rounded-xl border border-[#252A36] dark:border-[#252A36] light:border-slate-200 bg-[#0B0D12] dark:bg-[#0B0D12] light:bg-slate-50 hover:bg-[#181D2A] light:hover:bg-slate-100 text-zinc-300 dark:text-zinc-300 light:text-slate-700 text-xs font-semibold flex items-center justify-center gap-2 transition-colors"
+                      className="w-full py-3 px-4 rounded-xl border border-[#252A36] dark:border-[#252A36] light:border-slate-200 bg-[#0B0D12] dark:bg-[#0B0D12] light:bg-slate-50 dark:hover:bg-[#181D2A] hover:bg-slate-100 text-zinc-300 dark:text-zinc-300 light:text-slate-700 text-xs font-semibold flex items-center justify-center gap-2 transition-colors"
                     >
                       <Settings className="w-4 h-4" />
                       <span>Configure Company Info</span>
@@ -518,7 +681,7 @@ export const AdminDashboard: React.FC = () => {
 
                     <button
                       onClick={() => setActiveTab('database')}
-                      className="w-full py-3 px-4 rounded-xl border border-[#252A36] dark:border-[#252A36] light:border-slate-200 bg-[#0B0D12] dark:bg-[#0B0D12] light:bg-slate-50 hover:bg-[#181D2A] light:hover:bg-slate-100 text-zinc-300 dark:text-zinc-300 light:text-slate-700 text-xs font-semibold flex items-center justify-center gap-2 transition-colors"
+                      className="w-full py-3 px-4 rounded-xl border border-[#252A36] dark:border-[#252A36] light:border-slate-200 bg-[#0B0D12] dark:bg-[#0B0D12] light:bg-slate-50 dark:hover:bg-[#181D2A] hover:bg-slate-100 text-zinc-300 dark:text-zinc-300 light:text-slate-700 text-xs font-semibold flex items-center justify-center gap-2 transition-colors"
                     >
                       <Database className="w-4 h-4" />
                       <span>Supabase Credentials Status</span>
@@ -1374,62 +1537,283 @@ export const AdminDashboard: React.FC = () => {
           )}
 
           {/* ========================================================================= */}
-          {/* TAB 6: SUPABASE CONNECTION GUIDE */}
+          {/* TAB 6: SUPABASE CONNECTION & DATABASE CENTER */}
           {/* ========================================================================= */}
           {activeTab === 'database' && (
-            <div className="rounded-2xl border border-[#252A36] dark:border-[#252A36] light:border-slate-200 bg-[#121620] dark:bg-[#121620] light:bg-white p-8 space-y-6 shadow-sm animate-fadeIn">
-              <div className="flex items-center gap-3 pb-4 border-b border-[#252A36] dark:border-[#252A36] light:border-slate-200">
-                <div className="w-10 h-10 rounded-xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 light:text-emerald-600 flex items-center justify-center">
-                  <Database className="w-5 h-5" />
+            <div className="rounded-2xl border border-[#252A36] dark:border-[#252A36] light:border-slate-200 bg-[#121620] dark:bg-[#121620] light:bg-white p-8 space-y-8 shadow-sm animate-fadeIn">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-[#252A36] dark:border-[#252A36] light:border-slate-200">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 light:text-emerald-600 flex items-center justify-center">
+                    <Database className="w-5 h-5" />
+                  </div>
+                  <div>
+                    <h3 className="text-lg font-bold text-white dark:text-white light:text-slate-900">
+                      Supabase PostgreSQL Connection Center
+                    </h3>
+                    <p className="text-xs text-zinc-400 dark:text-zinc-400 light:text-slate-500">
+                      Connect live Supabase cloud database or manage schema &amp; sync for Web Smith Labs.
+                    </p>
+                  </div>
                 </div>
-                <div>
-                  <h3 className="text-lg font-bold text-white dark:text-white light:text-slate-900">
-                    Supabase PostgreSQL Connection Center
-                  </h3>
-                  <p className="text-xs text-zinc-400 dark:text-zinc-400 light:text-slate-500">
-                    Step-by-step instructions to connect your new Supabase database instance.
-                  </p>
+
+                <div className="flex items-center gap-2">
+                  <span
+                    className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-xl text-xs font-mono font-semibold border ${
+                      isConfigured
+                        ? 'border-emerald-500/30 bg-emerald-500/10 text-emerald-400'
+                        : 'border-amber-500/30 bg-amber-500/10 text-amber-300'
+                    }`}
+                  >
+                    <span className={`w-2 h-2 rounded-full ${isConfigured ? 'bg-emerald-400' : 'bg-amber-400 animate-pulse'}`} />
+                    <span>{isConfigured ? 'Live Connected' : 'Preview / Offline Cache'}</span>
+                  </span>
                 </div>
               </div>
 
               {/* Status Box */}
               <div
-                className={`p-5 rounded-xl border ${
+                className={`p-5 rounded-2xl border ${
                   isConfigured
-                    ? 'border-emerald-500/30 bg-emerald-500/10 text-emerald-300 light:bg-emerald-50 light:border-emerald-300 light:text-emerald-800'
-                    : 'border-amber-500/30 bg-amber-500/10 text-amber-200 light:bg-amber-50 light:border-amber-300 light:text-amber-800'
+                    ? 'border-emerald-500/30 bg-emerald-500/5 text-emerald-200 light:bg-emerald-50 light:border-emerald-300 light:text-emerald-800'
+                    : 'border-amber-500/30 bg-amber-500/5 text-amber-200 light:bg-amber-50 light:border-amber-300 light:text-amber-800'
                 }`}
               >
                 <div className="text-sm font-bold flex items-center gap-2">
-                  <span
-                    className={`w-2.5 h-2.5 rounded-full ${isConfigured ? 'bg-emerald-400' : 'bg-amber-400 animate-ping'}`}
-                  />
+                  <CheckCircle className={`w-4 h-4 ${isConfigured ? 'text-emerald-400' : 'text-amber-400'}`} />
                   <span>
-                    Status:{' '}
+                    Current Mode:{' '}
                     {isConfigured
-                      ? 'Live Supabase Connection Active'
-                      : 'Running in Local Storage Preview Mode (Waiting for Credentials)'}
+                      ? 'Live Supabase Cloud Database Connected'
+                      : 'Interactive Offline Mode (Ready for Supabase Credentials)'}
                   </span>
                 </div>
-                <p className="text-xs mt-1 text-zinc-300 dark:text-zinc-300 light:text-slate-700">
+                <p className="text-xs mt-1.5 text-zinc-300 dark:text-zinc-300 light:text-slate-700 leading-relaxed">
                   {isConfigured
-                    ? 'Your application is reading and writing directly to your Supabase PostgreSQL database tables.'
-                    : 'The website is fully functional in interactive demo mode using cached storage. When you are ready, provide your Supabase URL and Anon Key to activate live cloud database sync.'}
+                    ? `Your website is connected to: ${configuredUrl || 'Supabase'}. All CRUD operations on site settings, services, portfolio projects, client inquiries, testimonials, and FAQs synchronize directly with PostgreSQL.`
+                    : 'All features (CRUD for services, projects, FAQs, testimonials, settings, and contact inquiry submissions) are active in interactive browser storage. Connect your live Supabase project below to sync to your cloud PostgreSQL database.'}
                 </p>
+              </div>
+
+              {/* Interactive Credentials Setup Form */}
+              <div className="p-6 rounded-2xl border border-[#252A36] dark:border-[#252A36] light:border-slate-200 bg-[#0E1118] dark:bg-[#0E1118] light:bg-slate-50 space-y-4">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <h4 className="text-sm font-bold text-white dark:text-white light:text-slate-900">
+                      Supabase Cloud Project Credentials
+                    </h4>
+                    <p className="text-xs text-zinc-400 dark:text-zinc-400 light:text-slate-500">
+                      Enter your project URL and public Anon API key to connect instantly without rebuilding.
+                    </p>
+                  </div>
+                  {isConfigured && (
+                    <button
+                      type="button"
+                      onClick={() => {
+                        disconnectSupabase();
+                        setSupabaseUrlInput('');
+                        setSupabaseKeyInput('');
+                        setConnMessage(null);
+                      }}
+                      className="px-3 py-1.5 rounded-lg border border-rose-500/30 bg-rose-500/10 text-rose-300 hover:bg-rose-500/20 text-xs font-mono transition-colors"
+                    >
+                      Disconnect Keys
+                    </button>
+                  )}
+                </div>
+
+                <div className="grid grid-cols-1 gap-4">
+                  <div>
+                    <label className="block text-xs font-mono text-zinc-300 dark:text-zinc-300 light:text-slate-700 mb-1">
+                      Project URL (VITE_SUPABASE_URL)
+                    </label>
+                    <input
+                      type="text"
+                      placeholder="https://your-project-ref.supabase.co"
+                      value={supabaseUrlInput}
+                      onChange={e => setSupabaseUrlInput(e.target.value)}
+                      className="w-full px-4 py-2.5 rounded-xl border border-[#252A36] dark:border-[#252A36] light:border-slate-300 bg-[#0B0D12] dark:bg-[#0B0D12] light:bg-white text-xs font-mono text-white dark:text-white light:text-slate-900 placeholder:text-zinc-600 focus:outline-none focus:border-indigo-500"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-xs font-mono text-zinc-300 dark:text-zinc-300 light:text-slate-700 mb-1">
+                      Public Anon API Key (VITE_SUPABASE_ANON_KEY)
+                    </label>
+                    <input
+                      type="password"
+                      placeholder="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+                      value={supabaseKeyInput}
+                      onChange={e => setSupabaseKeyInput(e.target.value)}
+                      className="w-full px-4 py-2.5 rounded-xl border border-[#252A36] dark:border-[#252A36] light:border-slate-300 bg-[#0B0D12] dark:bg-[#0B0D12] light:bg-white text-xs font-mono text-white dark:text-white light:text-slate-900 placeholder:text-zinc-600 focus:outline-none focus:border-indigo-500"
+                    />
+                  </div>
+                </div>
+
+                <div className="flex flex-wrap items-center gap-3 pt-2">
+                  <button
+                    type="button"
+                    disabled={connTesting || !supabaseUrlInput.trim() || !supabaseKeyInput.trim()}
+                    onClick={async () => {
+                      setConnTesting(true);
+                      setConnMessage(null);
+                      const res = await connectSupabase(supabaseUrlInput, supabaseKeyInput);
+                      if (res.success) {
+                        const test = await testSupabaseConnection();
+                        setConnMessage({
+                          success: test.success,
+                          text: test.message,
+                          tableCounts: test.tableCounts,
+                        });
+                      } else {
+                        setConnMessage({
+                          success: false,
+                          text: res.error || 'Failed to connect with provided credentials.',
+                        });
+                      }
+                      setConnTesting(false);
+                    }}
+                    className="px-5 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-medium text-xs flex items-center gap-2 transition-all disabled:opacity-50 shadow-md shadow-indigo-500/20"
+                  >
+                    {connTesting ? (
+                      <span>Connecting &amp; Testing...</span>
+                    ) : (
+                      <>
+                        <Sparkles className="w-3.5 h-3.5" />
+                        <span>Save Credentials &amp; Connect</span>
+                      </>
+                    )}
+                  </button>
+
+                  {isConfigured && (
+                    <button
+                      type="button"
+                      disabled={connTesting}
+                      onClick={async () => {
+                        setConnTesting(true);
+                        const test = await testSupabaseConnection();
+                        setConnMessage({
+                          success: test.success,
+                          text: test.message,
+                          tableCounts: test.tableCounts,
+                        });
+                        setConnTesting(false);
+                      }}
+                      className="px-4 py-2.5 rounded-xl border border-[#252A36] dark:border-[#252A36] light:border-slate-200 bg-[#121620] dark:bg-[#121620] light:bg-white text-xs font-medium text-zinc-300 dark:text-zinc-300 light:text-slate-700 hover:text-white dark:hover:text-white light:hover:text-slate-900 transition-colors"
+                    >
+                      Verify / Ping Live Tables
+                    </button>
+                  )}
+                </div>
+
+                {connMessage && (
+                  <div
+                    className={`p-4 rounded-xl text-xs space-y-2 border ${
+                      connMessage.success
+                        ? 'border-emerald-500/30 bg-emerald-500/10 text-emerald-300'
+                        : 'border-rose-500/30 bg-rose-500/10 text-rose-300'
+                    }`}
+                  >
+                    <div className="font-semibold flex items-center gap-2">
+                      {connMessage.success ? <CheckCircle className="w-4 h-4" /> : <AlertCircle className="w-4 h-4" />}
+                      <span>{connMessage.text}</span>
+                    </div>
+
+                    {connMessage.tableCounts && (
+                      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-2 pt-2 border-t border-emerald-500/20 text-center font-mono text-[11px]">
+                        <div className="p-2 rounded bg-black/30">
+                          <div className="text-zinc-400">Settings</div>
+                          <div className="font-bold text-white text-sm">{connMessage.tableCounts.site_settings}</div>
+                        </div>
+                        <div className="p-2 rounded bg-black/30">
+                          <div className="text-zinc-400">Services</div>
+                          <div className="font-bold text-white text-sm">{connMessage.tableCounts.services}</div>
+                        </div>
+                        <div className="p-2 rounded bg-black/30">
+                          <div className="text-zinc-400">Projects</div>
+                          <div className="font-bold text-white text-sm">{connMessage.tableCounts.projects}</div>
+                        </div>
+                        <div className="p-2 rounded bg-black/30">
+                          <div className="text-zinc-400">Inquiries</div>
+                          <div className="font-bold text-white text-sm">{connMessage.tableCounts.inquiries}</div>
+                        </div>
+                        <div className="p-2 rounded bg-black/30">
+                          <div className="text-zinc-400">FAQs</div>
+                          <div className="font-bold text-white text-sm">{connMessage.tableCounts.faqs}</div>
+                        </div>
+                        <div className="p-2 rounded bg-black/30">
+                          <div className="text-zinc-400">Testimonials</div>
+                          <div className="font-bold text-white text-sm">{connMessage.tableCounts.testimonials}</div>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                )}
+              </div>
+
+              {/* Database Actions: Seed Database */}
+              <div className="p-6 rounded-2xl border border-[#252A36] dark:border-[#252A36] light:border-slate-200 bg-[#0E1118] dark:bg-[#0E1118] light:bg-slate-50 space-y-4">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                  <div>
+                    <h4 className="text-sm font-bold text-white dark:text-white light:text-slate-900">
+                      Seed / Initialize Supabase Cloud Database
+                    </h4>
+                    <p className="text-xs text-zinc-400 dark:text-zinc-400 light:text-slate-500">
+                      Populates your connected Supabase PostgreSQL tables with Web Smith Labs portfolio items, services, FAQs, and site configuration.
+                    </p>
+                  </div>
+
+                  <button
+                    type="button"
+                    disabled={!isConfigured || seedingLoading}
+                    onClick={async () => {
+                      setSeedingLoading(true);
+                      setSeedMessage(null);
+                      const res = await seedSupabaseDatabase();
+                      setSeedMessage({
+                        success: res.success,
+                        text: res.message,
+                      });
+                      setSeedingLoading(false);
+                    }}
+                    className="px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-semibold flex items-center gap-2 transition-colors disabled:opacity-50 shrink-0"
+                  >
+                    {seedingLoading ? (
+                      <span>Seeding Supabase...</span>
+                    ) : (
+                      <>
+                        <Database className="w-3.5 h-3.5" />
+                        <span>Seed Database Now</span>
+                      </>
+                    )}
+                  </button>
+                </div>
+
+                {seedMessage && (
+                  <div
+                    className={`p-3.5 rounded-xl text-xs flex items-center gap-2 border ${
+                      seedMessage.success
+                        ? 'border-emerald-500/30 bg-emerald-500/10 text-emerald-300'
+                        : 'border-rose-500/30 bg-rose-500/10 text-rose-300'
+                    }`}
+                  >
+                    {seedMessage.success ? <CheckCircle className="w-4 h-4" /> : <AlertCircle className="w-4 h-4" />}
+                    <span>{seedMessage.text}</span>
+                  </div>
+                )}
               </div>
 
               {/* Instructions Steps */}
               <div className="space-y-4">
                 <h4 className="text-xs font-mono uppercase tracking-wider text-indigo-400 light:text-indigo-600">
-                  How to Connect in 2 Minutes:
+                  How to Set Up Your Supabase Project (Quick Guide):
                 </h4>
 
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs">
                   <div className="p-4 rounded-xl border border-white/5 dark:border-white/5 light:border-slate-200 bg-[#0B0D12] dark:bg-[#0B0D12] light:bg-slate-50 space-y-2">
                     <span className="font-mono text-indigo-400 light:text-indigo-600 font-bold">Step 1</span>
-                    <div className="font-bold text-white dark:text-white light:text-slate-900">Create Supabase Project</div>
+                    <div className="font-bold text-white dark:text-white light:text-slate-900">Create Project</div>
                     <p className="text-zinc-400 dark:text-zinc-400 light:text-slate-600">
-                      Sign in to <span className="text-indigo-300 light:text-indigo-600">supabase.com</span> and create a new project named &ldquo;Kinetic Studio&rdquo;.
+                      Sign in to <span className="text-indigo-300 light:text-indigo-600">supabase.com</span> and create a new project named &ldquo;Web Smith Labs&rdquo;.
                     </p>
                   </div>
 
@@ -1437,15 +1821,15 @@ export const AdminDashboard: React.FC = () => {
                     <span className="font-mono text-indigo-400 light:text-indigo-600 font-bold">Step 2</span>
                     <div className="font-bold text-white dark:text-white light:text-slate-900">Run SQL Migration</div>
                     <p className="text-zinc-400 dark:text-zinc-400 light:text-slate-600">
-                      Open Supabase SQL Editor and execute the schema located at <span className="text-indigo-300 light:text-indigo-600 font-mono">supabase/schema.sql</span> and <span className="text-indigo-300 light:text-indigo-600 font-mono">seed.sql</span>.
+                      Open Supabase SQL Editor and execute <span className="text-indigo-300 light:text-indigo-600 font-mono">supabase/schema.sql</span> (and optional <span className="text-indigo-300 light:text-indigo-600 font-mono">seed.sql</span>).
                     </p>
                   </div>
 
                   <div className="p-4 rounded-xl border border-white/5 dark:border-white/5 light:border-slate-200 bg-[#0B0D12] dark:bg-[#0B0D12] light:bg-slate-50 space-y-2">
                     <span className="font-mono text-indigo-400 light:text-indigo-600 font-bold">Step 3</span>
-                    <div className="font-bold text-white dark:text-white light:text-slate-900">Paste Environment Keys</div>
+                    <div className="font-bold text-white dark:text-white light:text-slate-900">Paste Keys in UI or .env.local</div>
                     <p className="text-zinc-400 dark:text-zinc-400 light:text-slate-600">
-                      Create or edit <span className="text-indigo-300 light:text-indigo-600 font-mono">.env.local</span> in the project root with your project URL and public anon key.
+                      Enter credentials above or add them to <span className="text-indigo-300 light:text-indigo-600 font-mono">.env.local</span> in project root.
                     </p>
                   </div>
                 </div>
@@ -1454,7 +1838,7 @@ export const AdminDashboard: React.FC = () => {
               {/* File reference snippet */}
               <div className="p-4 rounded-xl bg-[#0B0D12] dark:bg-[#0B0D12] light:bg-slate-900 border border-white/5 space-y-2">
                 <div className="text-xs font-mono text-zinc-400 flex items-center justify-between">
-                  <span>.env.local contents:</span>
+                  <span>.env.local reference snippet:</span>
                 </div>
                 <pre className="font-mono text-xs text-indigo-300 p-3 rounded-lg bg-black/40 overflow-x-auto">
 {`VITE_SUPABASE_URL=https://your-project-ref.supabase.co

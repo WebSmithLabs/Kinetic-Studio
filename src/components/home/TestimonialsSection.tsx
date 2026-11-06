@@ -1,5 +1,5 @@
 import React from 'react';
-import { Star, Quote, Info } from 'lucide-react';
+import { Star, Quote } from 'lucide-react';
 import { useStudio } from '../../context/StudioContext';
 
 export const TestimonialsSection: React.FC = () => {
@@ -12,7 +12,7 @@ export const TestimonialsSection: React.FC = () => {
         <div className="flex flex-col md:flex-row md:items-end justify-between mb-16 gap-6 text-left">
           <div className="space-y-3 max-w-2xl">
             <div className="text-xs font-mono font-semibold uppercase tracking-widest text-indigo-400">
-              06 // CLIENT FEEDBACK
+              CLIENT FEEDBACK
             </div>
             <h2 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-white dark:text-white light:text-slate-900 tracking-tight">
               Endorsements from our partners.
@@ -20,12 +20,6 @@ export const TestimonialsSection: React.FC = () => {
             <p className="text-zinc-400 dark:text-zinc-400 light:text-slate-600 text-base sm:text-lg">
               Perspectives on our engineering rigor, design systems, and delivery speed.
             </p>
-          </div>
-
-          {/* Sample Content Disclosure Badge */}
-          <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-xl border border-white/10 bg-white/[0.02] text-xs font-mono text-zinc-400 shrink-0">
-            <Info className="w-3.5 h-3.5 text-indigo-400" />
-            <span>Sample Showcase Content &bull; Admin Editable</span>
           </div>
         </div>
 
@@ -43,7 +37,7 @@ export const TestimonialsSection: React.FC = () => {
                       <Star key={i} className="w-4 h-4 fill-amber-400" />
                     ))}
                   </div>
-                  <Quote className="w-6 h-6 text-indigo-400/40" />
+                  <Quote className="w-6 h-6 text-indigo-400/30" />
                 </div>
 
                 <p className="text-sm text-zinc-300 dark:text-zinc-300 light:text-slate-700 leading-relaxed italic mb-8">

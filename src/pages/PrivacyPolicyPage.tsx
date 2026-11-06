@@ -9,9 +9,9 @@ export const PrivacyPolicyPage: React.FC = () => {
   return (
     <>
       <SEO
-        title="Privacy Policy | Kinetic Studio"
-        description="Privacy policy and data governance practices of Kinetic Studio."
-        canonical="https://kineticstudio.co/privacy-policy"
+        title="Privacy Policy | Web Smith Labs"
+        description="Privacy policy and data governance practices of Web Smith Labs."
+        canonical="https://websmithlabs.com/privacy-policy"
       />
 
       <div className="pt-32 pb-24 text-left">
@@ -25,7 +25,7 @@ export const PrivacyPolicyPage: React.FC = () => {
               Privacy Policy
             </h1>
             <p className="text-xs font-mono text-zinc-400">
-              Last updated: November 2026 &bull; {settings.company_name} (KS)
+              Last updated: November 2026 &bull; {settings.company_name} (WSL)
             </p>
           </div>
 
@@ -35,7 +35,7 @@ export const PrivacyPolicyPage: React.FC = () => {
                 1. Overview &amp; Commitment
               </h2>
               <p>
-                At Kinetic Studio (&ldquo;we&rdquo;, &ldquo;our&rdquo;, or &ldquo;studio&rdquo;), we respect your privacy and are committed to protecting the personal and proprietary information you share with us. This Privacy Policy outlines our practices regarding data collection, usage, and security when you visit our website (kineticstudio.co) or initiate project inquiries.
+                At Web Smith Labs (&ldquo;we&rdquo;, &ldquo;our&rdquo;, or &ldquo;studio&rdquo;), we respect your privacy and are committed to protecting the personal and proprietary information you share with us. This Privacy Policy outlines our practices regarding data collection, usage, and security when you visit our website (websmithlabs.com) or initiate project inquiries.
               </p>
             </section>
 

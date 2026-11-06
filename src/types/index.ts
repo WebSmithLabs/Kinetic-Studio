@@ -128,9 +128,15 @@ export interface FaqItem {
   created_at?: string;
 }
 
-export interface AdminUser {
+export type UserRole = 'super_admin' | 'admin' | 'viewer' | 'client' | 'user';
+
+export interface StudioUser {
   id: string;
   email: string;
-  role: 'super_admin' | 'admin' | 'viewer';
+  role: UserRole;
   full_name: string;
+  avatar_url?: string;
+  created_at?: string;
 }
+
+export type AdminUser = StudioUser;

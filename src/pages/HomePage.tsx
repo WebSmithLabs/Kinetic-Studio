@@ -20,7 +20,7 @@ export const HomePage: React.FC = () => {
       <SEO
         title={settings.company_name}
         description={settings.meta_description}
-        canonical="https://kineticstudio.co/"
+        canonical="https://websmithlabs.com/"
       />
 
       <main className="w-full">
@@ -36,7 +36,7 @@ export const HomePage: React.FC = () => {
         {/* Featured Projects Portfolio */}
         <FeaturedProjects />
 
-        {/* Why Choose Kinetic Studio */}
+        {/* Why Choose Web Smith Labs */}
         <WhyChooseUs />
 
         {/* 6-Stage Development Process */}
