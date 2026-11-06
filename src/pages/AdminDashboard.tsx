@@ -269,7 +269,7 @@ export const AdminDashboard: React.FC = () => {
                     You are currently signed in as <strong className="font-mono text-white dark:text-white light:text-slate-900">{currentUser.email}</strong>, which does not possess studio administrator authorization.
                   </p>
                   <p className="text-[11px] text-zinc-400 dark:text-zinc-400 light:text-slate-600">
-                    Designated admin accounts (<span className="font-mono text-indigo-400">websmithlaps@gmail.com</span>) are granted immediate full access upon signing in.
+                    Designated admin account (<span className="font-mono text-indigo-400">websmithlaps@gmail.com</span>) is granted immediate full access upon signing in.
                   </p>
                 </div>
 

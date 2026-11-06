@@ -9,10 +9,6 @@ import {
   EyeOff,
   AlertCircle,
   CheckCircle,
-  Shield,
-  Sparkles,
-  KeyRound,
-  UserCheck,
 } from 'lucide-react';
 import { SEO } from '../components/common/SEO';
 import { Logo } from '../components/common/Logo';
@@ -47,22 +43,7 @@ export const LoginPage: React.FC = () => {
   const [errorMessage, setErrorMessage] = useState('');
   const [successMessage, setSuccessMessage] = useState('');
 
-  // Handle direct 1-click credential auto-login for testing convenience
-  const handleQuickLogin = async (targetEmail: string, targetPass: string) => {
-    setEmail(targetEmail);
-    setPassword(targetPass);
-    setErrorMessage('');
-    setSuccessMessage('');
-    setIsLoading(true);
-    const res = await loginWithEmail(targetEmail, targetPass);
-    setIsLoading(false);
-    if (res.success) {
-      const destination = redirectTo || (ADMIN_EMAILS.includes(targetEmail.toLowerCase()) ? '/admin' : '/');
-      navigate(destination, { replace: true });
-    } else {
-      setErrorMessage(res.error || 'Login failed.');
-    }
-  };
+
 
   const handleEmailAuth = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -269,46 +250,7 @@ export const LoginPage: React.FC = () => {
               </div>
             )}
 
-            {/* Quick 1-Click Test Logins */}
-            {mode === 'login' && (
-              <div className="space-y-2 p-3 rounded-2xl bg-white/[0.02] dark:bg-white/[0.02] light:bg-slate-50 border border-[#252A36] dark:border-[#252A36] light:border-slate-200">
-                <div className="flex items-center gap-1.5 text-[11px] font-mono text-zinc-400 uppercase tracking-wider">
-                  <KeyRound className="w-3.5 h-3.5 text-indigo-400" />
-                  <span>Verified Accounts (1-Click Sign In):</span>
-                </div>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                  <button
-                    type="button"
-                    onClick={() => handleQuickLogin('websmithlaps@gmail.com', 'Admin12345!')}
-                    disabled={isLoading}
-                    className="p-2 rounded-xl bg-indigo-500/10 hover:bg-indigo-500/20 border border-indigo-500/30 text-left transition-all text-xs group cursor-pointer"
-                  >
-                    <div className="flex items-center justify-between">
-                      <span className="font-semibold text-indigo-300 dark:text-indigo-300 light:text-indigo-700 text-[11px]">
-                        Admin Account
-                      </span>
-                      <Shield className="w-3.5 h-3.5 text-emerald-400" />
-                    </div>
-                    <span className="text-[10px] text-zinc-400 block truncate">websmithlaps@gmail.com</span>
-                  </button>
 
-                  <button
-                    type="button"
-                    onClick={() => handleQuickLogin('client@websmithlabs.com', 'Client12345!')}
-                    disabled={isLoading}
-                    className="p-2 rounded-xl bg-white/5 hover:bg-white/10 dark:bg-white/5 dark:hover:bg-white/10 light:bg-white border border-[#252A36] dark:border-[#252A36] light:border-slate-200 text-left transition-all text-xs group cursor-pointer"
-                  >
-                    <div className="flex items-center justify-between">
-                      <span className="font-semibold text-zinc-200 dark:text-zinc-200 light:text-slate-800 text-[11px]">
-                        Client Account
-                      </span>
-                      <UserCheck className="w-3.5 h-3.5 text-indigo-400" />
-                    </div>
-                    <span className="text-[10px] text-zinc-400 block truncate">client@websmithlabs.com</span>
-                  </button>
-                </div>
-              </div>
-            )}
 
             {/* Google OAuth Button */}
             {mode !== 'forgot' && (

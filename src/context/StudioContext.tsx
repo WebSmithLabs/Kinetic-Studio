@@ -41,8 +41,6 @@ const generateUUID = (): string => {
 // Designated Admin Accounts
 export const ADMIN_EMAILS: string[] = [
   'websmithlaps@gmail.com',
-  'websmithlabs@gmail.com',
-  'admin@websmithlabs.com',
 ];
 
 interface StudioContextType {
@@ -427,7 +425,7 @@ export const StudioProvider: React.FC<{ children: React.ReactNode }> = ({ childr
       if (session?.user) {
         const user: AdminUser = {
           id: session.user.id,
-          email: session.user.email || 'admin@websmithlabs.com',
+          email: session.user.email || 'websmithlaps@gmail.com',
           role: 'admin',
           full_name: session.user.user_metadata?.full_name || 'Web Smith Labs Administrator',
         };
