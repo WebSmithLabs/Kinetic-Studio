@@ -965,10 +965,17 @@ export const StudioProvider: React.FC<{ children: React.ReactNode }> = ({ childr
         : redirectTo
       : origin;
 
+    // For local development, ensure we're using the correct port
+    let finalRedirectTo = destination;
+    if (origin.includes('localhost') && !origin.includes(':5173')) {
+      // If on localhost but not on port 5173, replace with correct port
+      finalRedirectTo = destination.replace(/localhost:\d+/, 'localhost:5173');
+    }
+
     const { error } = await client.auth.signInWithOAuth({
       provider: 'google',
       options: {
-        redirectTo: destination,
+        redirectTo: finalRedirectTo,
       },
     });
 
