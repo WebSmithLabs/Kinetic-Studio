@@ -1,5 +1,6 @@
 User-agent: *
 Allow: /
 Disallow: /admin
+Disallow: /login
 
-Sitemap: https://kineticstudio.co/sitemap.xml
+Sitemap: https://websmithlabs.pages.dev/sitemap.xml

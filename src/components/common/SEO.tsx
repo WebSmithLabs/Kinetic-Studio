@@ -9,6 +9,8 @@ interface SEOProps {
   image?: string;
 }
 
+const BASE_URL = 'https://websmithlabs.pages.dev';
+
 export const SEO: React.FC<SEOProps> = ({
   title,
   description,
@@ -21,7 +23,7 @@ export const SEO: React.FC<SEOProps> = ({
   useEffect(() => {
     const finalTitle = title
       ? `${title} | ${settings.company_name}`
-      : `${settings.company_name} | Digital Experiences & Web Development`;
+      : `${settings.company_name} | Modern Websites, Web Applications & Digital Platforms`;
     const finalDesc = description || settings.meta_description;
 
     document.title = finalTitle;
@@ -42,6 +44,8 @@ export const SEO: React.FC<SEOProps> = ({
     setMetaTag('meta[property="og:description"]', 'content', finalDesc);
     setMetaTag('meta[property="og:type"]', 'content', type);
     setMetaTag('meta[property="og:image"]', 'content', image);
+    setMetaTag('meta[property="og:url"]', 'content', canonical || `${BASE_URL}${window.location.pathname}`);
+    setMetaTag('meta[name="robots"]', 'content', 'index, follow');
     setMetaTag('meta[property="twitter:title"]', 'content', finalTitle);
     setMetaTag('meta[property="twitter:description"]', 'content', finalDesc);
     setMetaTag('meta[property="twitter:image"]', 'content', image);
@@ -53,7 +57,7 @@ export const SEO: React.FC<SEOProps> = ({
         link.setAttribute('rel', 'canonical');
         document.head.appendChild(link);
       }
-      link.setAttribute('href', canonical);
+      link.setAttribute('href', `${BASE_URL}${canonical}`);
     }
   }, [title, description, canonical, type, image, settings]);
 
