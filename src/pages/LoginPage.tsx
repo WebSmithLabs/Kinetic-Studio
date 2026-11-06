@@ -429,16 +429,6 @@ export const LoginPage: React.FC = () => {
               </div>
             )}
 
-            {/* Admin Designation Callout */}
-            <div className="pt-3 border-t border-[#252A36]/60 dark:border-[#252A36]/60 light:border-slate-200/80">
-              <div className="flex items-start gap-2.5 p-3 rounded-xl bg-indigo-500/5 dark:bg-indigo-500/5 light:bg-indigo-50/50 border border-indigo-500/15 dark:border-indigo-500/15 light:border-indigo-200 text-[11px] leading-relaxed text-zinc-400 dark:text-zinc-400 light:text-slate-600">
-                <Shield className="w-4 h-4 text-indigo-400 shrink-0 mt-0.5" />
-                <span>
-                  Admin Account Active: <span className="text-indigo-300 dark:text-indigo-300 light:text-indigo-700 font-mono font-medium">websmithlaps@gmail.com</span> has full administrative permissions.
-                </span>
-              </div>
-            </div>
-
             {/* Back to Home Link */}
             <div className="text-center">
               <Link
