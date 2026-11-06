@@ -23,6 +23,7 @@ import {
 import { useStudio } from '../context/StudioContext';
 import { SEO } from '../components/common/SEO';
 import { GoogleIcon } from '../components/common/SocialIcons';
+import { useNavigate } from 'react-router-dom';
 import {
   ProjectItem,
   InquiryItem,
@@ -34,12 +35,12 @@ import {
 } from '../types';
 
 export const AdminDashboard: React.FC = () => {
+  const navigate = useNavigate();
   const {
     currentUser,
     adminUser,
     isAdmin,
     loginAdmin,
-    registerAdmin,
     logoutAdmin,
     loginWithGoogle,
     logout,
@@ -82,8 +83,6 @@ export const AdminDashboard: React.FC = () => {
   const [seedMessage, setSeedMessage] = useState<{ success: boolean; text: string } | null>(null);
 
   // Auth form state
-  const [authMode, setAuthMode] = useState<'login' | 'register'>('login');
-  const [authName, setAuthName] = useState('');
   const [authEmail, setAuthEmail] = useState('');
   const [authPassword, setAuthPassword] = useState('');
   const [authError, setAuthError] = useState('');
@@ -159,30 +158,6 @@ export const AdminDashboard: React.FC = () => {
     }
   };
 
-  // Handle Admin Registration
-  const handleRegister = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setAuthError('');
-    setAuthSuccess('');
-    if (!authEmail.trim() || !authPassword.trim()) {
-      setAuthError('Please fill out all required fields.');
-      return;
-    }
-    if (authPassword.length < 6) {
-      setAuthError('Password must be at least 6 characters.');
-      return;
-    }
-    setIsLoggingIn(true);
-    const result = await registerAdmin(authEmail, authPassword, authName.trim() || 'Admin');
-    setIsLoggingIn(false);
-    if (!result.success) {
-      setAuthError(result.error || 'Registration failed.');
-    } else {
-      setAuthSuccess('Administrator account created! You can now sign in.');
-      setAuthMode('login');
-    }
-  };
-
   // Handle Settings Save
   const handleSaveSettings = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -239,7 +214,13 @@ export const AdminDashboard: React.FC = () => {
     setIsProjectModalOpen(true);
   };
 
-  // If NOT authenticated, show Login Screen
+  // If NOT authenticated, redirect to login page
+  if (!currentUser) {
+    navigate('/login?redirectTo=/admin', { replace: true });
+    return null;
+  }
+
+  // If authenticated but not admin, show error message
   if (!isAdmin) {
     return (
       <>
@@ -247,197 +228,43 @@ export const AdminDashboard: React.FC = () => {
         <div className="min-h-screen flex items-center justify-center pt-24 pb-16 px-4 bg-[#0B0D12] dark:bg-[#0B0D12] light:bg-[#FAFAFC] transition-colors">
           <div className="w-full max-w-md rounded-3xl border border-[#252A36] dark:border-[#252A36] light:border-slate-200 bg-[#121620] dark:bg-[#121620] light:bg-white p-8 sm:p-10 shadow-2xl text-left space-y-6">
             <div className="text-center space-y-2">
-              <div className="w-12 h-12 rounded-2xl bg-indigo-500/10 border border-indigo-500/30 text-indigo-400 flex items-center justify-center mx-auto">
-                <Shield className="w-6 h-6" />
+              <div className="w-12 h-12 rounded-2xl bg-amber-500/10 border border-amber-500/30 text-amber-400 flex items-center justify-center mx-auto">
+                <AlertCircle className="w-6 h-6" />
               </div>
               <h1 className="text-2xl font-extrabold text-white dark:text-white light:text-slate-900">
-                Studio Admin Access
+                Access Denied
               </h1>
               <p className="text-xs text-zinc-400 dark:text-zinc-400 light:text-slate-500">
-                Secure administration portal for Web Smith Labs. Connected to Supabase Auth.
+                You do not have administrator privileges for this account.
               </p>
             </div>
 
-            {currentUser ? (
-              <div className="space-y-4">
-                <div className="p-4 rounded-2xl bg-amber-500/10 border border-amber-500/20 text-xs text-amber-200 light:text-amber-800 space-y-2">
-                  <div className="font-semibold text-sm text-white dark:text-white light:text-slate-900 flex items-center gap-2">
-                    <AlertCircle className="w-4 h-4 text-amber-400 shrink-0" />
-                    <span>Administrator Privileges Required</span>
-                  </div>
-                  <p>
-                    You are currently signed in as <strong className="font-mono text-white dark:text-white light:text-slate-900">{currentUser.email}</strong>, which does not possess studio administrator authorization.
-                  </p>
-                  <p className="text-[11px] text-zinc-400 dark:text-zinc-400 light:text-slate-600">
-                    Designated admin account (<span className="font-mono text-indigo-400">websmithlaps@gmail.com</span>) is granted immediate full access upon signing in.
-                  </p>
-                </div>
-
-                <div className="flex flex-col gap-2.5 pt-2">
-                  <button
-                    type="button"
-                    onClick={async () => {
-                      await logout();
-                    }}
-                    className="w-full py-2.5 px-4 rounded-xl text-xs font-semibold text-white bg-indigo-600 hover:bg-indigo-500 transition-all text-center cursor-pointer shadow-md shadow-indigo-500/20"
-                  >
-                    Sign Out & Switch Account
-                  </button>
-                  <a
-                    href="/"
-                    className="w-full py-2.5 px-4 rounded-xl text-xs font-semibold text-zinc-400 hover:text-white dark:hover:text-white light:text-slate-600 light:hover:text-slate-900 border border-[#252A36] dark:border-[#252A36] light:border-slate-300 text-center transition-all"
-                  >
-                    Return to Homepage
-                  </a>
-                </div>
+            <div className="space-y-4">
+              <div className="p-4 rounded-2xl bg-amber-500/10 border border-amber-500/20 text-xs text-amber-200 light:text-amber-800 space-y-2">
+                <p>
+                  You are currently signed in as <strong className="font-mono text-white dark:text-white light:text-slate-900">{currentUser.email}</strong>, which does not possess studio administrator authorization.
+                </p>
               </div>
-            ) : (
-              <>
-                {/* Google Sign In Button */}
+
+              <div className="flex flex-col gap-2.5 pt-2">
                 <button
                   type="button"
                   onClick={async () => {
-                    await loginWithGoogle('/admin');
+                    await logout();
+                    navigate('/login?redirectTo=/admin', { replace: true });
                   }}
-                  className="w-full flex items-center justify-center gap-2.5 px-4 py-2.5 rounded-xl border border-[#252A36] dark:border-[#252A36] light:border-slate-300 bg-[#0B0D12] dark:bg-[#0B0D12] light:bg-white text-xs font-semibold text-white dark:text-white light:text-slate-800 hover:bg-[#181D2A] dark:hover:bg-[#181D2A] light:hover:bg-slate-50 transition-all shadow-sm cursor-pointer"
+                  className="w-full py-2.5 px-4 rounded-xl text-xs font-semibold text-white bg-indigo-600 hover:bg-indigo-500 transition-all text-center cursor-pointer shadow-md shadow-indigo-500/20"
                 >
-                  <GoogleIcon className="w-4 h-4 shrink-0" />
-                  <span>Sign in with Google</span>
+                  Sign Out & Try Different Account
                 </button>
-
-                {/* Divider */}
-                <div className="relative my-2">
-                  <div className="absolute inset-0 flex items-center">
-                    <div className="w-full border-t border-[#252A36] dark:border-[#252A36] light:border-slate-200" />
-                  </div>
-                  <div className="relative flex justify-center text-[10px] uppercase tracking-wider font-mono">
-                    <span className="px-2.5 bg-[#121620] dark:bg-[#121620] light:bg-white text-zinc-500">
-                      Or with email
-                    </span>
-                  </div>
-                </div>
-
-                {/* Auth Mode Toggle */}
-                <div className="grid grid-cols-2 p-1 bg-[#0B0D12] dark:bg-[#0B0D12] light:bg-slate-100 rounded-xl border border-[#252A36] dark:border-[#252A36] light:border-slate-200">
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setAuthMode('login');
-                      setAuthError('');
-                      setAuthSuccess('');
-                    }}
-                    className={`py-2 text-xs font-semibold rounded-lg transition-all ${
-                      authMode === 'login'
-                        ? 'bg-indigo-600 text-white shadow-sm'
-                        : 'text-zinc-400 hover:text-white dark:text-zinc-400 dark:hover:text-white light:text-slate-600 light:hover:text-slate-900'
-                    }`}
-                  >
-                    Sign In
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setAuthMode('register');
-                      setAuthError('');
-                      setAuthSuccess('');
-                    }}
-                    className={`py-2 text-xs font-semibold rounded-lg transition-all ${
-                      authMode === 'register'
-                        ? 'bg-indigo-600 text-white shadow-sm'
-                        : 'text-zinc-400 hover:text-white dark:text-zinc-400 dark:hover:text-white light:text-slate-600 light:hover:text-slate-900'
-                    }`}
-                  >
-                    Register Admin
-                  </button>
-                </div>
-
-                {authError && (
-                  <div className="p-3.5 rounded-xl border border-rose-500/30 bg-rose-500/10 text-rose-300 text-xs flex items-center gap-2">
-                    <AlertCircle className="w-4 h-4 text-rose-400 shrink-0" />
-                    <span>{authError}</span>
-                  </div>
-                )}
-
-                {authSuccess && (
-                  <div className="p-3.5 rounded-xl border border-emerald-500/30 bg-emerald-500/10 text-emerald-300 text-xs flex items-center gap-2">
-                    <CheckCircle className="w-4 h-4 text-emerald-400 shrink-0" />
-                    <span>{authSuccess}</span>
-                  </div>
-                )}
-
-                <form onSubmit={authMode === 'login' ? handleLogin : handleRegister} className="space-y-4">
-                  {authMode === 'register' && (
-                    <div>
-                      <label className="block text-xs font-medium text-zinc-300 dark:text-zinc-300 light:text-slate-700 mb-1">
-                        Administrator Full Name
-                      </label>
-                      <input
-                        type="text"
-                        required
-                        placeholder="Studio Lead"
-                        value={authName}
-                        onChange={e => setAuthName(e.target.value)}
-                        className="w-full px-4 py-2.5 rounded-xl border border-[#252A36] dark:border-[#252A36] light:border-slate-300 bg-[#0B0D12] dark:bg-[#0B0D12] light:bg-slate-50 text-sm text-white dark:text-white light:text-slate-900 placeholder:text-zinc-600 dark:placeholder:text-zinc-600 light:placeholder:text-slate-400 focus:outline-none focus:border-indigo-500"
-                      />
-                    </div>
-                  )}
-
-                  <div>
-                    <label className="block text-xs font-medium text-zinc-300 dark:text-zinc-300 light:text-slate-700 mb-1">
-                      Administrator Email
-                    </label>
-                    <input
-                      type="email"
-                      required
-                      placeholder="websmithlaps@gmail.com"
-                      value={authEmail}
-                      onChange={e => setAuthEmail(e.target.value)}
-                      className="w-full px-4 py-2.5 rounded-xl border border-[#252A36] dark:border-[#252A36] light:border-slate-300 bg-[#0B0D12] dark:bg-[#0B0D12] light:bg-slate-50 text-sm text-white dark:text-white light:text-slate-900 placeholder:text-zinc-600 dark:placeholder:text-zinc-600 light:placeholder:text-slate-400 focus:outline-none focus:border-indigo-500"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-xs font-medium text-zinc-300 dark:text-zinc-300 light:text-slate-700 mb-1">
-                      Secure Password {authMode === 'register' && <span className="text-zinc-500 text-[10px]">(min 6 chars)</span>}
-                    </label>
-                    <input
-                      type="password"
-                      required
-                      placeholder="••••••••••••"
-                      value={authPassword}
-                      onChange={e => setAuthPassword(e.target.value)}
-                      className="w-full px-4 py-2.5 rounded-xl border border-[#252A36] dark:border-[#252A36] light:border-slate-300 bg-[#0B0D12] dark:bg-[#0B0D12] light:bg-slate-50 text-sm text-white dark:text-white light:text-slate-900 placeholder:text-zinc-600 dark:placeholder:text-zinc-600 light:placeholder:text-slate-400 focus:outline-none focus:border-indigo-500"
-                    />
-                  </div>
-
-                  <button
-                    type="submit"
-                    disabled={isLoggingIn}
-                    className="w-full py-3 px-4 rounded-xl text-sm font-semibold text-white bg-indigo-600 hover:bg-indigo-500 transition-all flex items-center justify-center gap-2 shadow-lg shadow-indigo-500/20 disabled:opacity-50 cursor-pointer"
-                  >
-                    {isLoggingIn
-                      ? authMode === 'login'
-                        ? 'Authenticating...'
-                        : 'Creating Admin Account...'
-                      : authMode === 'login'
-                      ? 'Sign In to Dashboard'
-                      : 'Register Administrator'}
-                  </button>
-                </form>
-
-                <div className="pt-2 text-center space-y-2">
-                  <div className="p-2.5 rounded-xl bg-indigo-500/5 border border-indigo-500/15 text-[11px] text-zinc-400 text-left flex items-start gap-2">
-                    <Shield className="w-3.5 h-3.5 text-indigo-400 shrink-0 mt-0.5" />
-                    <span>
-                      Designated Admin: <span className="text-indigo-300 font-mono font-medium">websmithlaps@gmail.com</span> receives instant administrator permissions.
-                    </span>
-                  </div>
-                  <span className="text-[11px] text-zinc-500 block">
-                    Authentication powered by Supabase Auth &bull; Web Smith Labs
-                  </span>
-                </div>
-              </>
-            )}
+                <a
+                  href="/"
+                  className="w-full py-2.5 px-4 rounded-xl text-xs font-semibold text-zinc-400 hover:text-white dark:hover:text-white light:text-slate-600 light:hover:text-slate-900 border border-[#252A36] dark:border-[#252A36] light:border-slate-300 text-center transition-all"
+                >
+                  Return to Homepage
+                </a>
+              </div>
+            </div>
           </div>
         </div>
       </>

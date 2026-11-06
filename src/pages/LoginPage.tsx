@@ -9,7 +9,6 @@ import {
   EyeOff,
   AlertCircle,
   CheckCircle,
-  Shield,
 } from 'lucide-react';
 import { SEO } from '../components/common/SEO';
 import { Logo } from '../components/common/Logo';
