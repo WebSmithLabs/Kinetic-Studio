@@ -17,21 +17,6 @@ export default defineConfig({
   build: {
     target: 'es2015',
     minify: 'terser',
-    terserOptions: {
-      compress: {
-        drop_console: true,
-        drop_debugger: true,
-      },
-    },
-    rollupOptions: {
-      output: {
-        manualChunks: {
-          vendor: ['react', 'react-dom', 'react-router-dom'],
-          supabase: ['@supabase/supabase-js'],
-          ui: ['framer-motion', 'lucide-react'],
-        },
-      },
-    },
   },
   plugins: [
     react(),

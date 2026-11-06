@@ -448,7 +448,7 @@ export const AdminDashboard: React.FC = () => {
   const totalProjects = projects.length;
   const publishedProjects = projects.filter(p => p.is_published).length;
   const newInquiries = inquiries.filter(i => i.status === 'new').length;
-  const pendingInquiries = inquiries.filter(i => i.status === 'new' || i.status === 'reviewing').length;
+  const pendingInquiries = inquiries.filter(i => i.status === 'new' || i.status === 'reviewed').length;
 
   return (
     <>
@@ -603,7 +603,7 @@ export const AdminDashboard: React.FC = () => {
                 <div className="p-6 rounded-2xl border border-[#252A36] dark:border-[#252A36] light:border-slate-200 bg-[#121620] dark:bg-[#121620] light:bg-white space-y-1 shadow-sm">
                   <div className="text-xs font-mono uppercase text-zinc-400 dark:text-zinc-400 light:text-slate-500">Active Pipeline</div>
                   <div className="text-3xl font-extrabold text-indigo-400 light:text-indigo-600">{pendingInquiries}</div>
-                  <div className="text-[11px] text-zinc-500">New &amp; reviewing</div>
+                  <div className="text-[11px] text-zinc-500">New &amp; reviewed</div>
                 </div>
               </div>
 
@@ -645,9 +645,21 @@ export const AdminDashboard: React.FC = () => {
                           className={`text-[10px] font-mono px-2.5 py-1 rounded-full uppercase tracking-wider ${
                             inq.status === 'new'
                               ? 'bg-rose-500/20 text-rose-300 light:bg-rose-100 light:text-rose-700 border border-rose-500/30 light:border-rose-300'
-                              : inq.status === 'reviewing'
+                              : inq.status === 'reviewed'
                               ? 'bg-amber-500/20 text-amber-300 light:bg-amber-100 light:text-amber-800 border border-amber-500/30 light:border-amber-300'
-                              : 'bg-emerald-500/20 text-emerald-300 light:bg-emerald-100 light:text-emerald-800 border border-emerald-500/30 light:border-emerald-300'
+                              : inq.status === 'accepted'
+                              ? 'bg-indigo-500/20 text-indigo-300 light:bg-indigo-100 light:text-indigo-800 border border-indigo-500/30 light:border-indigo-300'
+                              : inq.status === 'contacted'
+                              ? 'bg-cyan-500/20 text-cyan-300 light:bg-cyan-100 light:text-cyan-800 border border-cyan-500/30 light:border-cyan-300'
+                              : inq.status === 'ongoing'
+                              ? 'bg-blue-500/20 text-blue-300 light:bg-blue-100 light:text-blue-800 border border-blue-500/30 light:border-blue-300'
+                              : inq.status === 'finished'
+                              ? 'bg-emerald-500/20 text-emerald-300 light:bg-emerald-100 light:text-emerald-800 border border-emerald-500/30 light:border-emerald-300'
+                              : inq.status === 'advance_payment_completed'
+                              ? 'bg-purple-500/20 text-purple-300 light:bg-purple-100 light:text-purple-800 border border-purple-500/30 light:border-purple-300'
+                              : inq.status === 'payment_completed'
+                              ? 'bg-green-500/20 text-green-300 light:bg-green-100 light:text-green-800 border border-green-500/30 light:border-green-300'
+                              : 'bg-zinc-500/20 text-zinc-400 light:bg-zinc-100 light:text-zinc-600 border border-zinc-500/30 light:border-zinc-300'
                           }`}
                         >
                           {inq.status}
