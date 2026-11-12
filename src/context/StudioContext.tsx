@@ -451,6 +451,8 @@ export const StudioProvider: React.FC<{ children: React.ReactNode }> = ({ childr
           email: session.user.email || 'websmithlaps@gmail.com',
           role: 'admin',
           full_name: session.user.user_metadata?.full_name || 'Web Smith Labs Administrator',
+          email_verified: Boolean(session.user.email_confirmed_at || session.user.confirmed_at),
+          providers: session.user.app_metadata?.providers || [session.user.app_metadata?.provider || 'email'],
         };
         setAdminUser(user);
         localStorage.setItem('wsl_admin_user', JSON.stringify(user));
