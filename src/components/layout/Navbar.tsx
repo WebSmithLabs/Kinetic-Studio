@@ -110,25 +110,34 @@ export const Navbar: React.FC = () => {
                     <span>Admin</span>
                   </Link>
                 )}
-                <div
-                  className="flex items-center gap-2 px-2.5 py-1.5 rounded-xl border border-[#252A36] dark:border-[#252A36] light:border-slate-200 bg-[#121620]/60 dark:bg-[#121620]/60 light:bg-slate-50 text-xs"
-                  title={`Signed in as ${currentUser.email}`}
+                <Link
+                  to="/profile"
+                  className="flex items-center gap-2 px-2.5 py-1.5 rounded-xl border border-[#252A36] dark:border-[#252A36] light:border-slate-200 bg-[#121620]/60 dark:bg-[#121620]/60 light:bg-slate-50 hover:border-indigo-500/40 text-xs transition-colors group"
+                  title="Account Profile & Settings"
                 >
-                  <div className="w-6 h-6 rounded-full bg-indigo-600 text-white font-bold flex items-center justify-center text-[10px]">
-                    {(currentUser.full_name || currentUser.email).charAt(0).toUpperCase()}
-                  </div>
-                  <span className="hidden xl:inline text-zinc-300 dark:text-zinc-300 light:text-slate-700 font-medium max-w-[100px] truncate">
+                  {currentUser.avatar_url ? (
+                    <img
+                      src={currentUser.avatar_url}
+                      alt={currentUser.full_name}
+                      className="w-6 h-6 rounded-full object-cover"
+                    />
+                  ) : (
+                    <div className="w-6 h-6 rounded-full bg-indigo-600 text-white font-bold flex items-center justify-center text-[10px]">
+                      {(currentUser.full_name || currentUser.email).charAt(0).toUpperCase()}
+                    </div>
+                  )}
+                  <span className="hidden xl:inline text-zinc-300 dark:text-zinc-300 light:text-slate-700 font-medium max-w-[100px] truncate group-hover:text-indigo-400">
                     {currentUser.full_name || currentUser.email.split('@')[0]}
                   </span>
-                  <button
-                    onClick={() => logout()}
-                    className="p-1 text-zinc-400 hover:text-rose-400 transition-colors cursor-pointer"
-                    title="Sign Out"
-                    aria-label="Sign Out"
-                  >
-                    <LogOut className="w-3.5 h-3.5" />
-                  </button>
-                </div>
+                </Link>
+                <button
+                  onClick={() => logout()}
+                  className="p-1.5 rounded-lg border border-[#252A36] dark:border-[#252A36] light:border-slate-200 bg-[#121620]/60 dark:bg-[#121620]/60 light:bg-slate-50 text-zinc-400 hover:text-rose-400 transition-colors cursor-pointer"
+                  title="Sign Out"
+                  aria-label="Sign Out"
+                >
+                  <LogOut className="w-3.5 h-3.5" />
+                </button>
               </div>
             ) : (
               <Link
@@ -196,25 +205,46 @@ export const Navbar: React.FC = () => {
             {/* Mobile Auth Section */}
             {currentUser ? (
               <div className="p-3.5 rounded-xl bg-indigo-500/10 border border-indigo-500/20 flex items-center justify-between">
-                <div className="flex items-center gap-2.5">
-                  <div className="w-8 h-8 rounded-full bg-indigo-600 text-white font-bold flex items-center justify-center text-xs">
-                    {(currentUser.full_name || currentUser.email).charAt(0).toUpperCase()}
-                  </div>
+                <Link
+                  to="/profile"
+                  className="flex items-center gap-2.5 flex-grow"
+                  onClick={() => setMobileMenuOpen(false)}
+                >
+                  {currentUser.avatar_url ? (
+                    <img
+                      src={currentUser.avatar_url}
+                      alt={currentUser.full_name}
+                      className="w-8 h-8 rounded-full object-cover border border-indigo-500/30"
+                    />
+                  ) : (
+                    <div className="w-8 h-8 rounded-full bg-indigo-600 text-white font-bold flex items-center justify-center text-xs">
+                      {(currentUser.full_name || currentUser.email).charAt(0).toUpperCase()}
+                    </div>
+                  )}
                   <div>
                     <div className="text-xs font-semibold text-white dark:text-white light:text-slate-900">
                       {currentUser.full_name || 'Client'}
                     </div>
-                    <div className="text-[10px] text-zinc-400 dark:text-zinc-400 light:text-slate-500 max-w-[170px] truncate">
+                    <div className="text-[10px] text-zinc-400 dark:text-zinc-400 light:text-slate-500 max-w-[150px] truncate">
                       {currentUser.email}
                     </div>
                   </div>
+                </Link>
+                <div className="flex items-center gap-2 shrink-0">
+                  <Link
+                    to="/profile"
+                    onClick={() => setMobileMenuOpen(false)}
+                    className="text-xs text-indigo-400 hover:text-indigo-300 font-medium px-2 py-1"
+                  >
+                    Profile
+                  </Link>
+                  <button
+                    onClick={() => logout()}
+                    className="text-xs text-rose-400 hover:text-rose-300 font-medium px-2 py-1 cursor-pointer"
+                  >
+                    Sign Out
+                  </button>
                 </div>
-                <button
-                  onClick={() => logout()}
-                  className="text-xs text-rose-400 hover:text-rose-300 font-medium px-2 py-1"
-                >
-                  Sign Out
-                </button>
               </div>
             ) : (
               <Link

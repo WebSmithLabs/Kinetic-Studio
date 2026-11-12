@@ -145,7 +145,11 @@ export interface StudioUser {
   role: UserRole;
   full_name: string;
   avatar_url?: string;
+  phone?: string;
+  email_verified: boolean;
+  providers: string[];
   created_at?: string;
+  last_sign_in_at?: string;
 }
 
 export type AdminUser = StudioUser;

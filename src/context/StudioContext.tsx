@@ -101,6 +101,11 @@ interface StudioContextType {
   loginWithGoogle: (redirectTo?: string) => Promise<{ success: boolean; error?: string }>;
   logout: () => Promise<void>;
   resetPassword: (email: string) => Promise<{ success: boolean; error?: string }>;
+  updatePassword: (newPassword: string) => Promise<{ success: boolean; error?: string }>;
+  updateUserProfile: (updates: { full_name?: string; phone?: string; avatar_url?: string }) => Promise<{ success: boolean; error?: string }>;
+  verifyEmail: () => Promise<{ success: boolean; error?: string }>;
+  resendVerificationEmail: () => Promise<{ success: boolean; error?: string }>;
+  deleteAccount: () => Promise<{ success: boolean; error?: string }>;
   loginAdmin: (email: string, password: string) => Promise<{ success: boolean; error?: string }>;
   registerAdmin: (email: string, password: string, fullName?: string) => Promise<{ success: boolean; error?: string }>;
   logoutAdmin: () => Promise<void>;
@@ -204,6 +209,18 @@ export const StudioProvider: React.FC<{ children: React.ReactNode }> = ({ childr
       sessionUser.user_metadata?.avatar_url ||
       sessionUser.user_metadata?.picture;
 
+    const emailVerified = Boolean(
+      sessionUser.email_confirmed_at ||
+      sessionUser.confirmed_at ||
+      sessionUser.user_metadata?.email_verified === true
+    );
+
+    const providers: string[] =
+      sessionUser.app_metadata?.providers ||
+      (sessionUser.app_metadata?.provider ? [sessionUser.app_metadata.provider] : ['email']);
+
+    let userPhone: string | undefined = sessionUser.phone || sessionUser.user_metadata?.phone;
+
     const client = getSupabaseClient();
     if (client) {
       try {
@@ -219,6 +236,7 @@ export const StudioProvider: React.FC<{ children: React.ReactNode }> = ({ childr
           }
           if (profile.full_name) profileName = profile.full_name;
           if (profile.avatar_url) avatarUrl = profile.avatar_url;
+          if (profile.phone) userPhone = profile.phone;
         }
       } catch (e) {
         console.warn('Error fetching profile from Supabase:', e);
@@ -231,6 +249,11 @@ export const StudioProvider: React.FC<{ children: React.ReactNode }> = ({ childr
       role: profileRole,
       full_name: profileName,
       avatar_url: avatarUrl,
+      phone: userPhone,
+      email_verified: emailVerified,
+      providers: providers,
+      created_at: sessionUser.created_at,
+      last_sign_in_at: sessionUser.last_sign_in_at,
     };
 
     setCurrentUser(user);
@@ -857,17 +880,23 @@ export const StudioProvider: React.FC<{ children: React.ReactNode }> = ({ childr
       return { success: false, error: 'Database is not connected.' };
     }
 
+    const cleanEmail = email.trim().toLowerCase();
     const { data, error } = await client.auth.signInWithPassword({
-      email: email.trim(),
+      email: cleanEmail,
       password,
     });
 
     if (error) {
-      // Check if error is due to email not confirmed
       if (error.message.includes('Email not confirmed')) {
         return { 
           success: false, 
-          error: 'Please check your email and confirm your account before signing in.' 
+          error: 'Please check your email and confirm your account before signing in, or use Google Sign In.' 
+        };
+      }
+      if (error.message.includes('Invalid login credentials')) {
+        return {
+          success: false,
+          error: 'Invalid email or password. If you originally signed in with Google, please continue with Google or set a password in your Profile.',
         };
       }
       return { success: false, error: error.message };
@@ -894,7 +923,7 @@ export const StudioProvider: React.FC<{ children: React.ReactNode }> = ({ childr
       return { success: false, error: 'Database is not connected.' };
     }
 
-    const trimmedEmail = email.trim();
+    const trimmedEmail = email.trim().toLowerCase();
     const name = fullName?.trim() || trimmedEmail.split('@')[0];
 
     const { data, error } = await client.auth.signUp({
@@ -909,6 +938,14 @@ export const StudioProvider: React.FC<{ children: React.ReactNode }> = ({ childr
 
     if (error) {
       return { success: false, error: error.message };
+    }
+
+    // Check if user already exists
+    if (data.user && (!data.user.identities || data.user.identities.length === 0)) {
+      return {
+        success: false,
+        error: 'An account with this email already exists. Please sign in with your password or use Google Sign In.',
+      };
     }
 
     if (data.user) {
@@ -1031,6 +1068,143 @@ export const StudioProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     return { success: true };
   };
 
+  const updatePassword = async (
+    newPassword: string
+  ): Promise<{ success: boolean; error?: string }> => {
+    const client = getSupabaseClient();
+    if (!client || !isSupabaseConfigured()) {
+      return { success: false, error: 'Database is not connected.' };
+    }
+
+    if (!newPassword || newPassword.length < 6) {
+      return { success: false, error: 'Password must be at least 6 characters.' };
+    }
+
+    const { error } = await client.auth.updateUser({
+      password: newPassword,
+    });
+
+    if (error) {
+      return { success: false, error: error.message };
+    }
+
+    const { data: { user } } = await client.auth.getUser();
+    if (user) {
+      await syncUser(user);
+    }
+
+    return { success: true };
+  };
+
+  const updateUserProfile = async (updates: {
+    full_name?: string;
+    phone?: string;
+    avatar_url?: string;
+  }): Promise<{ success: boolean; error?: string }> => {
+    const client = getSupabaseClient();
+    if (!client || !isSupabaseConfigured()) {
+      return { success: false, error: 'Database is not connected.' };
+    }
+
+    if (!currentUser) {
+      return { success: false, error: 'User is not authenticated.' };
+    }
+
+    // Update Supabase auth user metadata
+    const { error: authError } = await client.auth.updateUser({
+      data: {
+        full_name: updates.full_name ?? currentUser.full_name,
+        name: updates.full_name ?? currentUser.full_name,
+        phone: updates.phone ?? currentUser.phone,
+        avatar_url: updates.avatar_url ?? currentUser.avatar_url,
+      },
+    });
+
+    if (authError) {
+      return { success: false, error: authError.message };
+    }
+
+    // Update public.profiles table
+    const profileUpdates: Record<string, any> = {
+      updated_at: new Date().toISOString(),
+    };
+    if (updates.full_name !== undefined) profileUpdates.full_name = updates.full_name;
+    if (updates.phone !== undefined) profileUpdates.phone = updates.phone;
+    if (updates.avatar_url !== undefined) profileUpdates.avatar_url = updates.avatar_url;
+
+    const { error: profileError } = await client
+      .from('profiles')
+      .update(profileUpdates)
+      .eq('id', currentUser.id);
+
+    if (profileError) {
+      console.warn('Profile table update error:', profileError);
+    }
+
+    const { data: { user } } = await client.auth.getUser();
+    if (user) {
+      await syncUser(user);
+    }
+
+    return { success: true };
+  };
+
+  const verifyEmail = async (): Promise<{ success: boolean; error?: string }> => {
+    const client = getSupabaseClient();
+    if (!client || !isSupabaseConfigured()) {
+      return { success: false, error: 'Database is not connected.' };
+    }
+
+    const { error } = await client.rpc('verify_user_email');
+    if (error) {
+      return { success: false, error: error.message };
+    }
+
+    const { data: { user } } = await client.auth.getUser();
+    if (user) {
+      await syncUser(user);
+    }
+
+    return { success: true };
+  };
+
+  const resendVerificationEmail = async (): Promise<{ success: boolean; error?: string }> => {
+    const client = getSupabaseClient();
+    if (!client || !isSupabaseConfigured()) {
+      return { success: false, error: 'Database is not connected.' };
+    }
+
+    if (!currentUser?.email) {
+      return { success: false, error: 'No email found.' };
+    }
+
+    const { error } = await client.auth.resend({
+      type: 'signup',
+      email: currentUser.email,
+    });
+
+    if (error) {
+      return { success: false, error: error.message };
+    }
+
+    return { success: true };
+  };
+
+  const deleteAccount = async (): Promise<{ success: boolean; error?: string }> => {
+    const client = getSupabaseClient();
+    if (!client || !isSupabaseConfigured()) {
+      return { success: false, error: 'Database is not connected.' };
+    }
+
+    const { error } = await client.rpc('delete_user_account');
+    if (error) {
+      return { success: false, error: error.message };
+    }
+
+    await logout();
+    return { success: true };
+  };
+
   // Backwards compatibility for Admin Dashboard
   const loginAdmin = loginWithEmail;
   const registerAdmin = registerWithEmail;
@@ -1092,6 +1266,11 @@ export const StudioProvider: React.FC<{ children: React.ReactNode }> = ({ childr
         loginWithGoogle,
         logout,
         resetPassword,
+        updatePassword,
+        updateUserProfile,
+        verifyEmail,
+        resendVerificationEmail,
+        deleteAccount,
         loginAdmin,
         registerAdmin,
         logoutAdmin,
