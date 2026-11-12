@@ -34,6 +34,9 @@ const PrivacyPolicyPage = lazy(() =>
 const TermsPage = lazy(() =>
   import('./pages/TermsPage').then(m => ({ default: m.TermsPage }))
 );
+const RefundPolicyPage = lazy(() =>
+  import('./pages/RefundPolicyPage').then(m => ({ default: m.RefundPolicyPage }))
+);
 const AdminDashboard = lazy(() =>
   import('./pages/AdminDashboard').then(m => ({ default: m.AdminDashboard }))
 );
@@ -67,6 +70,7 @@ const AppLayout: React.FC = () => {
             <Route path="/start-project" element={<StartProjectPage />} />
             <Route path="/privacy-policy" element={<PrivacyPolicyPage />} />
             <Route path="/terms" element={<TermsPage />} />
+            <Route path="/refund-policy" element={<RefundPolicyPage />} />
             <Route path="/admin" element={<AdminDashboard />} />
             <Route path="/login" element={<LoginPage />} />
             <Route path="/profile" element={<ProfilePage />} />

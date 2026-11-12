@@ -236,6 +236,14 @@ export const Footer: React.FC = () => {
               </li>
               <li>
                 <Link
+                  to="/refund-policy"
+                  className="text-zinc-400 dark:text-zinc-400 light:text-slate-600 hover:text-white dark:hover:text-white light:hover:text-slate-900 transition-colors"
+                >
+                  Refund Policy
+                </Link>
+              </li>
+              <li>
+                <Link
                   to="/admin"
                   className="inline-flex items-center gap-1.5 text-zinc-500 hover:text-indigo-400 transition-colors pt-2"
                 >
