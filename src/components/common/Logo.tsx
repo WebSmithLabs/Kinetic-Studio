@@ -28,53 +28,23 @@ export const Logo: React.FC<LogoProps> = ({
 
   const content = (
     <div className={`inline-flex items-center gap-2.5 select-none group ${className}`}>
-      {/* Modern WSL Monogram Shield */}
+      {/* WSL Globe Icon from public */}
       <div className={`relative ${iconSizes[size]} flex items-center justify-center shrink-0`}>
         {/* Subtle ambient glow behind logo */}
-        <div className="absolute inset-0 bg-gradient-to-tr from-indigo-500/25 via-violet-500/20 to-cyan-400/20 rounded-xl blur-md opacity-70 group-hover:opacity-100 transition-opacity duration-300" />
+        <div className="absolute inset-0 bg-gradient-to-tr from-indigo-500/30 via-violet-500/20 to-cyan-400/25 rounded-full blur-md opacity-70 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none" />
         
-        <svg
-          viewBox="0 0 40 40"
-          fill="none"
-          xmlns="http://www.w3.org/2000/svg"
-          className="w-full h-full relative z-10 transition-transform duration-300 group-hover:scale-105"
-        >
-          {/* Outer Rounded Container */}
-          <rect
-            x="1.5"
-            y="1.5"
-            width="37"
-            height="37"
-            rx="9"
-            className="stroke-[#252A36] dark:stroke-[#252A36] light:stroke-slate-200 fill-[#0B0D12] dark:fill-[#0B0D12] light:fill-white"
-            strokeWidth="1.5"
-          />
-          <defs>
-            <linearGradient id="wslGrad" x1="6" y1="6" x2="34" y2="34" gradientUnits="userSpaceOnUse">
-              <stop offset="0%" stopColor="#6366F1" />
-              <stop offset="60%" stopColor="#8B5CF6" />
-              <stop offset="100%" stopColor="#06B6D4" />
-            </linearGradient>
-            <linearGradient id="wslAccent" x1="10" y1="20" x2="30" y2="20" gradientUnits="userSpaceOnUse">
-              <stop offset="0%" stopColor="#818CF8" />
-              <stop offset="100%" stopColor="#C084FC" />
-            </linearGradient>
-          </defs>
-
-          {/* Geometric "W" Forge Lines */}
-          <path
-            d="M9 13L14.5 27L19.5 15.5L20.5 15.5L25.5 27L31 13"
-            stroke="url(#wslGrad)"
-            strokeWidth="2.8"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          />
-
-          {/* Precision Anvil/Lab Diamond node */}
-          <circle cx="20" cy="11" r="1.75" fill="#38BDF8" />
-          <circle cx="9" cy="13" r="1.25" fill="#6366F1" />
-          <circle cx="31" cy="13" r="1.25" fill="#06B6D4" />
-        </svg>
+        {/* High-res icon with fallback to Logo.png */}
+        <img
+          src="/icon.png"
+          alt="Web Smith Labs"
+          className="w-full h-full object-contain relative z-10 transition-transform duration-300 group-hover:scale-105 select-none drop-shadow-[0_2px_8px_rgba(99,102,241,0.35)]"
+          onError={(e) => {
+            const img = e.currentTarget;
+            if (!img.src.endsWith('/Logo.png')) {
+              img.src = '/Logo.png';
+            }
+          }}
+        />
       </div>
 
       {/* Wordmark */}

@@ -22,6 +22,8 @@ import {
 } from 'lucide-react';
 import { useStudio } from '../context/StudioContext';
 import { SEO } from '../components/common/SEO';
+import { Logo } from '../components/common/Logo';
+import { LoadingSpinner } from '../components/common/LoadingSpinner';
 import { GoogleIcon } from '../components/common/SocialIcons';
 import { useNavigate } from 'react-router-dom';
 import {
@@ -40,6 +42,7 @@ export const AdminDashboard: React.FC = () => {
     currentUser,
     adminUser,
     isAdmin,
+    authLoading,
     loginAdmin,
     logoutAdmin,
     loginWithGoogle,
@@ -214,6 +217,11 @@ export const AdminDashboard: React.FC = () => {
     setIsProjectModalOpen(true);
   };
 
+  // While checking auth status
+  if (authLoading) {
+    return <LoadingSpinner />;
+  }
+
   // If NOT authenticated, redirect to login page
   if (!currentUser) {
     navigate('/login?redirectTo=/admin', { replace: true });
@@ -285,18 +293,21 @@ export const AdminDashboard: React.FC = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           {/* Top Admin Header Bar */}
           <div className="flex flex-col sm:flex-row sm:items-center justify-between pb-6 mb-8 border-b border-[#252A36] dark:border-[#252A36] light:border-slate-200 gap-4">
-            <div>
-              <div className="flex items-center gap-2 text-xs font-mono text-indigo-400 light:text-indigo-600">
-                <Shield className="w-4 h-4" />
-                <span>ADMINISTRATION COMMAND CENTER</span>
+            <div className="flex items-center gap-4">
+              <Logo size="lg" showWordmark={false} linkToHome={true} />
+              <div>
+                <div className="flex items-center gap-2 text-xs font-mono text-indigo-400 light:text-indigo-600">
+                  <Shield className="w-4 h-4" />
+                  <span>ADMINISTRATION COMMAND CENTER</span>
+                </div>
+                <h1 className="text-2xl sm:text-3xl font-extrabold text-white dark:text-white light:text-slate-900 mt-1">
+                  Studio Management Portal
+                </h1>
+                <p className="text-xs text-zinc-400 dark:text-zinc-400 light:text-slate-500">
+                  Signed in as <strong className="text-zinc-200 dark:text-zinc-200 light:text-slate-800">{adminUser?.email}</strong> &bull; Role:{' '}
+                  <span className="text-emerald-400 light:text-emerald-600 font-mono font-semibold uppercase">{adminUser?.role}</span>
+                </p>
               </div>
-              <h1 className="text-2xl sm:text-3xl font-extrabold text-white dark:text-white light:text-slate-900 mt-1">
-                Studio Management Portal
-              </h1>
-              <p className="text-xs text-zinc-400 dark:text-zinc-400 light:text-slate-500">
-                Signed in as <strong className="text-zinc-200 dark:text-zinc-200 light:text-slate-800">{adminUser?.email}</strong> &bull; Role:{' '}
-                <span className="text-emerald-400 light:text-emerald-600 font-mono font-semibold uppercase">{adminUser?.role}</span>
-              </p>
             </div>
 
             <div className="flex items-center gap-3">

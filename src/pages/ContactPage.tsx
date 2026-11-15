@@ -107,7 +107,7 @@ export const ContactPage: React.FC = () => {
                     {settings.contact_email}
                   </a>
                 ) : (
-                  <div className="text-sm text-zinc-500 italic">Email configurable in admin</div>
+                  <div className="text-sm text-zinc-500 italic">hello@websmithlabs.com</div>
                 )}
                 <p className="text-xs text-zinc-400 leading-relaxed">
                   Fast response within 24 business hours.
@@ -127,7 +127,7 @@ export const ContactPage: React.FC = () => {
                     {settings.phone_number}
                   </div>
                 ) : (
-                  <div className="text-sm text-zinc-500 italic">Phone configurable in admin</div>
+                  <div className="text-sm text-zinc-500 italic">+91-80-4820-1920</div>
                 )}
 
                 {settings.whatsapp_number && (

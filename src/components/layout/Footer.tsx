@@ -20,7 +20,7 @@ import {
 import { useStudio } from '../../context/StudioContext';
 
 export const Footer: React.FC = () => {
-  const { settings, services } = useStudio();
+  const { settings, services, isAdmin } = useStudio();
 
   const scrollToTop = () => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -242,15 +242,17 @@ export const Footer: React.FC = () => {
                   Refund Policy
                 </Link>
               </li>
-              <li>
-                <Link
-                  to="/admin"
-                  className="inline-flex items-center gap-1.5 text-zinc-500 hover:text-indigo-400 transition-colors pt-2"
-                >
-                  <Shield className="w-3.5 h-3.5" />
-                  <span>Admin Portal</span>
-                </Link>
-              </li>
+              {isAdmin && (
+                <li>
+                  <Link
+                    to="/admin"
+                    className="inline-flex items-center gap-1.5 text-zinc-500 hover:text-indigo-400 transition-colors pt-2"
+                  >
+                    <Shield className="w-3.5 h-3.5" />
+                    <span>Admin Portal</span>
+                  </Link>
+                </li>
+              )}
             </ul>
           </div>
         </div>

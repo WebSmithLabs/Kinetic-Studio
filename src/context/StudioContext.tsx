@@ -181,7 +181,7 @@ export const StudioProvider: React.FC<{ children: React.ReactNode }> = ({ childr
   });
 
   const [adminUser, setAdminUser] = useState<AdminUser | null>(() => {
-    const saved = localStorage.getItem('wsl_admin_user') || localStorage.getItem('ks_admin_user');
+    const saved = localStorage.getItem('wsl_admin_user');
     return saved ? JSON.parse(saved) : null;
   });
 
@@ -931,15 +931,13 @@ export const StudioProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     }
 
     if (data.user) {
-      // Check if email confirmation is required
-      if (data.user.email_confirmed_at) {
-        // Email already confirmed, create session
-        if (data.session) {
-          await syncUser(data.user);
-          return { success: true };
-        }
+      if (data.session) {
+        await syncUser(data.user);
+        return { success: true };
+      }
 
-        // Try to sign in immediately
+      // Try signing in immediately (in case user was auto-confirmed by database trigger)
+      try {
         const signInRes = await client.auth.signInWithPassword({
           email: trimmedEmail,
           password,
@@ -949,6 +947,8 @@ export const StudioProvider: React.FC<{ children: React.ReactNode }> = ({ childr
           await syncUser(signInRes.data.user);
           return { success: true };
         }
+      } catch {
+        // Fall through to confirmation requirement
       }
 
       // Email confirmation required
@@ -1192,16 +1192,12 @@ export const StudioProvider: React.FC<{ children: React.ReactNode }> = ({ childr
   const registerAdmin = registerWithEmail;
   const logoutAdmin = logout;
 
-  // Determine admin privileges: either explicit admin role or designated admin email
+  // Determine admin privileges: user must be authenticated, and either have explicit admin role or designated admin email
   const isAdmin = Boolean(
-    (currentUser &&
+    currentUser &&
       (currentUser.role === 'admin' ||
         currentUser.role === 'super_admin' ||
-        ADMIN_EMAILS.some(e => e.toLowerCase() === currentUser.email?.toLowerCase()))) ||
-    (adminUser &&
-      (adminUser.role === 'admin' ||
-        adminUser.role === 'super_admin' ||
-        ADMIN_EMAILS.some(e => e.toLowerCase() === adminUser.email?.toLowerCase())))
+        ADMIN_EMAILS.some(e => e.toLowerCase() === currentUser.email?.toLowerCase()))
   );
 
   return (

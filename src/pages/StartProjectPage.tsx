@@ -214,51 +214,6 @@ export const StartProjectPage: React.FC = () => {
 
               {/* Action Buttons */}
               <div className="max-w-md mx-auto space-y-3">
-                {/* 1-Click Fast Access Buttons */}
-                <div className="p-3 rounded-2xl bg-white/[0.02] dark:bg-white/[0.02] light:bg-slate-50 border border-[#252A36] dark:border-[#252A36] light:border-slate-200 text-left space-y-2">
-                  <div className="flex items-center gap-1.5 text-[11px] font-mono text-zinc-400 uppercase tracking-wider">
-                    <KeyRound className="w-3.5 h-3.5 text-indigo-400" />
-                    <span>Instant Client Sign-In (1-Click):</span>
-                  </div>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                    <button
-                      type="button"
-                      onClick={async () => {
-                        setErrorMessage('');
-                        const res = await loginWithEmail('client@websmithlabs.com', 'Client12345!');
-                        if (!res.success) setErrorMessage(res.error || 'Login failed.');
-                      }}
-                      className="p-2.5 rounded-xl bg-white/5 hover:bg-white/10 dark:bg-white/5 dark:hover:bg-white/10 light:bg-white border border-[#252A36] dark:border-[#252A36] light:border-slate-200 text-left transition-all text-xs group cursor-pointer"
-                    >
-                      <div className="flex items-center justify-between">
-                        <span className="font-semibold text-zinc-200 dark:text-zinc-200 light:text-slate-800 text-[11px]">
-                          Client Account
-                        </span>
-                        <UserCheck className="w-3.5 h-3.5 text-indigo-400" />
-                      </div>
-                      <span className="text-[10px] text-zinc-400 block truncate">client@websmithlabs.com</span>
-                    </button>
-
-                    <button
-                      type="button"
-                      onClick={async () => {
-                        setErrorMessage('');
-                        const res = await loginWithEmail('websmithlaps@gmail.com', 'Admin12345!');
-                        if (!res.success) setErrorMessage(res.error || 'Login failed.');
-                      }}
-                      className="p-2.5 rounded-xl bg-indigo-500/10 hover:bg-indigo-500/20 border border-indigo-500/30 text-left transition-all text-xs group cursor-pointer"
-                    >
-                      <div className="flex items-center justify-between">
-                        <span className="font-semibold text-indigo-300 dark:text-indigo-300 light:text-indigo-700 text-[11px]">
-                          Admin Lead
-                        </span>
-                        <ShieldCheck className="w-3.5 h-3.5 text-emerald-400" />
-                      </div>
-                      <span className="text-[10px] text-zinc-400 block truncate">websmithlaps@gmail.com</span>
-                    </button>
-                  </div>
-                </div>
-
                 <button
                   type="button"
                   onClick={async () => {
@@ -267,7 +222,7 @@ export const StartProjectPage: React.FC = () => {
                     if (!res.success) {
                       setErrorMessage(
                         res.error ||
-                          'Google OAuth is not activated in this Supabase project. Please use email authentication or the 1-click accounts above.'
+                          'Google OAuth is not activated in this Supabase project. Please use email authentication below.'
                       );
                     }
                   }}
