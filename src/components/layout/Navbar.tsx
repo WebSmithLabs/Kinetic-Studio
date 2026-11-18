@@ -11,6 +11,7 @@ import {
   LogIn,
   LogOut,
   User,
+  ClipboardList,
 } from 'lucide-react';
 import { Logo } from '../common/Logo';
 import { useStudio } from '../../context/StudioContext';
@@ -110,6 +111,16 @@ export const Navbar: React.FC = () => {
                     <span>Admin</span>
                   </Link>
                 )}
+                {!isAdmin && (
+                  <Link
+                    to="/my-inquiries"
+                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-mono font-medium text-indigo-400 dark:text-indigo-400 light:text-indigo-600 bg-indigo-500/10 border border-indigo-500/20 hover:bg-indigo-500/20 transition-colors"
+                    title="My Project Inquiries"
+                  >
+                    <ClipboardList className="w-3.5 h-3.5" />
+                    <span className="hidden xl:inline">Inquiries</span>
+                  </Link>
+                )}
                 <Link
                   to="/profile"
                   className="flex items-center gap-2 px-2.5 py-1.5 rounded-xl border border-[#252A36] dark:border-[#252A36] light:border-slate-200 bg-[#121620]/60 dark:bg-[#121620]/60 light:bg-slate-50 hover:border-indigo-500/40 text-xs transition-colors group"
@@ -150,13 +161,15 @@ export const Navbar: React.FC = () => {
             )}
 
             {/* Primary CTA */}
-            <Link
-              to="/start-project"
-              className="relative inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold text-white bg-gradient-to-r from-indigo-500 via-indigo-600 to-purple-600 hover:from-indigo-400 hover:to-purple-500 shadow-lg shadow-indigo-500/25 transition-all duration-200 group transform active:scale-95"
-            >
-              <span>{settings.primary_cta_text || 'Start a Project'}</span>
-              <ArrowRight className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" />
-            </Link>
+            {!isAdmin && (
+              <Link
+                to="/start-project"
+                className="relative inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold text-white bg-gradient-to-r from-indigo-500 via-indigo-600 to-purple-600 hover:from-indigo-400 hover:to-purple-500 shadow-lg shadow-indigo-500/25 transition-all duration-200 group transform active:scale-95"
+              >
+                <span>{settings.primary_cta_text || 'Start a Project'}</span>
+                <ArrowRight className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" />
+              </Link>
+            )}
           </div>
 
           {/* Mobile Menu & Theme Buttons */}
@@ -256,9 +269,21 @@ export const Navbar: React.FC = () => {
               </Link>
             )}
 
+            {currentUser && !isAdmin && (
+              <Link
+                to="/my-inquiries"
+                onClick={() => setMobileMenuOpen(false)}
+                className="flex items-center gap-2 px-4 py-3 text-indigo-400 bg-indigo-500/10 border border-indigo-500/20 rounded-xl font-medium"
+              >
+                <ClipboardList className="w-4 h-4" />
+                <span>My Inquiries</span>
+              </Link>
+            )}
+
             {isAdmin && (
               <Link
                 to="/admin"
+                onClick={() => setMobileMenuOpen(false)}
                 className="flex items-center gap-2 px-4 py-3 text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 rounded-xl font-medium"
               >
                 <Shield className="w-4 h-4" />
@@ -287,13 +312,15 @@ export const Navbar: React.FC = () => {
                 </span>
               </button>
 
-              <Link
-                to="/start-project"
-                className="w-full flex items-center justify-center gap-2 px-5 py-3 rounded-xl text-base font-semibold text-white bg-gradient-to-r from-indigo-500 to-purple-600 shadow-md shadow-indigo-500/25"
-              >
-                <Sparkles className="w-4 h-4" />
-                <span>{settings.primary_cta_text || 'Start a Project'}</span>
-              </Link>
+              {!isAdmin && (
+                <Link
+                  to="/start-project"
+                  className="w-full flex items-center justify-center gap-2 px-5 py-3 rounded-xl text-base font-semibold text-white bg-gradient-to-r from-indigo-500 to-purple-600 shadow-md shadow-indigo-500/25"
+                >
+                  <Sparkles className="w-4 h-4" />
+                  <span>{settings.primary_cta_text || 'Start a Project'}</span>
+                </Link>
+              )}
             </div>
           </div>
         </div>

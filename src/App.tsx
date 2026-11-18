@@ -46,6 +46,9 @@ const LoginPage = lazy(() =>
 const ProfilePage = lazy(() =>
   import('./pages/ProfilePage').then(m => ({ default: m.ProfilePage }))
 );
+const MyInquiriesPage = lazy(() =>
+  import('./pages/MyInquiriesPage').then(m => ({ default: m.MyInquiriesPage }))
+);
 const NotFoundPage = lazy(() =>
   import('./pages/NotFoundPage').then(m => ({ default: m.NotFoundPage }))
 );
@@ -74,6 +77,7 @@ const AppLayout: React.FC = () => {
             <Route path="/admin" element={<AdminDashboard />} />
             <Route path="/login" element={<LoginPage />} />
             <Route path="/profile" element={<ProfilePage />} />
+            <Route path="/my-inquiries" element={<MyInquiriesPage />} />
             <Route path="*" element={<NotFoundPage />} />
           </Routes>
         </Suspense>

@@ -20,6 +20,7 @@ import {
   LogOut,
   Eye,
   EyeOff,
+  ClipboardList,
 } from 'lucide-react';
 import { SEO } from '../components/common/SEO';
 import { GoogleIcon } from '../components/common/SocialIcons';
@@ -238,6 +239,15 @@ export const ProfilePage: React.FC = () => {
             </div>
 
             <div className="flex items-center gap-2.5">
+              {!isAdmin && (
+                <Link
+                  to="/my-inquiries"
+                  className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-mono font-medium text-indigo-400 bg-indigo-500/10 border border-indigo-500/30 hover:bg-indigo-500/20 transition-all shadow-sm"
+                >
+                  <ClipboardList className="w-4 h-4" />
+                  <span>My Inquiries</span>
+                </Link>
+              )}
               {isAdmin && (
                 <Link
                   to="/admin"
