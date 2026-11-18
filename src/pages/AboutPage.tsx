@@ -50,7 +50,7 @@ export const AboutPage: React.FC = () => {
     <>
       <SEO
         title="About Us | Studio Philosophy & Values"
-        description="Learn about Web Smith Labs: an independent technology and digital solutions lab transforming ideas into meaningful digital experiences."
+        description="Learn about Web Smith Labs: a modern web engineering company crafting websites, portfolios, and full-stack applications with 100% code ownership."
         canonical="https://websmithlabs.com/about"
       />
 
@@ -63,10 +63,10 @@ export const AboutPage: React.FC = () => {
               <span>WHO WE ARE</span>
             </div>
             <h1 className="text-3xl sm:text-5xl lg:text-6xl font-extrabold text-white dark:text-white light:text-slate-900 tracking-tight leading-tight break-words">
-              An Independent Studio Powered by Craft and Engineering.
+              Full-Stack Web Engineering Built for Growth &amp; Impact.
             </h1>
             <p className="text-base sm:text-lg lg:text-xl text-zinc-300 dark:text-zinc-300 light:text-slate-600 leading-relaxed font-normal">
-              We design and build bespoke digital experiences that help businesses stand out and grow.
+              We design and build bespoke digital experiences, personal portfolios, and scalable cloud solutions that help businesses and individuals stand out and grow.
             </p>
           </div>
         </div>
@@ -86,7 +86,7 @@ export const AboutPage: React.FC = () => {
                 Empowering Digital Presence
               </h2>
               <p className="text-zinc-300 dark:text-zinc-300 light:text-slate-600 leading-relaxed text-base">
-                Helping businesses, startups, and individuals establish distinctive digital identities through thoughtful design and reliable technology.
+                Helping businesses, startups, creators, and students establish distinctive digital identities through thoughtful design, zero-overhead hosting, and reliable modern technology.
               </p>
             </div>
 
@@ -99,28 +99,28 @@ export const AboutPage: React.FC = () => {
                 Our Vision
               </div>
               <h2 className="text-2xl sm:text-3xl font-bold text-white dark:text-white light:text-slate-900">
-                Building Modern Platforms
+                Democratizing Modern Web Standards
               </h2>
               <p className="text-zinc-300 dark:text-zinc-300 light:text-slate-600 leading-relaxed text-base">
-                Growing into a leading independent technology studio creating innovative software, SaaS platforms, and digital experiences.
+                Delivering accessible software engineering, personal portfolios, and scalable web platforms with clean code, zero vendor lock-in, and transparent milestone pricing.
               </p>
             </div>
           </div>
         </div>
 
-        {/* Independence Banner */}
+        {/* Philosophy Banner */}
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-12 sm:mb-20">
           <div className="rounded-3xl border border-[#252A36] dark:border-[#252A36] light:border-slate-200 bg-[#0E1118]/80 dark:bg-[#0E1118]/80 light:bg-slate-50 p-6 sm:p-12">
             <div className="max-w-2xl space-y-4">
               <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-indigo-500/30 bg-indigo-500/10 light:border-indigo-200 light:bg-indigo-50 text-xs font-mono font-semibold text-indigo-300 light:text-indigo-600">
                 <Shield className="w-3.5 h-3.5" />
-                <span>INDEPENDENT STUDIO</span>
+                <span>OUR PHILOSOPHY</span>
               </div>
               <h2 className="text-2xl sm:text-3xl font-extrabold text-white dark:text-white light:text-slate-900 tracking-tight">
-                Autonomous craft with strategic alliances.
+                Engineering precision with complete transparency.
               </h2>
               <p className="text-zinc-300 dark:text-zinc-300 light:text-slate-700 leading-relaxed text-sm sm:text-base">
-                Web Smith Labs operates as a fully independent technology studio and lab. We maintain our own identity, ownership, and direct client engagements, while collaborating with select technical innovators on specialized high-complexity initiatives.
+                Web Smith Labs is a full-service web engineering company. We deliver custom websites, accessible domain-less starter projects, personal portfolios, and full-stack web applications. We prioritize 100% code ownership, honest milestone pricing, and direct engineer-to-client collaboration with no hidden markups.
               </p>
             </div>
           </div>

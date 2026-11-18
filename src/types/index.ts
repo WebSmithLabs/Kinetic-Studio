@@ -18,6 +18,9 @@ export type InquiryStatus =
   | 'archived';
 
 export type ProjectType =
+  | 'Personal Portfolio & Resume'
+  | 'Zero-Domain Starter Website'
+  | 'Low-Cost Cloud Solution'
   | 'Business Website'
   | 'Portfolio Website'
   | 'E-commerce Website'
@@ -54,12 +57,20 @@ export interface SiteSettings {
   meta_description: string;
   footer_text: string;
   razorpay_key_id?: string;
+  razorpay_key_secret?: string;
+  razorpay_webhook_secret?: string;
   razorpay_enabled?: boolean;
   cashfree_app_id?: string;
+  cashfree_secret_key?: string;
+  cashfree_webhook_secret?: string;
   cashfree_mode?: 'sandbox' | 'production';
   cashfree_enabled?: boolean;
+  default_payment_gateway?: 'customer_choice' | 'razorpay' | 'cashfree';
   currency_symbol?: string;
   gst_number?: string;
+  enable_store?: boolean;
+  enable_maintenance?: boolean;
+  india_only_notice?: boolean;
   updated_at?: string;
 }
 
@@ -114,8 +125,11 @@ export interface InquiryItem {
   budget_range: string;
   timeframe: string;
   reference_websites?: string;
+  domain_preference?: string;
+  cloud_preference?: string;
   status: InquiryStatus;
   admin_notes?: string;
+  quote_notes?: string;
   advance_amount?: number;
   total_amount?: number;
   paid_amount?: number;
@@ -164,7 +178,7 @@ export interface StudioUser {
 
 export type AdminUser = StudioUser;
 
-export type PaymentGateway = 'razorpay' | 'cashfree' | 'demo';
+export type PaymentGateway = 'razorpay' | 'cashfree' | 'demo' | 'manual';
 
 export type PaymentType =
   | 'advance_deposit'

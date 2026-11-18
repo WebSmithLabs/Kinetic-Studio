@@ -35,6 +35,7 @@ import {
   removeSupabaseCredentials,
   getSupabaseCredentials,
 } from '../lib/supabase';
+import { sanitizeInquiryData, sanitizeText } from '../lib/sanitize';
 
 // RFC4122 compliant UUID v4 generator for both local state and PostgreSQL UUID columns
 const generateUUID = (): string => {
@@ -87,6 +88,7 @@ interface StudioContextType {
   inquiries: InquiryItem[];
   submitInquiry: (inquiry: Omit<InquiryItem, 'id' | 'status' | 'created_at'>) => Promise<{ success: boolean; message: string }>;
   updateInquiryStatus: (id: string, status: InquiryItem['status'], notes?: string) => Promise<boolean>;
+  updateInquiry: (id: string, updates: Partial<InquiryItem>) => Promise<boolean>;
   deleteInquiry: (id: string) => Promise<boolean>;
 
   // Testimonials
@@ -181,8 +183,18 @@ export const StudioProvider: React.FC<{ children: React.ReactNode }> = ({ childr
   });
 
   const [services, setServices] = useState<ServiceItem[]>(() => {
-    const saved = localStorage.getItem('wsl_services') || localStorage.getItem('ks_services');
-    return saved ? JSON.parse(saved) : initialServices;
+    const saved = localStorage.getItem('wsl_services');
+    if (saved) {
+      try {
+        const parsed = JSON.parse(saved);
+        if (Array.isArray(parsed) && parsed.length >= initialServices.length) {
+          return parsed;
+        }
+      } catch (e) {
+        // fallback to initial
+      }
+    }
+    return initialServices;
   });
 
   const [projects, setProjects] = useState<ProjectItem[]>(() => {
@@ -201,8 +213,18 @@ export const StudioProvider: React.FC<{ children: React.ReactNode }> = ({ childr
   });
 
   const [faqs, setFaqs] = useState<FaqItem[]>(() => {
-    const saved = localStorage.getItem('wsl_faqs') || localStorage.getItem('ks_faqs');
-    return saved ? JSON.parse(saved) : initialFaqs;
+    const saved = localStorage.getItem('wsl_faqs');
+    if (saved) {
+      try {
+        const parsed = JSON.parse(saved);
+        if (Array.isArray(parsed) && parsed.length >= initialFaqs.length) {
+          return parsed;
+        }
+      } catch (e) {
+        // fallback to initial
+      }
+    }
+    return initialFaqs;
   });
 
   const [payments, setPayments] = useState<PaymentRecord[]>(() => {
@@ -502,6 +524,61 @@ export const StudioProvider: React.FC<{ children: React.ReactNode }> = ({ childr
           setInquiries(inquiriesData);
         });
       }
+
+      // 7. Payments
+      const { data: paymentsData, error: payErr } = await client
+        .from('payments')
+        .select('*')
+        .order('created_at', { ascending: false });
+      if (!payErr && paymentsData && paymentsData.length > 0) {
+        startTransition(() => {
+          setPayments(paymentsData);
+        });
+      }
+
+      // 8. Client Subscriptions
+      const { data: subsData, error: subErr } = await client
+        .from('subscriptions')
+        .select('*')
+        .order('created_at', { ascending: false });
+      if (!subErr && subsData && subsData.length > 0) {
+        startTransition(() => {
+          setClientSubscriptions(subsData);
+        });
+      }
+
+      // 9. Subscription Plans
+      const { data: plansData, error: planErr } = await client
+        .from('subscription_plans')
+        .select('*')
+        .order('monthly_price_inr', { ascending: true });
+      if (!planErr && plansData && plansData.length > 0) {
+        startTransition(() => {
+          setSubscriptionPlans(plansData);
+        });
+      }
+
+      // 10. Store Products
+      const { data: storeData, error: storeErr } = await client
+        .from('store_products')
+        .select('*')
+        .order('created_at', { ascending: false });
+      if (!storeErr && storeData && storeData.length > 0) {
+        startTransition(() => {
+          setStoreProducts(storeData);
+        });
+      }
+
+      // 11. Collaboration Messages
+      const { data: collabData, error: colErr } = await client
+        .from('collaboration_messages')
+        .select('*')
+        .order('created_at', { ascending: true });
+      if (!colErr && collabData && collabData.length > 0) {
+        startTransition(() => {
+          setCollaborations(collabData);
+        });
+      }
     } catch (err) {
       console.warn('Notice: Using local cache or fallback data until Supabase is synced:', err);
     } finally {
@@ -535,6 +612,29 @@ export const StudioProvider: React.FC<{ children: React.ReactNode }> = ({ childr
           setInquiries(prev => prev.filter(i => i.id !== payload.old.id));
         }
       })
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'payments' }, payload => {
+        if (payload.eventType === 'INSERT') {
+          setPayments(prev => [payload.new as PaymentRecord, ...prev.filter(p => p.id !== payload.new.id)]);
+        } else if (payload.eventType === 'UPDATE') {
+          setPayments(prev => prev.map(p => (p.id === payload.new.id ? (payload.new as PaymentRecord) : p)));
+        } else if (payload.eventType === 'DELETE') {
+          setPayments(prev => prev.filter(p => p.id !== payload.old.id));
+        }
+      })
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'subscriptions' }, payload => {
+        if (payload.eventType === 'INSERT') {
+          setClientSubscriptions(prev => [payload.new as ClientSubscription, ...prev.filter(s => s.id !== payload.new.id)]);
+        } else if (payload.eventType === 'UPDATE') {
+          setClientSubscriptions(prev => prev.map(s => (s.id === payload.new.id ? (payload.new as ClientSubscription) : s)));
+        } else if (payload.eventType === 'DELETE') {
+          setClientSubscriptions(prev => prev.filter(s => s.id !== payload.old.id));
+        }
+      })
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'collaboration_messages' }, payload => {
+        if (payload.eventType === 'INSERT') {
+          setCollaborations(prev => [...prev.filter(c => c.id !== payload.new.id), payload.new as CollaborationItem]);
+        }
+      })
       .on('postgres_changes', { event: '*', schema: 'public', table: 'projects' }, () => {
         client.from('projects').select('*').order('display_order', { ascending: true }).then(res => {
           if (res.data) setProjects(res.data);
@@ -553,6 +653,16 @@ export const StudioProvider: React.FC<{ children: React.ReactNode }> = ({ childr
       .on('postgres_changes', { event: '*', schema: 'public', table: 'testimonials' }, () => {
         client.from('testimonials').select('*').order('display_order', { ascending: true }).then(res => {
           if (res.data) setTestimonials(res.data);
+        });
+      })
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'subscription_plans' }, () => {
+        client.from('subscription_plans').select('*').order('monthly_price_inr', { ascending: true }).then(res => {
+          if (res.data && res.data.length > 0) setSubscriptionPlans(res.data);
+        });
+      })
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'store_products' }, () => {
+        client.from('store_products').select('*').order('created_at', { ascending: false }).then(res => {
+          if (res.data) setStoreProducts(res.data);
         });
       })
       .subscribe();
@@ -602,13 +712,21 @@ export const StudioProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     try {
       const counts: Record<string, number> = {};
 
-      const [sRes, srvRes, prjRes, inqRes, faqRes, tstRes] = await Promise.all([
+      const [
+        sRes, srvRes, prjRes, inqRes, faqRes, tstRes,
+        payRes, subRes, planRes, storeRes, colRes
+      ] = await Promise.all([
         client.from('site_settings').select('id', { count: 'exact', head: true }),
         client.from('services').select('id', { count: 'exact', head: true }),
         client.from('projects').select('id', { count: 'exact', head: true }),
         client.from('inquiries').select('id', { count: 'exact', head: true }),
         client.from('faqs').select('id', { count: 'exact', head: true }),
         client.from('testimonials').select('id', { count: 'exact', head: true }),
+        client.from('payments').select('id', { count: 'exact', head: true }),
+        client.from('subscriptions').select('id', { count: 'exact', head: true }),
+        client.from('subscription_plans').select('id', { count: 'exact', head: true }),
+        client.from('store_products').select('id', { count: 'exact', head: true }),
+        client.from('collaboration_messages').select('id', { count: 'exact', head: true }),
       ]);
 
       counts.site_settings = sRes.count ?? 0;
@@ -617,6 +735,11 @@ export const StudioProvider: React.FC<{ children: React.ReactNode }> = ({ childr
       counts.inquiries = inqRes.count ?? 0;
       counts.faqs = faqRes.count ?? 0;
       counts.testimonials = tstRes.count ?? 0;
+      counts.payments = payRes.count ?? 0;
+      counts.subscriptions = subRes.count ?? 0;
+      counts.subscription_plans = planRes.count ?? 0;
+      counts.store_products = storeRes.count ?? 0;
+      counts.collaboration_messages = colRes.count ?? 0;
 
       // Check if schema exists
       if (sRes.error && sRes.error.code === '42P01') {
@@ -628,7 +751,7 @@ export const StudioProvider: React.FC<{ children: React.ReactNode }> = ({ childr
 
       return {
         success: true,
-        message: 'Successfully connected to Supabase PostgreSQL database! All tables accessible.',
+        message: 'Successfully connected to Supabase PostgreSQL database! All 11 tables accessible.',
         tableCounts: counts,
       };
     } catch (err) {
@@ -676,12 +799,22 @@ export const StudioProvider: React.FC<{ children: React.ReactNode }> = ({ childr
         await client.from('testimonials').upsert(tst, { onConflict: 'id' });
       }
 
+      // 6. Subscription Plans
+      for (const plan of initialSubscriptionPlans) {
+        await client.from('subscription_plans').upsert(plan, { onConflict: 'id' });
+      }
+
+      // 7. Store Products
+      for (const prod of initialStoreProducts) {
+        await client.from('store_products').upsert(prod, { onConflict: 'id' });
+      }
+
       // Reload
       await loadSupabaseData();
 
       return {
         success: true,
-        message: 'Successfully seeded your Supabase database with Web Smith Labs default services, portfolio projects, FAQs, and site configuration!',
+        message: 'Successfully seeded your Supabase database with Web Smith Labs default services, portfolio projects, FAQs, plans, and site configuration!',
       };
     } catch (err) {
       return {
@@ -798,8 +931,9 @@ export const StudioProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     inquiryData: Omit<InquiryItem, 'id' | 'status' | 'created_at'>
   ): Promise<{ success: boolean; message: string }> => {
     try {
+      const sanitized = sanitizeInquiryData(inquiryData as unknown as Record<string, unknown>) as unknown as Omit<InquiryItem, 'id' | 'status' | 'created_at'>;
       const newInquiry: InquiryItem = {
-        ...inquiryData,
+        ...sanitized,
         id: generateUUID(),
         status: 'new',
         created_at: new Date().toISOString(),
@@ -848,6 +982,33 @@ export const StudioProvider: React.FC<{ children: React.ReactNode }> = ({ childr
       const updates: Record<string, unknown> = { status, updated_at: new Date().toISOString() };
       if (notes !== undefined) updates.admin_notes = notes;
       const { error } = await client.from('inquiries').update(updates).eq('id', id);
+      if (error) console.error('Supabase inquiry update error:', error);
+    }
+    return true;
+  };
+
+  const updateInquiry = async (
+    id: string,
+    updates: Partial<InquiryItem>
+  ): Promise<boolean> => {
+    setInquiries(prev =>
+      prev.map(inq =>
+        inq.id === id
+          ? {
+              ...inq,
+              ...updates,
+              updated_at: new Date().toISOString(),
+            }
+          : inq
+      )
+    );
+
+    const client = getSupabaseClient();
+    if (client && isSupabaseConfigured()) {
+      const { error } = await client
+        .from('inquiries')
+        .update({ ...updates, updated_at: new Date().toISOString() })
+        .eq('id', id);
       if (error) console.error('Supabase inquiry update error:', error);
     }
     return true;
@@ -937,6 +1098,24 @@ export const StudioProvider: React.FC<{ children: React.ReactNode }> = ({ childr
         if (error) console.warn('Supabase payment insert notice:', error);
       } catch (err) {
         console.warn('Supabase payment insert caught error:', err);
+      }
+    }
+
+    // Automatically synchronize client inquiry quote & payment state if linked
+    if (payment.inquiry_id && payment.status === 'success') {
+      const targetInq = inquiries.find(i => i.id === payment.inquiry_id);
+      if (targetInq) {
+        const updatedPaid = (targetInq.paid_amount || 0) + Number(payment.amount);
+        let nextStatus: InquiryItem['status'] = targetInq.status;
+        if (targetInq.total_amount && updatedPaid >= targetInq.total_amount) {
+          nextStatus = 'payment_completed';
+        } else if (targetInq.advance_amount && updatedPaid >= targetInq.advance_amount) {
+          nextStatus = 'advance_payment_completed';
+        }
+        await updateInquiry(targetInq.id, {
+          paid_amount: updatedPaid,
+          status: nextStatus,
+        });
       }
     }
     return true;
@@ -1040,6 +1219,8 @@ export const StudioProvider: React.FC<{ children: React.ReactNode }> = ({ childr
   ): Promise<boolean> => {
     const item: CollaborationItem = {
       ...msg,
+      message: sanitizeText(msg.message, 3000),
+      sender_name: sanitizeText(msg.sender_name, 100),
       id: generateUUID(),
       created_at: new Date().toISOString(),
     };
@@ -1430,6 +1611,7 @@ export const StudioProvider: React.FC<{ children: React.ReactNode }> = ({ childr
         inquiries,
         submitInquiry,
         updateInquiryStatus,
+        updateInquiry,
         deleteInquiry,
         testimonials,
         addTestimonial,

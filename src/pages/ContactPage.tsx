@@ -273,7 +273,7 @@ export const ContactPage: React.FC = () => {
                         <input
                           type="text"
                           required
-                          placeholder="Your Name"
+                          placeholder="e.g. Ramesh Kumar"
                           value={name}
                           onChange={e => setName(e.target.value)}
                           className="w-full px-4 py-2.5 rounded-xl border border-[#252A36] dark:border-[#252A36] light:border-slate-300 bg-[#0B0D12] dark:bg-[#0B0D12] light:bg-slate-50 text-sm text-white dark:text-white light:text-slate-900 placeholder:text-zinc-500 focus:outline-none focus:border-indigo-500"
@@ -287,7 +287,7 @@ export const ContactPage: React.FC = () => {
                         <input
                           type="email"
                           required
-                          placeholder="you@company.com"
+                          placeholder="example@gmail.com"
                           value={email}
                           onChange={e => setEmail(e.target.value)}
                           className="w-full px-4 py-2.5 rounded-xl border border-[#252A36] dark:border-[#252A36] light:border-slate-300 bg-[#0B0D12] dark:bg-[#0B0D12] light:bg-slate-50 text-sm text-white dark:text-white light:text-slate-900 placeholder:text-zinc-500 focus:outline-none focus:border-indigo-500"
@@ -301,7 +301,7 @@ export const ContactPage: React.FC = () => {
                       </label>
                       <input
                         type="text"
-                        placeholder="Inquiry or partnership topic"
+                        placeholder="e.g. Website development or personal portfolio"
                         value={subject}
                         onChange={e => setSubject(e.target.value)}
                         className="w-full px-4 py-2.5 rounded-xl border border-[#252A36] dark:border-[#252A36] light:border-slate-300 bg-[#0B0D12] dark:bg-[#0B0D12] light:bg-slate-50 text-sm text-white dark:text-white light:text-slate-900 placeholder:text-zinc-500 focus:outline-none focus:border-indigo-500"
@@ -315,7 +315,7 @@ export const ContactPage: React.FC = () => {
                       <textarea
                         required
                         rows={5}
-                        placeholder="How can Web Smith Labs assist your organization?"
+                        placeholder="Tell us about your project requirements, goals, or questions..."
                         value={message}
                         onChange={e => setMessage(e.target.value)}
                         className="w-full px-4 py-2.5 rounded-xl border border-[#252A36] dark:border-[#252A36] light:border-slate-300 bg-[#0B0D12] dark:bg-[#0B0D12] light:bg-slate-50 text-sm text-white dark:text-white light:text-slate-900 placeholder:text-zinc-500 focus:outline-none focus:border-indigo-500"

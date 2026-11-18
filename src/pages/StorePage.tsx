@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { Link } from 'react-router-dom';
 import {
   ShoppingBag,
   ExternalLink,
@@ -25,7 +26,37 @@ export const StorePage: React.FC = () => {
   const [selectedCategory, setSelectedCategory] = useState<string>('All');
   const [selectedProductForPayment, setSelectedProductForPayment] = useState<StoreProduct | null>(null);
   const [purchasedProducts, setPurchasedProducts] = useState<string[]>([]);
-  const [currency, setCurrency] = useState<'INR' | 'USD'>('INR');
+  const currency = 'INR';
+
+  if (settings.enable_store === false) {
+    return (
+      <>
+        <SEO
+          title="Digital Store | Web Smith Labs"
+          description="Ready-made templates are currently offline. Contact Web Smith Labs for bespoke software and website engineering."
+        />
+        <div className="pt-32 pb-24 max-w-2xl mx-auto px-4 text-center space-y-6">
+          <div className="w-16 h-16 rounded-2xl bg-indigo-500/10 border border-indigo-500/30 text-indigo-400 flex items-center justify-center mx-auto">
+            <ShoppingBag className="w-8 h-8" />
+          </div>
+          <h1 className="text-3xl font-extrabold text-white dark:text-white light:text-slate-900">
+            Digital Store Offline
+          </h1>
+          <p className="text-sm text-zinc-400 dark:text-zinc-400 light:text-slate-600 leading-relaxed">
+            Our engineering studio focuses exclusively on high-touch bespoke client software and websites tailored to individual client requirements. Ready-made template sales are currently paused.
+          </p>
+          <div>
+            <Link
+              to="/start-project"
+              className="inline-flex items-center gap-2 px-6 py-3 rounded-xl text-sm font-semibold text-white bg-indigo-600 hover:bg-indigo-500 transition-colors shadow-lg shadow-indigo-500/25"
+            >
+              <span>Start a Custom Project Inquiry</span>
+            </Link>
+          </div>
+        </div>
+      </>
+    );
+  }
 
   const categories = ['All', 'SaaS Platforms', 'Agency & Portfolios', 'E-Commerce', 'Healthcare & Clinic'];
 
@@ -60,14 +91,14 @@ export const StorePage: React.FC = () => {
               <span>DIGITAL STORE &amp; TEMPLATES</span>
             </div>
             <h1 className="text-3xl sm:text-5xl lg:text-6xl font-extrabold text-white dark:text-white light:text-slate-900 tracking-tight leading-tight break-words">
-              Production-Grade Websites &amp; Turnkey Platforms. Ready to Deploy.
+              Production-Grade Websites &amp; Turnkey Platforms.
             </h1>
             <p className="text-base sm:text-lg lg:text-xl text-zinc-400 dark:text-zinc-400 light:text-slate-600 leading-relaxed">
-              Skip months of development. Buy pre-built, scalable web solutions with clean TypeScript code, Supabase schemas, and integrated Razorpay / Cashfree payments.
+              Skip months of boilerplate setup. Acquire pre-built web solutions with clean TypeScript code, full source code ownership, and domestic INR invoicing.
             </p>
           </div>
 
-          {/* Controls Bar: Category Filters & Currency Toggle */}
+          {/* Controls Bar: Category Filters & Currency Indicator */}
           <div className="mt-8 sm:mt-10 flex flex-col md:flex-row md:items-center justify-between gap-4 pt-6 border-t border-[#252A36] dark:border-[#252A36] light:border-slate-200">
             {/* Category Filter Pills */}
             <div className="flex flex-wrap items-center gap-2">
@@ -90,30 +121,11 @@ export const StorePage: React.FC = () => {
               ))}
             </div>
 
-            {/* Currency Selector & Security Badge */}
+            {/* Currency Indicator & License Badge */}
             <div className="flex items-center gap-3">
-              <div className="flex items-center p-1 rounded-xl border border-[#252A36] dark:border-[#252A36] light:border-slate-200 bg-[#121620] dark:bg-[#121620] light:bg-slate-100 text-xs font-mono">
-                <button
-                  onClick={() => setCurrency('INR')}
-                  className={`px-3 py-1 rounded-lg transition-colors cursor-pointer ${
-                    currency === 'INR' ? 'bg-indigo-600 text-white font-bold' : 'text-zinc-400 hover:text-white dark:hover:text-white light:text-slate-600 light:hover:text-slate-900'
-                  }`}
-                >
-                  INR (₹)
-                </button>
-                <button
-                  onClick={() => setCurrency('USD')}
-                  className={`px-3 py-1 rounded-lg transition-colors cursor-pointer ${
-                    currency === 'USD' ? 'bg-indigo-600 text-white font-bold' : 'text-zinc-400 hover:text-white dark:hover:text-white light:text-slate-600 light:hover:text-slate-900'
-                  }`}
-                >
-                  USD ($)
-                </button>
-              </div>
-
-              <div className="hidden sm:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-mono text-emerald-400 light:text-emerald-700 bg-emerald-500/10 light:bg-emerald-50 border border-emerald-500/20 light:border-emerald-300">
-                <ShieldCheck className="w-3.5 h-3.5" />
-                <span>Razorpay &amp; Cashfree Protected</span>
+              <div className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-mono text-emerald-400 light:text-emerald-700 bg-emerald-500/10 light:bg-emerald-50 border border-emerald-500/20 light:border-emerald-300">
+                <CheckCircle2 className="w-3.5 h-3.5" />
+                <span>Billing in INR (₹) &bull; Domestic India Invoicing</span>
               </div>
             </div>
           </div>
@@ -265,7 +277,7 @@ export const StorePage: React.FC = () => {
               Need Custom Modifications or Turnkey Setup?
             </h2>
             <p className="text-xs sm:text-base text-zinc-300 dark:text-zinc-300 light:text-slate-600 max-w-2xl mx-auto leading-relaxed">
-              Every template purchased from Web Smith Labs can be tailored, rebranded, and connected to your custom domain, Supabase instance, or Razorpay / Cashfree accounts by our engineering team.
+              Every template purchased from Web Smith Labs can be tailored, rebranded, and connected to your custom domain, Supabase instance, or business backend by our engineering team.
             </p>
             <div className="pt-2">
               <a

@@ -304,7 +304,7 @@ export const LoginPage: React.FC = () => {
                     <input
                       type="text"
                       required
-                      placeholder="Jane Doe"
+                      placeholder="e.g. Ramesh Kumar"
                       value={fullName}
                       onChange={e => setFullName(e.target.value)}
                       className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-[#252A36] dark:border-[#252A36] light:border-slate-300 bg-[#0B0D12] dark:bg-[#0B0D12] light:bg-slate-50 text-sm text-white dark:text-white light:text-slate-900 placeholder:text-zinc-600 dark:placeholder:text-zinc-600 light:placeholder:text-slate-400 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500"
@@ -324,7 +324,7 @@ export const LoginPage: React.FC = () => {
                   <input
                     type="email"
                     required
-                    placeholder="you@company.com"
+                    placeholder="example@gmail.com"
                     value={email}
                     onChange={e => setEmail(e.target.value)}
                     className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-[#252A36] dark:border-[#252A36] light:border-slate-300 bg-[#0B0D12] dark:bg-[#0B0D12] light:bg-slate-50 text-sm text-white dark:text-white light:text-slate-900 placeholder:text-zinc-600 dark:placeholder:text-zinc-600 light:placeholder:text-slate-400 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500"

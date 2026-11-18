@@ -10,6 +10,8 @@ import {
   ArrowRight,
   Check,
   Globe,
+  User,
+  Zap,
 } from 'lucide-react';
 import { useStudio } from '../../context/StudioContext';
 
@@ -19,6 +21,12 @@ export const ServicesOverview: React.FC = () => {
   // Helper to map icon names to Lucide icons
   const renderIcon = (iconName: string) => {
     switch (iconName) {
+      case 'Globe':
+        return <Globe className="w-5 h-5 text-cyan-400" />;
+      case 'User':
+        return <User className="w-5 h-5 text-indigo-400" />;
+      case 'Zap':
+        return <Zap className="w-5 h-5 text-amber-400" />;
       case 'Building2':
         return <Building2 className="w-5 h-5 text-indigo-400" />;
       case 'Code2':
@@ -36,7 +44,7 @@ export const ServicesOverview: React.FC = () => {
     }
   };
 
-  const activeServices = services.filter(s => s.is_active).slice(0, 6);
+  const activeServices = services.filter(s => s.is_active);
 
   return (
     <section id="services" className="py-24 relative overflow-hidden">

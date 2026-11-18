@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { Link } from 'react-router-dom';
 import {
   ShieldCheck,
   Zap,
@@ -21,12 +22,42 @@ import { PaymentModal } from '../components/common/PaymentModal';
 import { formatCurrency } from '../lib/payments';
 
 export const MaintenancePage: React.FC = () => {
-  const { subscriptionPlans, addSubscription, currentUser } = useStudio();
+  const { subscriptionPlans, addSubscription, currentUser, settings } = useStudio();
 
   const [billingCycle, setBillingCycle] = useState<'monthly' | 'annual'>('monthly');
-  const [currency, setCurrency] = useState<'INR' | 'USD'>('INR');
+  const currency = 'INR';
   const [selectedPlanForPayment, setSelectedPlanForPayment] = useState<SubscriptionPlan | null>(null);
   const [activeSubscribedPlan, setActiveSubscribedPlan] = useState<string | null>(null);
+
+  if (settings.enable_maintenance === false) {
+    return (
+      <>
+        <SEO
+          title="Maintenance Retainers | Web Smith Labs"
+          description="Ongoing maintenance retainers are currently dedicated to existing clients. Contact Web Smith Labs for bespoke software and website engineering."
+        />
+        <div className="pt-32 pb-24 max-w-2xl mx-auto px-4 text-center space-y-6">
+          <div className="w-16 h-16 rounded-2xl bg-indigo-500/10 border border-indigo-500/30 text-indigo-400 flex items-center justify-center mx-auto">
+            <ShieldCheck className="w-8 h-8" />
+          </div>
+          <h1 className="text-3xl font-extrabold text-white dark:text-white light:text-slate-900">
+            Maintenance Retainers Closed
+          </h1>
+          <p className="text-sm text-zinc-400 dark:text-zinc-400 light:text-slate-600 leading-relaxed">
+            Our ongoing maintenance and retainer slots are currently reserved exclusively for active and past clients. If you are starting a new web project, post-launch maintenance terms are evaluated and tailored directly during your project review.
+          </p>
+          <div>
+            <Link
+              to="/start-project"
+              className="inline-flex items-center gap-2 px-6 py-3 rounded-xl text-sm font-semibold text-white bg-indigo-600 hover:bg-indigo-500 transition-colors shadow-lg shadow-indigo-500/25"
+            >
+              <span>Start a Custom Project Inquiry</span>
+            </Link>
+          </div>
+        </div>
+      </>
+    );
+  }
 
   const handleSubscribeClick = (plan: SubscriptionPlan) => {
     setSelectedPlanForPayment(plan);
@@ -38,13 +69,9 @@ export const MaintenancePage: React.FC = () => {
 
       // Register new active subscription
       const amount =
-        currency === 'INR'
-          ? billingCycle === 'monthly'
-            ? selectedPlanForPayment.monthly_price_inr
-            : selectedPlanForPayment.annual_price_inr
-          : billingCycle === 'monthly'
-          ? selectedPlanForPayment.monthly_price_usd
-          : selectedPlanForPayment.annual_price_usd;
+        billingCycle === 'monthly'
+          ? selectedPlanForPayment.monthly_price_inr
+          : selectedPlanForPayment.annual_price_inr;
 
       const nextBilling = new Date();
       if (billingCycle === 'monthly') {
@@ -74,7 +101,7 @@ export const MaintenancePage: React.FC = () => {
     <>
       <SEO
         title="Website Maintenance & Engineering Retainers | Web Smith Labs"
-        description="Continuous website maintenance, speed optimization, security updates, and dedicated engineering retainers powered by Razorpay and Cashfree subscriptions."
+        description="Continuous website maintenance, speed optimization, security updates, and dedicated engineering retainers for Indian businesses."
         canonical="https://websmithlabs.com/maintenance"
       />
 
@@ -87,14 +114,14 @@ export const MaintenancePage: React.FC = () => {
           </div>
 
           <h1 className="text-3xl sm:text-5xl lg:text-6xl font-extrabold text-white dark:text-white light:text-slate-900 tracking-tight leading-tight max-w-4xl mx-auto break-words">
-            Zero-Downtime Website Maintenance &amp; Retainer Subscriptions.
+            Website Maintenance &amp; Retainer Subscriptions.
           </h1>
 
           <p className="text-base sm:text-lg lg:text-xl text-zinc-400 dark:text-zinc-400 light:text-slate-600 leading-relaxed max-w-2xl mx-auto mt-4">
-            Protect your revenue, guarantee 99.99% uptime, and retain dedicated web engineers for continuous upgrades, bug fixes, and security patches.
+            Keep your website fast, secure, and current with ongoing technical care, off-site cloud backups, and direct senior engineer support.
           </p>
 
-          {/* Billing Cycle Toggle & Currency Switcher */}
+          {/* Billing Cycle Toggle & Currency Indicator */}
           <div className="mt-8 sm:mt-10 flex flex-wrap items-center justify-center gap-4">
             {/* Billing Cycle Selector */}
             <div className="flex items-center p-1 rounded-2xl border border-[#252A36] dark:border-[#252A36] light:border-slate-200 bg-[#121620] dark:bg-[#121620] light:bg-slate-100 text-xs font-semibold">
@@ -123,24 +150,10 @@ export const MaintenancePage: React.FC = () => {
               </button>
             </div>
 
-            {/* Currency Switcher */}
-            <div className="flex items-center p-1 rounded-2xl border border-[#252A36] dark:border-[#252A36] light:border-slate-200 bg-[#121620] dark:bg-[#121620] light:bg-slate-100 text-xs font-mono">
-              <button
-                onClick={() => setCurrency('INR')}
-                className={`px-3.5 py-1.5 rounded-xl transition-colors cursor-pointer ${
-                  currency === 'INR' ? 'bg-indigo-600 text-white font-bold' : 'text-zinc-400 hover:text-white dark:hover:text-white light:text-slate-600 light:hover:text-slate-900'
-                }`}
-              >
-                INR (₹)
-              </button>
-              <button
-                onClick={() => setCurrency('USD')}
-                className={`px-3.5 py-1.5 rounded-xl transition-colors cursor-pointer ${
-                  currency === 'USD' ? 'bg-indigo-600 text-white font-bold' : 'text-zinc-400 hover:text-white dark:hover:text-white light:text-slate-600 light:hover:text-slate-900'
-                }`}
-              >
-                USD ($)
-              </button>
+            {/* Currency Indicator */}
+            <div className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-2xl border border-[#252A36] dark:border-[#252A36] light:border-slate-200 bg-[#121620] dark:bg-[#121620] light:bg-slate-100 text-xs font-mono text-emerald-400 light:text-emerald-700">
+              <CheckCircle2 className="w-3.5 h-3.5" />
+              <span>INR (₹) Billing Exclusively</span>
             </div>
           </div>
         </div>
@@ -200,10 +213,7 @@ export const MaintenancePage: React.FC = () => {
                       </div>
                       <span className="text-[11px] text-zinc-500 dark:text-zinc-500 light:text-slate-400 block mt-1">
                         {billingCycle === 'annual'
-                          ? `Billed annually (${formatCurrency(
-                              currency === 'INR' ? plan.annual_price_inr : plan.annual_price_usd,
-                              currency
-                            )}/yr)`
+                          ? `Billed annually (${formatCurrency(plan.annual_price_inr, 'INR')}/yr)`
                           : 'Billed monthly &bull; Cancel anytime'}
                       </span>
                     </div>
@@ -253,7 +263,7 @@ export const MaintenancePage: React.FC = () => {
                         }`}
                       >
                         <CreditCard className="w-4 h-4" />
-                        <span>Subscribe via Razorpay / Cashfree</span>
+                        <span>Subscribe to Retainer Plan</span>
                         <ArrowRight className="w-4 h-4" />
                       </button>
                     )}
@@ -314,15 +324,11 @@ export const MaintenancePage: React.FC = () => {
           title={`Subscribe: ${selectedPlanForPayment.name} (${billingCycle.toUpperCase()})`}
           description={`Ongoing Website Maintenance & Engineering Retainer (${billingCycle} subscription)`}
           amount={
-            currency === 'INR'
-              ? billingCycle === 'monthly'
-                ? selectedPlanForPayment.monthly_price_inr
-                : selectedPlanForPayment.annual_price_inr
-              : billingCycle === 'monthly'
-              ? selectedPlanForPayment.monthly_price_usd
-              : selectedPlanForPayment.annual_price_usd
+            billingCycle === 'monthly'
+              ? selectedPlanForPayment.monthly_price_inr
+              : selectedPlanForPayment.annual_price_inr
           }
-          currency={currency}
+          currency="INR"
           paymentType="subscription_retainer"
           subscriptionId={selectedPlanForPayment.id}
           onPaymentComplete={handlePaymentSuccess}

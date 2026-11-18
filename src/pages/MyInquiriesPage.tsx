@@ -11,7 +11,7 @@ import {
   Phone,
   Building2,
   FileText,
-  DollarSign,
+  IndianRupee,
   Calendar,
   Globe,
   AlertCircle,
@@ -94,7 +94,7 @@ const STATUS_CONFIG: Record<
     color: 'text-emerald-400',
     bgColor: 'bg-emerald-500/10',
     borderColor: 'border-emerald-500/30',
-    icon: <DollarSign className="w-4 h-4" />,
+    icon: <IndianRupee className="w-4 h-4" />,
     step: 7,
   },
   finished: {
@@ -137,7 +137,14 @@ interface InquiryCardProps {
     budget_range: string;
     timeframe: string;
     reference_websites?: string;
+    domain_preference?: string;
+    cloud_preference?: string;
     status: InquiryStatus;
+    total_amount?: number;
+    advance_amount?: number;
+    paid_amount?: number;
+    quote_notes?: string;
+    admin_notes?: string;
     created_at: string;
     updated_at?: string;
   };
@@ -173,6 +180,13 @@ const InquiryCard: React.FC<InquiryCardProps> = ({ inquiry, onTriggerPayment }) 
 
   // Filter messages related to this inquiry
   const projectMessages = collaborations.filter(c => c.inquiry_id === inquiry.id);
+
+  // Dynamic custom valuation set by Admin
+  const hasAgreedQuote = typeof inquiry.total_amount === 'number' && inquiry.total_amount > 0;
+  const totalAmount = inquiry.total_amount || 0;
+  const advanceAmount = inquiry.advance_amount || Math.round(totalAmount * 0.5);
+  const paidAmount = inquiry.paid_amount || 0;
+  const balanceDue = Math.max(0, totalAmount - paidAmount);
 
   const handleSendCollaborationNote = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -289,58 +303,106 @@ const InquiryCard: React.FC<InquiryCardProps> = ({ inquiry, onTriggerPayment }) 
           </div>
         </div>
 
-        {/* PAYMENT ACTION BANNERS */}
-        {inquiry.status === 'accepted' && (
-          <div className="mt-5 p-4 rounded-xl bg-gradient-to-r from-emerald-500/10 via-indigo-500/10 to-transparent border border-emerald-500/30 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-            <div>
-              <span className="text-xs font-bold text-white dark:text-white light:text-slate-900 flex items-center gap-1.5">
-                <CheckCircle2 className="w-4 h-4 text-emerald-400" />
-                <span>Project Accepted by Web Smith Labs!</span>
-              </span>
-              <p className="text-[11px] text-zinc-300 dark:text-zinc-300 light:text-slate-600 mt-0.5">
-                Please deposit the initial 50% project advance (₹25,000) to kick off architectural design and sprint 1 development.
-              </p>
+        {/* CUSTOM VALUATION & PAYMENT ACTION BANNERS */}
+        {!hasAgreedQuote && (inquiry.status === 'new' || inquiry.status === 'reviewed' || inquiry.status === 'contacted') && (
+          <div className="mt-5 p-4 rounded-xl bg-amber-500/10 border border-amber-500/30 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs animate-fadeIn">
+            <div className="flex items-start gap-2.5">
+              <Clock className="w-4 h-4 text-amber-400 shrink-0 mt-0.5" />
+              <div>
+                <span className="font-semibold text-amber-300 block">
+                  Scope Review &amp; Consultation in Progress
+                </span>
+                <span className="text-zinc-300 dark:text-zinc-300 light:text-slate-600 text-[11px] leading-relaxed block mt-0.5">
+                  Our engineering lead is evaluating your project requirements. We will contact you directly to agree on deliverables and finalize your custom project fee (₹ INR).
+                </span>
+              </div>
             </div>
-            <button
-              onClick={() => onTriggerPayment(inquiry, 'advance_deposit', 25000)}
-              className="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl text-xs font-bold text-white bg-emerald-600 hover:bg-emerald-500 shadow-md shadow-emerald-500/20 transition-all shrink-0 cursor-pointer"
-            >
-              <CreditCard className="w-4 h-4" />
-              <span>Pay Advance Deposit (₹25,000)</span>
-            </button>
+            <span className="px-3 py-1 rounded-full bg-amber-500/20 border border-amber-500/40 text-amber-300 font-mono text-[10px] whitespace-nowrap self-start sm:self-center">
+              Tailored Quote Pending
+            </span>
           </div>
         )}
 
-        {(inquiry.status === 'advance_payment_completed' || inquiry.status === 'ongoing') && (
-          <div className="mt-5 p-4 rounded-xl bg-gradient-to-r from-indigo-500/10 via-purple-500/10 to-transparent border border-indigo-500/30 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-            <div>
-              <span className="text-xs font-bold text-white dark:text-white light:text-slate-900 flex items-center gap-1.5">
-                <Rocket className="w-4 h-4 text-indigo-400" />
-                <span>Sprint in Progress &bull; Final Milestone Ready</span>
-              </span>
-              <p className="text-[11px] text-zinc-300 dark:text-zinc-300 light:text-slate-600 mt-0.5">
-                Advance payment confirmed. Settle remaining milestone invoice (₹25,000) for final source code release and domain DNS handover.
-              </p>
+        {hasAgreedQuote && (
+          <div className="mt-5 rounded-xl border border-indigo-500/30 bg-gradient-to-br from-indigo-500/[0.07] to-purple-500/[0.05] p-4 space-y-3 animate-fadeIn">
+            {/* Quote Header & Financials */}
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-3 border-b border-indigo-500/20">
+              <div className="flex items-center gap-2">
+                <IndianRupee className="w-4 h-4 text-emerald-400" />
+                <span className="text-xs font-bold text-white dark:text-white light:text-slate-900">
+                  Agreed Project Valuation (INR)
+                </span>
+              </div>
+              <div className="flex flex-wrap items-center gap-2 text-[11px] font-mono">
+                <span className="px-2.5 py-0.5 rounded-full bg-indigo-500/20 text-indigo-300 border border-indigo-500/30">
+                  Total Fee: ₹{totalAmount.toLocaleString('en-IN')}
+                </span>
+                <span className="px-2.5 py-0.5 rounded-full bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">
+                  Kickoff Deposit: ₹{advanceAmount.toLocaleString('en-IN')}
+                </span>
+              </div>
             </div>
-            <button
-              onClick={() => onTriggerPayment(inquiry, 'milestone_payment', 25000)}
-              className="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl text-xs font-bold text-white bg-indigo-600 hover:bg-indigo-500 shadow-md shadow-indigo-500/20 transition-all shrink-0 cursor-pointer"
-            >
-              <CreditCard className="w-4 h-4" />
-              <span>Settle Final Balance (₹25,000)</span>
-            </button>
-          </div>
-        )}
 
-        {inquiry.status === 'payment_completed' && (
-          <div className="mt-5 p-3 rounded-xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-between text-xs text-emerald-400">
-            <span className="flex items-center gap-2 font-semibold">
-              <CheckCircle2 className="w-4 h-4" />
-              <span>Payments Complete &bull; Handover &amp; Assets Unlocked</span>
-            </span>
-            <span className="text-[11px] font-mono text-zinc-400">
-              Receipt verified
-            </span>
+            {/* Scope Deliverables Notes if set by Admin */}
+            {inquiry.quote_notes && (
+              <div className="p-3 rounded-lg bg-black/30 dark:bg-black/30 light:bg-white border border-white/5 dark:border-white/5 light:border-slate-200 text-xs">
+                <span className="text-[10px] font-mono uppercase text-indigo-400 block mb-1">
+                  Scope &amp; Deliverables Breakdown:
+                </span>
+                <p className="text-zinc-200 dark:text-zinc-200 light:text-slate-700 text-xs leading-relaxed">
+                  {inquiry.quote_notes}
+                </p>
+              </div>
+            )}
+
+            {/* Payment Trigger Buttons */}
+            {(inquiry.status === 'accepted' || paidAmount < advanceAmount) && (
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-1">
+                <p className="text-[11px] text-zinc-300 dark:text-zinc-300 light:text-slate-600">
+                  Deposit the advance kickoff fee to begin architecture design and Sprint 1 development.
+                </p>
+                <button
+                  onClick={() => onTriggerPayment(inquiry, 'advance_deposit', advanceAmount)}
+                  className="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl text-xs font-bold text-white bg-emerald-600 hover:bg-emerald-500 shadow-md shadow-emerald-500/20 transition-all shrink-0 cursor-pointer"
+                >
+                  <CreditCard className="w-4 h-4" />
+                  <span>Pay Advance Kickoff (₹{advanceAmount.toLocaleString('en-IN')})</span>
+                </button>
+              </div>
+            )}
+
+            {(inquiry.status === 'advance_payment_completed' || inquiry.status === 'ongoing') && balanceDue > 0 && (
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-1">
+                <div>
+                  <span className="text-xs font-bold text-white dark:text-white light:text-slate-900 flex items-center gap-1.5">
+                    <Rocket className="w-4 h-4 text-indigo-400" />
+                    <span>Advance Kickoff Paid (₹{paidAmount.toLocaleString('en-IN')}) &bull; Sprint in Progress</span>
+                  </span>
+                  <p className="text-[11px] text-zinc-300 dark:text-zinc-300 light:text-slate-600 mt-0.5">
+                    Settle final milestone balance for complete source code handover and domain DNS release.
+                  </p>
+                </div>
+                <button
+                  onClick={() => onTriggerPayment(inquiry, 'milestone_payment', balanceDue)}
+                  className="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl text-xs font-bold text-white bg-indigo-600 hover:bg-indigo-500 shadow-md shadow-indigo-500/20 transition-all shrink-0 cursor-pointer"
+                >
+                  <CreditCard className="w-4 h-4" />
+                  <span>Settle Balance (₹{balanceDue.toLocaleString('en-IN')})</span>
+                </button>
+              </div>
+            )}
+
+            {(inquiry.status === 'payment_completed' || (balanceDue === 0 && paidAmount > 0)) && (
+              <div className="p-3 rounded-lg bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-between text-xs text-emerald-400">
+                <span className="flex items-center gap-2 font-semibold">
+                  <CheckCircle2 className="w-4 h-4" />
+                  <span>Full Project Fee Settled &bull; Repository &amp; Assets Handover Complete</span>
+                </span>
+                <span className="text-[11px] font-mono text-zinc-400">
+                  ₹{totalAmount.toLocaleString('en-IN')} Paid
+                </span>
+              </div>
+            )}
           </div>
         )}
       </div>
@@ -439,7 +501,7 @@ const InquiryCard: React.FC<InquiryCardProps> = ({ inquiry, onTriggerPayment }) 
           {/* Details Grid */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div className="flex items-start gap-2.5 p-3 rounded-xl bg-[#121620] dark:bg-[#121620] light:bg-white border border-[#252A36] dark:border-[#252A36] light:border-slate-200">
-              <DollarSign className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />
+              <IndianRupee className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />
               <div>
                 <span className="text-[10px] font-mono uppercase tracking-wider text-zinc-500 dark:text-zinc-500 light:text-slate-400 block">Budget Range</span>
                 <span className="text-sm font-medium text-white dark:text-white light:text-slate-900">{inquiry.budget_range}</span>
@@ -480,6 +542,26 @@ const InquiryCard: React.FC<InquiryCardProps> = ({ inquiry, onTriggerPayment }) 
                 <div>
                   <span className="text-[10px] font-mono uppercase tracking-wider text-zinc-500 dark:text-zinc-500 light:text-slate-400 block">Reference Links</span>
                   <span className="text-sm text-indigo-400 light:text-indigo-600 break-all">{inquiry.reference_websites}</span>
+                </div>
+              </div>
+            )}
+
+            {inquiry.domain_preference && (
+              <div className="flex items-start gap-2.5 p-3 rounded-xl bg-[#121620] dark:bg-[#121620] light:bg-white border border-[#252A36] dark:border-[#252A36] light:border-slate-200">
+                <Globe className="w-4 h-4 text-cyan-400 shrink-0 mt-0.5" />
+                <div>
+                  <span className="text-[10px] font-mono uppercase tracking-wider text-zinc-500 dark:text-zinc-500 light:text-slate-400 block">Domain Setup</span>
+                  <span className="text-xs font-medium text-white dark:text-white light:text-slate-900">{inquiry.domain_preference}</span>
+                </div>
+              </div>
+            )}
+
+            {inquiry.cloud_preference && (
+              <div className="flex items-start gap-2.5 p-3 rounded-xl bg-[#121620] dark:bg-[#121620] light:bg-white border border-[#252A36] dark:border-[#252A36] light:border-slate-200">
+                <Sparkles className="w-4 h-4 text-indigo-400 shrink-0 mt-0.5" />
+                <div>
+                  <span className="text-[10px] font-mono uppercase tracking-wider text-zinc-500 dark:text-zinc-500 light:text-slate-400 block">Cloud Architecture</span>
+                  <span className="text-xs font-medium text-white dark:text-white light:text-slate-900">{inquiry.cloud_preference}</span>
                 </div>
               </div>
             )}
@@ -575,7 +657,7 @@ export const MyInquiriesPage: React.FC = () => {
     <>
       <SEO
         title="Client Workspace & Project Hub | Web Smith Labs"
-        description="Track your project milestones, pay invoices via Razorpay or Cashfree, review deliverables, and manage active retainers with Web Smith Labs."
+        description="Track your custom project milestones, pay agreed invoices securely in INR (₹), review deliverables, and collaborate directly with senior engineers at Web Smith Labs."
       />
 
       <div className="min-h-screen pt-24 sm:pt-32 pb-16 sm:pb-24 px-4 sm:px-6 lg:px-8 bg-[#0B0D12] dark:bg-[#0B0D12] light:bg-[#FAFAFC] text-left transition-colors">
@@ -588,20 +670,22 @@ export const MyInquiriesPage: React.FC = () => {
                 <span>CLIENT WORKSPACE &amp; DASHBOARD</span>
               </div>
               <h1 className="text-3xl sm:text-4xl font-extrabold text-white dark:text-white light:text-slate-900 tracking-tight">
-                Projects, Retainers &amp; Payments
+                Projects, Milestones &amp; Payments
               </h1>
               <p className="text-sm text-zinc-400 dark:text-zinc-400 light:text-slate-600 mt-1">
-                Collaborate with our engineering team, settle milestone invoices, and manage your website retainers.
+                Collaborate with our engineering squad, track custom milestones, and settle project invoices in INR (₹).
               </p>
             </div>
 
             <div className="flex items-center gap-2">
-              <Link
-                to="/store"
-                className="inline-flex items-center gap-1.5 px-4 py-2.5 rounded-xl text-xs font-semibold border border-[#252A36] dark:border-[#252A36] light:border-slate-300 text-zinc-300 dark:text-zinc-300 light:text-slate-700 hover:text-white dark:hover:text-white light:hover:text-slate-900 bg-[#121620] dark:bg-[#121620] light:bg-white hover:bg-[#181D2A] light:hover:bg-slate-50 transition-colors shadow-sm"
-              >
-                <span>Browse Store</span>
-              </Link>
+              {settings.enable_store && (
+                <Link
+                  to="/store"
+                  className="inline-flex items-center gap-1.5 px-4 py-2.5 rounded-xl text-xs font-semibold border border-[#252A36] dark:border-[#252A36] light:border-slate-300 text-zinc-300 dark:text-zinc-300 light:text-slate-700 hover:text-white dark:hover:text-white light:hover:text-slate-900 bg-[#121620] dark:bg-[#121620] light:bg-white hover:bg-[#181D2A] light:hover:bg-slate-50 transition-colors shadow-sm"
+                >
+                  <span>Browse Store</span>
+                </Link>
+              )}
               <Link
                 to="/start-project"
                 className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-xs font-bold text-white bg-gradient-to-r from-indigo-500 via-indigo-600 to-purple-600 hover:from-indigo-400 hover:to-purple-500 shadow-lg shadow-indigo-500/25 transition-all active:scale-95 shrink-0"
@@ -626,17 +710,19 @@ export const MyInquiriesPage: React.FC = () => {
               <ClipboardList className="w-4 h-4" />
               <span>Projects &amp; Inquiries ({myInquiries.length})</span>
             </button>
-            <button
-              onClick={() => setActiveTab('subscriptions')}
-              className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-semibold whitespace-nowrap transition-all cursor-pointer ${
-                activeTab === 'subscriptions'
-                  ? 'bg-indigo-600 text-white shadow-md shadow-indigo-500/20'
-                  : 'text-zinc-400 dark:text-zinc-400 light:text-slate-600 hover:text-white dark:hover:text-white light:hover:text-slate-900 hover:bg-white/5 dark:hover:bg-white/5 light:hover:bg-slate-100'
-              }`}
-            >
-              <ShieldCheck className="w-4 h-4" />
-              <span>Active Retainers ({mySubscriptions.length})</span>
-            </button>
+            {settings.enable_maintenance && (
+              <button
+                onClick={() => setActiveTab('subscriptions')}
+                className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-semibold whitespace-nowrap transition-all cursor-pointer ${
+                  activeTab === 'subscriptions'
+                    ? 'bg-indigo-600 text-white shadow-md shadow-indigo-500/20'
+                    : 'text-zinc-400 dark:text-zinc-400 light:text-slate-600 hover:text-white dark:hover:text-white light:hover:text-slate-900 hover:bg-white/5 dark:hover:bg-white/5 light:hover:bg-slate-100'
+                }`}
+              >
+                <ShieldCheck className="w-4 h-4" />
+                <span>Active Retainers ({mySubscriptions.length})</span>
+              </button>
+            )}
             <button
               onClick={() => setActiveTab('payments')}
               className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-semibold whitespace-nowrap transition-all cursor-pointer ${
@@ -740,7 +826,7 @@ export const MyInquiriesPage: React.FC = () => {
                   <ShieldCheck className="w-12 h-12 text-indigo-400 light:text-indigo-600 mx-auto" />
                   <h3 className="text-lg font-bold text-white dark:text-white light:text-slate-900">No Active Website Retainers</h3>
                   <p className="text-xs text-zinc-400 dark:text-zinc-400 light:text-slate-600 max-w-md mx-auto">
-                    Subscribe to continuous uptime monitoring, weekly database backups, and monthly developer support hours powered by Razorpay and Cashfree subscriptions.
+                    Subscribe to continuous performance monitoring, weekly secure backups, and dedicated developer support hours with direct senior engineer access.
                   </p>
                   <Link
                     to="/maintenance"

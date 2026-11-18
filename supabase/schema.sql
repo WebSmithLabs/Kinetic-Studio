@@ -27,9 +27,9 @@ CREATE TABLE IF NOT EXISTS public.site_settings (
     contact_email TEXT DEFAULT 'hello@websmithlabs.com',
     phone_number TEXT DEFAULT '+91 (0) 80 4820 1920',
     whatsapp_number TEXT DEFAULT '+919876543210',
-    hero_badge TEXT DEFAULT 'INDEPENDENT DIGITAL & WEB LAB',
-    hero_title TEXT DEFAULT 'Building High-Impact Web Experiences That Move Businesses Forward.',
-    hero_description TEXT DEFAULT 'From high-performance business websites to custom web applications and scalable digital solutions, Web Smith Labs transforms ideas into digital reality through modern engineering.',
+    hero_badge TEXT DEFAULT 'FULL-STACK WEB & DIGITAL ENGINEERING',
+    hero_title TEXT DEFAULT 'Building Modern Websites, Portfolios & Web Applications That Deliver.',
+    hero_description TEXT DEFAULT 'From domain-less starter websites and personal portfolios to custom business platforms and full-stack web applications, we engineer clean, accessible, and high-performance digital solutions tailored to your goals.',
     primary_cta_text TEXT DEFAULT 'Start a Project',
     secondary_cta_text TEXT DEFAULT 'Explore Our Work',
     twitter_url TEXT DEFAULT 'https://x.com/websmithlabs',
@@ -42,12 +42,20 @@ CREATE TABLE IF NOT EXISTS public.site_settings (
     secondary_accent_color TEXT DEFAULT '#8B5CF6',
     meta_title TEXT DEFAULT 'Web Smith Labs | Modern Websites, Web Applications & Digital Platforms',
     meta_description TEXT DEFAULT 'Web Smith Labs builds modern websites, custom web applications and high-impact digital experiences for businesses, startups and individuals.',
-    footer_text TEXT DEFAULT 'Web Smith Labs is an independent digital engineering and web technology company. Collaborating with select technology innovators.',
+    footer_text TEXT DEFAULT 'Web Smith Labs is a full-service web engineering and digital solutions company. Delivering tailored websites, domain-less starter options, and custom web applications with 100% client code ownership.',
     razorpay_key_id TEXT DEFAULT 'rzp_test_wsl1024demo',
+    razorpay_key_secret TEXT DEFAULT '',
+    razorpay_webhook_secret TEXT DEFAULT '',
     razorpay_enabled BOOLEAN DEFAULT true,
     cashfree_app_id TEXT DEFAULT 'cf_app_sandbox_wsl8838',
+    cashfree_secret_key TEXT DEFAULT '',
+    cashfree_webhook_secret TEXT DEFAULT '',
     cashfree_mode TEXT DEFAULT 'sandbox',
     cashfree_enabled BOOLEAN DEFAULT true,
+    default_payment_gateway TEXT DEFAULT 'customer_choice',
+    enable_store BOOLEAN DEFAULT false,
+    enable_maintenance BOOLEAN DEFAULT false,
+    india_only_notice BOOLEAN DEFAULT true,
     currency_symbol TEXT DEFAULT '₹',
     gst_number TEXT DEFAULT '29ABCDE1234F1Z5',
     updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
@@ -117,6 +125,12 @@ CREATE TABLE IF NOT EXISTS public.inquiries (
     reference_websites TEXT,
     status TEXT NOT NULL DEFAULT 'new' CHECK (status IN ('new', 'reviewed', 'accepted', 'contacted', 'ongoing', 'finished', 'advance_payment_completed', 'payment_completed', 'archived')),
     admin_notes TEXT DEFAULT '',
+    quote_notes TEXT DEFAULT '',
+    advance_amount NUMERIC DEFAULT 0,
+    total_amount NUMERIC DEFAULT 0,
+    paid_amount NUMERIC DEFAULT 0,
+    domain_preference TEXT DEFAULT '',
+    cloud_preference TEXT DEFAULT '',
     ip_address TEXT,
     created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
     updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
@@ -159,7 +173,7 @@ CREATE TABLE IF NOT EXISTS public.payments (
     subscription_id TEXT,
     amount NUMERIC NOT NULL,
     currency TEXT NOT NULL DEFAULT 'INR',
-    gateway TEXT NOT NULL CHECK (gateway IN ('razorpay', 'cashfree', 'demo')),
+    gateway TEXT NOT NULL CHECK (gateway IN ('razorpay', 'cashfree', 'demo', 'manual')),
     payment_id TEXT NOT NULL,
     order_id TEXT NOT NULL,
     payment_type TEXT NOT NULL,
@@ -223,6 +237,42 @@ CREATE TABLE IF NOT EXISTS public.collaboration_messages (
     created_at TIMESTAMPTZ NOT NULL DEFAULT now()
 );
 
+-- 13. Subscription Plans (Maintenance & Retainer Tiers)
+CREATE TABLE IF NOT EXISTS public.subscription_plans (
+    id TEXT PRIMARY KEY,
+    slug TEXT UNIQUE NOT NULL,
+    name TEXT NOT NULL,
+    badge TEXT,
+    monthly_price_inr NUMERIC NOT NULL,
+    annual_price_inr NUMERIC NOT NULL,
+    monthly_price_usd NUMERIC NOT NULL DEFAULT 0,
+    annual_price_usd NUMERIC NOT NULL DEFAULT 0,
+    description TEXT NOT NULL,
+    features JSONB NOT NULL DEFAULT '[]'::jsonb,
+    sla TEXT NOT NULL,
+    support_channel TEXT NOT NULL,
+    hours_included TEXT NOT NULL,
+    is_popular BOOLEAN NOT NULL DEFAULT false,
+    created_at TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+
+-- Safe Column Additions for Existing Databases
+ALTER TABLE public.site_settings ADD COLUMN IF NOT EXISTS enable_store BOOLEAN DEFAULT false;
+ALTER TABLE public.site_settings ADD COLUMN IF NOT EXISTS enable_maintenance BOOLEAN DEFAULT false;
+ALTER TABLE public.site_settings ADD COLUMN IF NOT EXISTS india_only_notice BOOLEAN DEFAULT true;
+ALTER TABLE public.site_settings ADD COLUMN IF NOT EXISTS razorpay_key_secret TEXT DEFAULT '';
+ALTER TABLE public.site_settings ADD COLUMN IF NOT EXISTS razorpay_webhook_secret TEXT DEFAULT '';
+ALTER TABLE public.site_settings ADD COLUMN IF NOT EXISTS cashfree_secret_key TEXT DEFAULT '';
+ALTER TABLE public.site_settings ADD COLUMN IF NOT EXISTS cashfree_webhook_secret TEXT DEFAULT '';
+ALTER TABLE public.site_settings ADD COLUMN IF NOT EXISTS default_payment_gateway TEXT DEFAULT 'customer_choice';
+
+ALTER TABLE public.inquiries ADD COLUMN IF NOT EXISTS quote_notes TEXT DEFAULT '';
+ALTER TABLE public.inquiries ADD COLUMN IF NOT EXISTS advance_amount NUMERIC DEFAULT 0;
+ALTER TABLE public.inquiries ADD COLUMN IF NOT EXISTS total_amount NUMERIC DEFAULT 0;
+ALTER TABLE public.inquiries ADD COLUMN IF NOT EXISTS paid_amount NUMERIC DEFAULT 0;
+ALTER TABLE public.inquiries ADD COLUMN IF NOT EXISTS domain_preference TEXT DEFAULT '';
+ALTER TABLE public.inquiries ADD COLUMN IF NOT EXISTS cloud_preference TEXT DEFAULT '';
+
 -- ==============================================================================
 -- INDEXES FOR MAXIMUM QUERY PERFORMANCE
 -- ==============================================================================
@@ -234,6 +284,7 @@ CREATE INDEX IF NOT EXISTS idx_faqs_active ON public.faqs(is_active, display_ord
 CREATE INDEX IF NOT EXISTS idx_payments_client ON public.payments(client_email, created_at DESC);
 CREATE INDEX IF NOT EXISTS idx_subscriptions_client ON public.subscriptions(client_email, status);
 CREATE INDEX IF NOT EXISTS idx_collab_inquiry ON public.collaboration_messages(inquiry_id, created_at ASC);
+CREATE INDEX IF NOT EXISTS idx_subscription_plans_slug ON public.subscription_plans(slug);
 
 -- ==============================================================================
 -- DATA API GRANTS
@@ -257,6 +308,21 @@ ALTER TABLE public.payments ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.subscriptions ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.store_products ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.collaboration_messages ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.subscription_plans ENABLE ROW LEVEL SECURITY;
+
+-- 12. SUBSCRIPTION PLANS POLICIES
+DROP POLICY IF EXISTS "Public can view subscription plans" ON public.subscription_plans;
+CREATE POLICY "Public can view subscription plans"
+    ON public.subscription_plans FOR SELECT
+    TO anon, authenticated
+    USING (true);
+
+DROP POLICY IF EXISTS "Authenticated can manage subscription plans" ON public.subscription_plans;
+CREATE POLICY "Authenticated can manage subscription plans"
+    ON public.subscription_plans FOR ALL
+    TO authenticated
+    USING (true)
+    WITH CHECK (true);
 
 -- 8. PAYMENTS POLICIES
 DROP POLICY IF EXISTS "Users can view own payments" ON public.payments;

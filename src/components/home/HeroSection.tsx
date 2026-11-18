@@ -63,33 +63,33 @@ export const HeroSection: React.FC = () => {
         {/* Trust Markers */}
         <div className="flex flex-wrap items-center justify-center gap-y-2 gap-x-8 text-xs text-zinc-400 dark:text-zinc-400 light:text-slate-500 mb-16">
           <div className="flex items-center gap-2">
-            <CheckCircle2 className="w-4 h-4 text-indigo-400" />
-            <span>Bespoke Engineering</span>
+            <CheckCircle2 className="w-4 h-4 text-emerald-400" />
+            <span>Custom Websites &amp; Portfolios</span>
           </div>
           <div className="flex items-center gap-2">
             <CheckCircle2 className="w-4 h-4 text-indigo-400" />
-            <span>Modern React &amp; Supabase</span>
+            <span>Domain-Less &amp; Free Cloud Options</span>
           </div>
           <div className="flex items-center gap-2">
-            <CheckCircle2 className="w-4 h-4 text-indigo-400" />
-            <span>Independent Studio Craft</span>
+            <CheckCircle2 className="w-4 h-4 text-purple-400" />
+            <span>100% Code Ownership</span>
           </div>
         </div>
 
-        {/* Live Studio Metrics Synced with Database */}
+        {/* Live Studio Metrics Synced Dynamically with Database */}
         <div className="pt-10 border-t border-[#252A36]/60 dark:border-[#252A36]/60 light:border-slate-200 grid grid-cols-2 md:grid-cols-4 gap-6 text-center max-w-4xl mx-auto">
           <div>
             <div className="text-3xl lg:text-4xl font-extrabold text-white dark:text-white light:text-slate-900 tracking-tight">
-              {services.length || 6}<span className="text-indigo-400">+</span>
+              {services.filter(s => s.is_active).length || 8}
             </div>
             <div className="text-xs text-zinc-400 dark:text-zinc-400 light:text-slate-500 mt-1 font-medium">
-              Core Capabilities
+              Active Services
             </div>
           </div>
 
           <div>
             <div className="text-3xl lg:text-4xl font-extrabold text-white dark:text-white light:text-slate-900 tracking-tight">
-              {projects.length || 4}<span className="text-purple-400">+</span>
+              {projects.filter(p => p.is_published).length || projects.length}
             </div>
             <div className="text-xs text-zinc-400 dark:text-zinc-400 light:text-slate-500 mt-1 font-medium">
               Live Projects
@@ -101,7 +101,7 @@ export const HeroSection: React.FC = () => {
               &lt; 1.0<span className="text-indigo-400">s</span>
             </div>
             <div className="text-xs text-zinc-400 dark:text-zinc-400 light:text-slate-500 mt-1 font-medium">
-              Load Speed
+              Average Load Speed
             </div>
           </div>
 
@@ -110,7 +110,7 @@ export const HeroSection: React.FC = () => {
               100<span className="text-purple-400">%</span>
             </div>
             <div className="text-xs text-zinc-400 dark:text-zinc-400 light:text-slate-500 mt-1 font-medium">
-              Bespoke Architecture
+              Client Code Ownership
             </div>
           </div>
         </div>

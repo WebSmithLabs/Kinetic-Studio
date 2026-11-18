@@ -39,8 +39,8 @@ export const Navbar: React.FC = () => {
     { name: 'Home', href: '/' },
     { name: 'Services', href: '/services' },
     { name: 'Our Work', href: '/work' },
-    { name: 'Store & Templates', href: '/store' },
-    { name: 'Maintenance', href: '/maintenance' },
+    ...(settings.enable_store ? [{ name: 'Store & Templates', href: '/store' }] : []),
+    ...(settings.enable_maintenance ? [{ name: 'Maintenance', href: '/maintenance' }] : []),
     { name: 'About', href: '/about' },
     { name: 'Contact', href: '/contact' },
   ];

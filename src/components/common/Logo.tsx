@@ -26,18 +26,27 @@ export const Logo: React.FC<LogoProps> = ({
     lg: 'text-2xl',
   };
 
+  const paddings = {
+    sm: 'p-0.5',
+    md: 'p-1',
+    lg: 'p-1.5',
+  };
+
   const content = (
     <div className={`inline-flex items-center gap-2.5 select-none group ${className}`}>
-      {/* WSL Globe Icon from public */}
+      {/* WSL Globe Icon with White Circle Backdrop */}
       <div className={`relative ${iconSizes[size]} flex items-center justify-center shrink-0`}>
-        {/* Subtle ambient glow behind logo */}
-        <div className="absolute inset-0 bg-gradient-to-tr from-indigo-500/30 via-violet-500/20 to-cyan-400/25 rounded-full blur-md opacity-70 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none" />
+        {/* Solid white circular background - ensures perfect contrast in both dark and light themes */}
+        <div className="absolute inset-0 rounded-full bg-white shadow-sm ring-1 ring-slate-200/80 dark:ring-white/20 transition-transform duration-300 group-hover:scale-105" />
+        
+        {/* Subtle ambient accent glow */}
+        <div className="absolute -inset-0.5 bg-gradient-to-tr from-indigo-500/25 via-violet-500/15 to-cyan-400/20 rounded-full blur-sm opacity-50 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none" />
         
         {/* High-res icon with fallback to Logo.png */}
         <img
           src="/icon.png"
           alt="Web Smith Labs"
-          className="w-full h-full object-contain relative z-10 transition-transform duration-300 group-hover:scale-105 select-none drop-shadow-[0_2px_8px_rgba(99,102,241,0.35)]"
+          className={`w-full h-full object-contain ${paddings[size]} rounded-full relative z-10 transition-transform duration-300 group-hover:scale-105 select-none`}
           onError={(e) => {
             const img = e.currentTarget;
             if (!img.src.endsWith('/Logo.png')) {

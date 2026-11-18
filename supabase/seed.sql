@@ -29,7 +29,18 @@ INSERT INTO public.site_settings (
     secondary_accent_color,
     meta_title,
     meta_description,
-    footer_text
+    footer_text,
+    razorpay_key_id,
+    razorpay_enabled,
+    cashfree_app_id,
+    cashfree_mode,
+    cashfree_enabled,
+    default_payment_gateway,
+    enable_store,
+    enable_maintenance,
+    india_only_notice,
+    currency_symbol,
+    gst_number
 ) VALUES (
     'primary',
     'Web Smith Labs',
@@ -40,9 +51,9 @@ INSERT INTO public.site_settings (
     'hello@websmithlabs.com',
     '+91 (0) 80 4820 1920',
     '+919876543210',
-    'INDEPENDENT DIGITAL & WEB LAB',
-    'Building High-Impact Web Experiences That Move Businesses Forward.',
-    'From high-performance business websites to custom web applications and scalable digital solutions, Web Smith Labs transforms ideas into digital reality through modern engineering.',
+    'FULL-STACK WEB & DIGITAL ENGINEERING',
+    'Building Modern Websites, Portfolios & Web Applications That Deliver.',
+    'From domain-less starter websites and personal portfolios to custom business platforms and full-stack web applications, we engineer clean, accessible, and high-performance digital solutions tailored to your goals.',
     'Start a Project',
     'Explore Our Work',
     'https://x.com/websmithlabs',
@@ -55,19 +66,56 @@ INSERT INTO public.site_settings (
     '#8B5CF6',
     'Web Smith Labs | Modern Websites, Web Applications & Digital Platforms',
     'Web Smith Labs builds modern websites, custom web applications and high-impact digital experiences for businesses, startups and individuals.',
-    'Web Smith Labs is an independent digital engineering and web technology company. Collaborating with select technology innovators.'
+    'Web Smith Labs is a full-service web engineering and digital solutions company. Delivering tailored websites, domain-less starter options, and custom web applications with 100% client code ownership.',
+    'rzp_test_wsl1024demo',
+    true,
+    'cf_app_sandbox_wsl8838',
+    'sandbox',
+    true,
+    'customer_choice',
+    false,
+    false,
+    true,
+    '₹',
+    '29ABCDE1234F1Z5'
 )
 ON CONFLICT (id) DO UPDATE SET
     company_name = EXCLUDED.company_name,
     short_name = EXCLUDED.short_name,
+    hero_badge = EXCLUDED.hero_badge,
     hero_title = EXCLUDED.hero_title,
     hero_description = EXCLUDED.hero_description,
+    footer_text = EXCLUDED.footer_text,
     tagline = EXCLUDED.tagline,
     contact_email = EXCLUDED.contact_email;
 
 -- 2. Insert Core Services
 INSERT INTO public.services (slug, title, category, summary, description, deliverables, technologies, icon, display_order, is_active)
 VALUES
+(
+    'domain-less-websites',
+    'Domain-Less Starter Websites',
+    'Starter & Accessible Web',
+    'High-speed modern websites launched on permanent free subdomains (Cloudflare Pages, GitHub Pages, Firebase Hosting) without recurring domain renewal fees.',
+    'Perfect for early-stage initiatives, small ventures, local shops, and students wanting an online presence without annual domain renewal fees or complex hosting bills. We deploy on secure, free global CDN subdomains with zero hosting server costs.',
+    '["Free permanent subdomain (e.g., .pages.dev, .github.io, .web.app)", "Zero hosting charges & lifetime free SSL/TLS encryption", "Lightning-fast static & edge delivery on Cloudflare or Netlify", "Seamless one-click upgrade to your own custom .in / .com domain later", "Contact form & WhatsApp lead capture integration", "Mobile-optimized responsive layouts with dark/light themes"]'::jsonb,
+    '["Cloudflare Pages", "GitHub Pages", "Firebase Hosting", "Netlify", "React", "Tailwind CSS"]'::jsonb,
+    'Globe',
+    1,
+    true
+),
+(
+    'personal-portfolios',
+    'Personal Portfolios & Resumes',
+    'Individual & Creator',
+    'Tailored, elegant portfolio websites for developers, creators, freelancers, consultants, and job-seekers to stand out.',
+    'Showcase your projects, achievements, skills, and resume with an interactive portfolio tailored to your unique personal brand. Engineered for high performance, mobile elegance, and employer impact.',
+    '["Interactive project showcases with live preview modals", "Resume / CV download and verifiable skills matrix", "Social links, GitHub activity & testimonial callouts", "Contact form with spam filtering & direct email forwarding", "SEO optimization for your personal name & specialized niche", "Ultra-low cost or free hosting architecture setup"]'::jsonb,
+    '["React", "Tailwind CSS", "Vite", "Supabase", "Cloudflare Pages"]'::jsonb,
+    'Sparkles',
+    2,
+    true
+),
 (
     'business-websites',
     'Business Websites',
@@ -77,7 +125,7 @@ VALUES
     '["Websites for local businesses & shops", "Corporate websites with executive polish", "Business portfolios & brand showcases", "High-converting landing pages", "Local search discovery & SEO", "Self-serve content management (CMS)"]'::jsonb,
     '["React", "Next.js", "Tailwind CSS", "Headless CMS", "Modern SEO"]'::jsonb,
     'Building2',
-    1,
+    3,
     true
 ),
 (
@@ -89,7 +137,19 @@ VALUES
     '["Custom-designed web architectures", "Interactive web applications & portals", "Responsive multi-device platforms", "Custom functionality & API integrations", "Database modeling & role-based auth", "Edge deployment & serverless functions"]'::jsonb,
     '["TypeScript", "React", "Node.js", "Supabase", "PostgreSQL", "Cloudflare"]'::jsonb,
     'Code2',
-    2,
+    4,
+    true
+),
+(
+    'cloud-web-apps',
+    'Cost-Optimized Cloud & Web Apps',
+    'Cloud Architecture',
+    'Scalable web applications engineered on generous free tiers (Supabase, Firebase, Netlify) with safe, budget-friendly growth pathways.',
+    'Get full-stack backend capabilities—authentication, database, file storage, and real-time events—at near-zero initial infrastructure cost. We architect your application to run smoothly on free and low-end tiers, with effortless scalability when traffic surges.',
+    '["Database setup on Supabase (PostgreSQL) or Firebase Firestore", "Secure email/password and social login authentication", "File upload and asset storage configuration", "Row Level Security (RLS) data protection policies", "Automated backup configuration and failover planning", "Transparent scaling roadmap with zero unexpected bills"]'::jsonb,
+    '["Supabase", "Firebase", "PostgreSQL", "Netlify Edge", "TypeScript"]'::jsonb,
+    'Server',
+    5,
     true
 ),
 (
@@ -101,7 +161,7 @@ VALUES
     '["Website interface design (UI)", "User experience optimization (UX)", "Interactive wireframing & prototyping", "Responsive design systems & token libraries", "Accessibility auditing (WCAG AA)", "Fluid micro-interactions & motion design"]'::jsonb,
     '["Figma", "Design Tokens", "Framer Motion", "Tailwind CSS"]'::jsonb,
     'Palette',
-    3,
+    6,
     true
 ),
 (
@@ -113,31 +173,19 @@ VALUES
     '["Software showcase websites", "App landing pages with conversion funnels", "Game showcase & studio sites", "Interactive documentation portals", "Live in-browser feature previews", "Checkout & store integration"]'::jsonb,
     '["React", "Canvas 2D/3D", "Tailwind CSS", "MDX Docs", "Vite"]'::jsonb,
     'Sparkles',
-    4,
+    7,
     true
 ),
 (
     'digital-solutions',
-    'Digital Solutions',
+    'Digital Solutions & Automation',
     'Transformation',
     'Custom internal tools, dashboards, and automated workflows that streamline your operations.',
     'Empower your team with tailor-made digital tools. We build internal administrative portals, automated client onboarding pipelines, custom dashboards, and system integrations.',
     '["Business digital transformation roadmaps", "Third-party website & SaaS integrations", "Custom internal analytics dashboards", "Process automation & webhook orchestrations", "Client onboarding portals", "Real-time metrics & reporting pipelines"]'::jsonb,
     '["Supabase", "PostgreSQL", "REST/GraphQL", "Automation Webhooks", "TypeScript"]'::jsonb,
     'Cpu',
-    5,
-    true
-),
-(
-    'website-maintenance',
-    'Website Maintenance',
-    'Support & Security',
-    'Continuous updates, speed optimization, and security support to keep your site at peak performance.',
-    'A digital presence is a living asset. Our maintenance partnerships provide proactive security patching, dependency upgrades, speed tuning, and ongoing support so your team can focus on growth.',
-    '["Continuous updates and improvements", "Rapid bug fixes and troubleshooting", "Core Web Vitals & performance optimization", "Security patches, SSL & maintenance support", "Automated off-site database backups", "Direct developer emergency channel"]'::jsonb,
-    '["Edge CDN", "SSL/TLS Hardening", "Lighthouse CI", "Automated Backups"]'::jsonb,
-    'ShieldCheck',
-    6,
+    8,
     true
 )
 ON CONFLICT (slug) DO UPDATE SET
@@ -145,7 +193,8 @@ ON CONFLICT (slug) DO UPDATE SET
     summary = EXCLUDED.summary,
     description = EXCLUDED.description,
     deliverables = EXCLUDED.deliverables,
-    technologies = EXCLUDED.technologies;
+    technologies = EXCLUDED.technologies,
+    display_order = EXCLUDED.display_order;
 
 -- 3. Insert Portfolio Projects
 INSERT INTO public.projects (
@@ -265,44 +314,58 @@ INSERT INTO public.faqs (question, answer, category, display_order, is_active)
 VALUES
 (
     'What types of projects does Web Smith Labs take on?',
-    'We build high-performance business websites, custom full-stack web applications, design systems, product showcases, and scalable digital solutions for businesses, startups, and creators.',
+    'We build high-performance business websites, domain-less starter sites, personal portfolios & resumes, custom full-stack web applications, product showcases, and scalable cloud integrations for businesses, startups, and individuals.',
     'General',
     1,
     true
 ),
 (
-    'Is Web Smith Labs an independent studio?',
-    'Yes. Web Smith Labs operates as an independent web engineering and digital design lab. We maintain direct client engagements and technical ownership while collaborating with select technical partners on specialized initiatives.',
-    'Company',
+    'What is a domain-less starter website?',
+    'A domain-less website is hosted on high-speed global edge networks like Cloudflare Pages (.pages.dev), GitHub Pages (.github.io), or Firebase Hosting (.web.app). It provides complete website functionality, HTTPS security, and lightning-fast speeds with zero annual domain fees. You can seamlessly map your own custom .com or .in domain whenever you are ready.',
+    'Domain & Hosting',
     2,
     true
 ),
 (
-    'What is your typical project timeline?',
-    'Landing pages and business websites typically launch in 2 to 4 weeks. Custom web platforms and complex applications usually take 6 to 10 weeks.',
-    'Process',
+    'Can we build a full-stack web app on free cloud tiers?',
+    'Absolutely. Modern developer platforms like Supabase, Firebase, and Netlify provide generous free tiers with robust PostgreSQL databases, user authentication, and secure edge hosting. We specialize in designing efficient architectures that remain entirely free or ultra-low cost until your application reaches significant user scale.',
+    'Cloud & Scalability',
     3,
     true
 ),
 (
-    'Do you offer ongoing maintenance and support?',
-    'Yes. Every project includes a 30-day post-launch warranty, with optional ongoing maintenance for security, performance, updates, and cloud telemetry.',
-    'Services',
+    'Do you build personal portfolios and resume websites?',
+    'Yes! We craft bespoke, modern portfolio websites for developers, creators, freelancers, and professionals looking to showcase their projects, skills, and case studies with high visual polish and mobile responsiveness.',
+    'Portfolios',
     4,
+    true
+),
+(
+    'What is your typical project timeline?',
+    'Domain-less sites and landing pages typically launch in 1 to 2 weeks. Business websites and personal portfolios take 2 to 4 weeks. Custom web platforms and complex web applications usually take 6 to 10 weeks.',
+    'Process',
+    5,
+    true
+),
+(
+    'Do you offer ongoing maintenance and support?',
+    'Yes. Every project includes a 30-day post-launch warranty, with optional monthly care retainers for security patching, speed optimization, and feature enhancements.',
+    'Services',
+    6,
     true
 ),
 (
     'Can our team update content independently?',
     'Yes. We provide easy-to-use content management tools and an intuitive admin dashboard connected directly to Supabase so you can update copy, images, and projects in real time without writing code.',
     'Technology',
-    5,
+    7,
     true
 ),
 (
     'How do we get started?',
     'Submit a brief via our "Start a Project" form. We review your goals and respond within 24 to 48 hours to schedule an introductory discovery session.',
     'Process',
-    6,
+    8,
     true
 );
 
@@ -342,3 +405,65 @@ VALUES
     true,
     3
 );
+
+-- 6. Insert Subscription Plans
+INSERT INTO public.subscription_plans (
+    id, slug, name, badge, monthly_price_inr, annual_price_inr,
+    monthly_price_usd, annual_price_usd, description, features, sla,
+    support_channel, hours_included, is_popular
+) VALUES
+(
+    'sub_plan_starter',
+    'starter-care',
+    'Starter Care',
+    'Essential Maintenance',
+    4999,
+    49990,
+    0,
+    0,
+    'Proactive uptime monitoring, security patching, and essential updates for business websites and personal portfolios.',
+    '["24/7 uptime & health monitoring", "Monthly security patches & dependency updates", "Weekly automated off-site database backups", "Core Web Vitals & performance tuning", "Email support (48-hour response)", "1 hour/month of minor content updates"]'::jsonb,
+    '48 hours',
+    'Email & Ticket Support',
+    '1 hour/month included',
+    false
+),
+(
+    'sub_plan_pro',
+    'professional-care',
+    'Professional Care',
+    'Most Popular',
+    12999,
+    129990,
+    0,
+    0,
+    'Comprehensive maintenance, performance monitoring, continuous feature development, and priority support for growing web applications.',
+    '["Continuous 1-minute uptime monitoring", "Weekly security auditing & dependency upgrades", "Daily automated database backups & snapshots", "Continuous performance & Core Web Vitals optimization", "Priority WhatsApp & email support (12-hour response)", "5 hours/month of feature additions & content updates", "Monthly health & analytics report"]'::jsonb,
+    '12 hours',
+    'Priority WhatsApp & Email',
+    '5 hours/month included',
+    true
+),
+(
+    'sub_plan_enterprise',
+    'enterprise-partner',
+    'Enterprise Partner',
+    'Dedicated Engineering',
+    29999,
+    299990,
+    0,
+    0,
+    'Dedicated engineering retainer for high-traffic platforms, custom SaaS architectures, and mission-critical web applications.',
+    '["Real-time telemetry & anomaly detection", "Immediate security vulnerability patching", "Continuous database replication & disaster recovery", "Dedicated Slack/Discord private channel", "Emergency developer phone hotline (2-hour response)", "15 hours/month of custom engineering & optimizations", "Quarterly architectural review & technology roadmapping"]'::jsonb,
+    '2 hours emergency',
+    'Dedicated Slack & Phone',
+    '15 hours/month included',
+    false
+)
+ON CONFLICT (id) DO UPDATE SET
+    name = EXCLUDED.name,
+    badge = EXCLUDED.badge,
+    monthly_price_inr = EXCLUDED.monthly_price_inr,
+    annual_price_inr = EXCLUDED.annual_price_inr,
+    description = EXCLUDED.description,
+    features = EXCLUDED.features;

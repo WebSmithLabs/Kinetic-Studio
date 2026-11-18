@@ -7,9 +7,12 @@ import {
   CheckCircle2,
   AlertCircle,
   Clock,
-  DollarSign,
+  IndianRupee,
   Briefcase,
   Layers,
+  Globe,
+  Server,
+  Zap,
   ArrowRight,
   ShieldCheck,
   Lock,
@@ -39,10 +42,16 @@ export const StartProjectPage: React.FC = () => {
   const [email, setEmail] = useState('');
   const [phone, setPhone] = useState('');
   const [companyName, setCompanyName] = useState('');
-  const [projectType, setProjectType] = useState<ProjectType>('Business Website');
+  const [projectType, setProjectType] = useState<ProjectType>('Personal Portfolio & Resume');
   const [description, setDescription] = useState('');
-  const [budgetRange, setBudgetRange] = useState('$5,000 - $10,000');
-  const [timeframe, setTimeframe] = useState('2-4 weeks');
+  const [domainPreference, setDomainPreference] = useState(
+    'Free Subdomain (Cloudflare / GitHub / Firebase — Zero Domain Cost)'
+  );
+  const [cloudPreference, setCloudPreference] = useState(
+    'Free-Tier Cloud (Supabase / Firebase Free — ₹0 monthly bills, upgrade later)'
+  );
+  const [budgetRange, setBudgetRange] = useState('₹5,000 - ₹15,000 (Domain-less / Portfolio)');
+  const [timeframe, setTimeframe] = useState('1-2 weeks');
   const [referenceWebsites, setReferenceWebsites] = useState('');
 
   // Status State
@@ -57,10 +66,25 @@ export const StartProjectPage: React.FC = () => {
     if (projectTypeParam) {
       setProjectType(projectTypeParam as ProjectType);
     } else if (serviceParam) {
-      if (serviceParam.includes('Business')) setProjectType('Business Website');
-      else if (serviceParam.includes('Custom')) setProjectType('Web Application');
-      else if (serviceParam.includes('Product')) setProjectType('Product Showcase Website');
-      else if (serviceParam.includes('Digital')) setProjectType('Custom Digital Solution');
+      if (serviceParam.includes('Domain') || serviceParam.includes('Zero-Cost')) {
+        setProjectType('Zero-Domain Starter Website');
+        setDomainPreference('Free Subdomain (Cloudflare / GitHub / Firebase — Zero Domain Cost)');
+        setBudgetRange('₹5,000 - ₹15,000 (Domain-less / Portfolio)');
+      } else if (serviceParam.includes('Portfolio') || serviceParam.includes('Resume')) {
+        setProjectType('Personal Portfolio & Resume');
+        setBudgetRange('Under ₹5,000 (Student / Starter Portfolio)');
+      } else if (serviceParam.includes('Cost-Optimized') || serviceParam.includes('Cloud')) {
+        setProjectType('Low-Cost Cloud Solution');
+        setCloudPreference('Free-Tier Cloud (Supabase / Firebase Free — ₹0 monthly bills, upgrade later)');
+      } else if (serviceParam.includes('Business')) {
+        setProjectType('Business Website');
+      } else if (serviceParam.includes('Custom')) {
+        setProjectType('Web Application');
+      } else if (serviceParam.includes('Product')) {
+        setProjectType('Product Showcase Website');
+      } else if (serviceParam.includes('Digital')) {
+        setProjectType('Custom Digital Solution');
+      }
     }
   }, [searchParams]);
 
@@ -77,26 +101,41 @@ export const StartProjectPage: React.FC = () => {
   }, [currentUser, fullName, email]);
 
   const projectTypes: ProjectType[] = [
+    'Personal Portfolio & Resume',
+    'Zero-Domain Starter Website',
+    'Low-Cost Cloud Solution',
     'Business Website',
     'Portfolio Website',
     'E-commerce Website',
     'Web Application',
     'Product Showcase Website',
-    'Documentation Website',
     'Custom Digital Solution',
     'Other',
   ];
 
+  const domainPreferenceOptions = [
+    'Free Subdomain (Cloudflare / GitHub / Firebase — Zero Domain Cost)',
+    'Custom Domain (.com / .in / .org — I already have or will purchase)',
+    'Not sure / Recommend during consultation',
+  ];
+
+  const cloudPreferenceOptions = [
+    'Free-Tier Cloud (Supabase / Firebase Free — ₹0 monthly bills, upgrade later)',
+    'Dedicated Cloud / Self-Hosted',
+    'Static Site Only (No database needed)',
+  ];
+
   const budgetOptions = [
-    'Under $2,500',
-    '$2,500 - $5,000',
-    '$5,000 - $10,000',
-    '$10,000 - $25,000',
-    '$25,000+',
+    'Under ₹5,000 (Student / Starter Portfolio)',
+    '₹5,000 - ₹15,000 (Domain-less / Portfolio)',
+    '₹15,000 - ₹30,000 (Starter Business / Micro-App)',
+    '₹30,000 - ₹60,000 (Custom Web Platform)',
+    '₹60,000 - ₹1,50,000+',
+    'Custom Scope / Valuation',
   ];
 
   const timeframeOptions = [
-    'Immediately (Urgent)',
+    'Immediately (Urgent: 3-5 days)',
     '1-2 weeks',
     '2-4 weeks',
     '1-2 months',
@@ -126,16 +165,20 @@ export const StartProjectPage: React.FC = () => {
     setIsSubmitting(true);
 
     try {
+      const detailedDescription = `${description.trim()}\n\n[Architecture & Hosting Preferences]\n• Domain & Hosting: ${domainPreference}\n• Cloud Backend Tier: ${cloudPreference}`;
+
       const result = await submitInquiry({
         full_name: fullName.trim(),
         email: email.trim(),
         phone: phone.trim() || undefined,
         company_name: companyName.trim() || undefined,
         project_type: projectType,
-        description: description.trim(),
+        description: detailedDescription,
         budget_range: budgetRange,
         timeframe: timeframe,
         reference_websites: referenceWebsites.trim() || undefined,
+        domain_preference: domainPreference,
+        cloud_preference: cloudPreference,
       });
 
       if (result.success) {
@@ -379,7 +422,7 @@ export const StartProjectPage: React.FC = () => {
                     <input
                       type="text"
                       required
-                      placeholder="e.g. Alex Rivera"
+                      placeholder="e.g. Ramesh Kumar"
                       value={fullName}
                       onChange={e => setFullName(e.target.value)}
                       className="w-full px-4 py-3 rounded-xl border border-[#252A36] dark:border-[#252A36] light:border-slate-300 bg-[#0B0D12] dark:bg-[#0B0D12] light:bg-slate-50 text-sm text-white dark:text-white light:text-slate-900 placeholder:text-zinc-500 focus:outline-none focus:border-indigo-500"
@@ -393,7 +436,7 @@ export const StartProjectPage: React.FC = () => {
                     <input
                       type="email"
                       required
-                      placeholder="alex@company.com"
+                      placeholder="example@gmail.com"
                       value={email}
                       onChange={e => setEmail(e.target.value)}
                       className="w-full px-4 py-3 rounded-xl border border-[#252A36] dark:border-[#252A36] light:border-slate-300 bg-[#0B0D12] dark:bg-[#0B0D12] light:bg-slate-50 text-sm text-white dark:text-white light:text-slate-900 placeholder:text-zinc-500 focus:outline-none focus:border-indigo-500"
@@ -402,11 +445,11 @@ export const StartProjectPage: React.FC = () => {
 
                   <div>
                     <label className="block text-xs font-medium text-zinc-300 dark:text-zinc-300 light:text-slate-700 mb-1.5">
-                      Phone Number (Optional)
+                      Phone / WhatsApp Number (Optional)
                     </label>
                     <input
                       type="tel"
-                      placeholder="+1 (555) 000-0000"
+                      placeholder="+91 98765 43210"
                       value={phone}
                       onChange={e => setPhone(e.target.value)}
                       className="w-full px-4 py-3 rounded-xl border border-[#252A36] dark:border-[#252A36] light:border-slate-300 bg-[#0B0D12] dark:bg-[#0B0D12] light:bg-slate-50 text-sm text-white dark:text-white light:text-slate-900 placeholder:text-zinc-500 focus:outline-none focus:border-indigo-500"
@@ -419,7 +462,7 @@ export const StartProjectPage: React.FC = () => {
                     </label>
                     <input
                       type="text"
-                      placeholder="Acme Technologies"
+                      placeholder="Company or Personal Brand (optional)"
                       value={companyName}
                       onChange={e => setCompanyName(e.target.value)}
                       className="w-full px-4 py-3 rounded-xl border border-[#252A36] dark:border-[#252A36] light:border-slate-300 bg-[#0B0D12] dark:bg-[#0B0D12] light:bg-slate-50 text-sm text-white dark:text-white light:text-slate-900 placeholder:text-zinc-500 focus:outline-none focus:border-indigo-500"
@@ -490,21 +533,101 @@ export const StartProjectPage: React.FC = () => {
                 </div>
               </div>
 
-              {/* Step 4: Budget & Timeframe */}
+              {/* Step 4: Hosting, Domain & Cloud Preferences */}
+              <div className="space-y-6 pt-4 border-t border-[#252A36] dark:border-[#252A36] light:border-slate-200">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                  <div className="flex items-center gap-2 text-xs font-mono font-semibold uppercase tracking-wider text-indigo-400">
+                    <span className="w-5 h-5 rounded-full bg-indigo-500/20 text-indigo-300 flex items-center justify-center text-[11px]">
+                      4
+                    </span>
+                    <span>Domain &amp; Cloud Architecture Preferences</span>
+                  </div>
+                  <span className="text-[11px] font-mono text-emerald-400 flex items-center gap-1 bg-emerald-500/10 px-2.5 py-0.5 rounded-full border border-emerald-500/20 self-start sm:self-auto">
+                    <Sparkles className="w-3 h-3" />
+                    <span>Free Hosting &amp; Zero Monthly Cloud Bills Supported</span>
+                  </span>
+                </div>
+
+                {/* Domain & CDN Preference */}
+                <div className="space-y-2">
+                  <label className="block text-xs font-medium text-zinc-300 dark:text-zinc-300 light:text-slate-700">
+                    Domain Setup Preference:
+                  </label>
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
+                    {domainPreferenceOptions.map(opt => (
+                      <button
+                        type="button"
+                        key={opt}
+                        onClick={() => setDomainPreference(opt)}
+                        className={`p-3 rounded-xl border text-xs text-left transition-all cursor-pointer ${
+                          domainPreference === opt
+                            ? 'border-cyan-500 bg-cyan-500/15 text-cyan-300 dark:text-cyan-300 light:text-cyan-700 font-semibold shadow-md'
+                            : 'border-[#252A36] dark:border-[#252A36] light:border-slate-200 bg-[#0B0D12] dark:bg-[#0B0D12] light:bg-slate-50 text-zinc-400 dark:text-zinc-400 light:text-slate-600 hover:text-white dark:hover:text-white light:hover:text-slate-900'
+                        }`}
+                      >
+                        <div className="flex items-start gap-2">
+                          <Globe className="w-4 h-4 shrink-0 text-cyan-400 mt-0.5" />
+                          <span className="leading-snug">{opt}</span>
+                        </div>
+                      </button>
+                    ))}
+                  </div>
+                  <p className="text-[11px] text-zinc-500">
+                    ⚡ Free platform subdomains (Cloudflare Pages .pages.dev, GitHub Pages .github.io, Firebase Hosting .web.app) require ₹0 domain purchases, include worldwide SSL, and can be upgraded to your own custom domain (.com, .in) at any time.
+                  </p>
+                </div>
+
+                {/* Cloud Backend & Database Preference */}
+                <div className="space-y-2">
+                  <label className="block text-xs font-medium text-zinc-300 dark:text-zinc-300 light:text-slate-700">
+                    Database &amp; Cloud Tier Preference:
+                  </label>
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
+                    {cloudPreferenceOptions.map(opt => (
+                      <button
+                        type="button"
+                        key={opt}
+                        onClick={() => setCloudPreference(opt)}
+                        className={`p-3 rounded-xl border text-xs text-left transition-all cursor-pointer ${
+                          cloudPreference === opt
+                            ? 'border-indigo-500 bg-indigo-500/15 text-indigo-300 dark:text-indigo-300 light:text-indigo-700 font-semibold shadow-md'
+                            : 'border-[#252A36] dark:border-[#252A36] light:border-slate-200 bg-[#0B0D12] dark:bg-[#0B0D12] light:bg-slate-50 text-zinc-400 dark:text-zinc-400 light:text-slate-600 hover:text-white dark:hover:text-white light:hover:text-slate-900'
+                        }`}
+                      >
+                        <div className="flex items-start gap-2">
+                          <Server className="w-4 h-4 shrink-0 text-indigo-400 mt-0.5" />
+                          <span className="leading-snug">{opt}</span>
+                        </div>
+                      </button>
+                    ))}
+                  </div>
+                  <p className="text-[11px] text-zinc-500">
+                    🔒 Generous free tiers from Supabase &amp; Firebase offer full production security, Row-Level Security auth, and zero ongoing monthly fees for personal projects, portfolios, and small websites.
+                  </p>
+                </div>
+              </div>
+
+              {/* Step 5: Budget & Timeframe */}
               <div className="space-y-6 pt-4 border-t border-[#252A36] dark:border-[#252A36] light:border-slate-200">
                 <div className="flex items-center gap-2 text-xs font-mono font-semibold uppercase tracking-wider text-indigo-400">
                   <span className="w-5 h-5 rounded-full bg-indigo-500/20 text-indigo-300 flex items-center justify-center text-[11px]">
-                    4
+                    5
                   </span>
                   <span>Budget &amp; Target Timeframe</span>
                 </div>
 
                 {/* Budget selection */}
                 <div>
-                  <label className="block text-xs font-medium text-zinc-300 dark:text-zinc-300 light:text-slate-700 mb-2">
-                    Expected Investment Range
-                  </label>
-                  <div className="grid grid-cols-2 sm:grid-cols-5 gap-2">
+                  <div className="flex items-center justify-between mb-2">
+                    <label className="block text-xs font-medium text-zinc-300 dark:text-zinc-300 light:text-slate-700">
+                      Expected Investment Range (INR ₹)
+                    </label>
+                    <span className="text-[11px] text-emerald-400 font-mono flex items-center gap-1">
+                      <IndianRupee className="w-3 h-3" />
+                      <span>Custom pricing quoted after scope review</span>
+                    </span>
+                  </div>
+                  <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
                     {budgetOptions.map(opt => (
                       <button
                         type="button"
@@ -520,6 +643,9 @@ export const StartProjectPage: React.FC = () => {
                       </button>
                     ))}
                   </div>
+                  <p className="text-[11px] text-zinc-400 mt-2 leading-relaxed">
+                    🇮🇳 Web Smith Labs provides custom development services exclusively in India. Every client project receives an individual scope evaluation, and your exact project cost and milestone schedule will be set directly by our engineering lead after discussing your needs.
+                  </p>
                 </div>
 
                 {/* Timeframe selection */}

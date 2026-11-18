@@ -16,7 +16,7 @@ export const SEO: React.FC<SEOProps> = ({
   description,
   canonical,
   type = 'website',
-  image = 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&w=1200&q=80',
+  image = 'https://websmithlabs.pages.dev/Logo.png',
 }) => {
   const { settings } = useStudio();
 
@@ -44,11 +44,14 @@ export const SEO: React.FC<SEOProps> = ({
     setMetaTag('meta[property="og:description"]', 'content', finalDesc);
     setMetaTag('meta[property="og:type"]', 'content', type);
     setMetaTag('meta[property="og:image"]', 'content', image);
+    setMetaTag('meta[property="og:image:secure_url"]', 'content', image);
+    setMetaTag('meta[property="og:image:alt"]', 'content', `${settings.company_name} Official Logo`);
     setMetaTag('meta[property="og:url"]', 'content', canonical || `${BASE_URL}${window.location.pathname}`);
     setMetaTag('meta[name="robots"]', 'content', 'index, follow');
     setMetaTag('meta[property="twitter:title"]', 'content', finalTitle);
     setMetaTag('meta[property="twitter:description"]', 'content', finalDesc);
     setMetaTag('meta[property="twitter:image"]', 'content', image);
+    setMetaTag('meta[property="twitter:image:alt"]', 'content', `${settings.company_name} Official Logo`);
 
     if (canonical) {
       let link = document.querySelector('link[rel="canonical"]');

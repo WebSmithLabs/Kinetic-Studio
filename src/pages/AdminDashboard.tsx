@@ -25,7 +25,7 @@ import {
   Download,
   ShoppingBag,
   ExternalLink,
-  DollarSign,
+  IndianRupee,
 } from 'lucide-react';
 import { useStudio } from '../context/StudioContext';
 import { SEO } from '../components/common/SEO';
@@ -45,6 +45,148 @@ import {
   ClientSubscription,
 } from '../types';
 import { formatCurrency } from '../lib/payments';
+
+const InquiryQuoteCard: React.FC<{
+  inquiry: InquiryItem;
+  onUpdate: (id: string, updates: Partial<InquiryItem>) => Promise<boolean>;
+}> = ({ inquiry, onUpdate }) => {
+  const [totalAmount, setTotalAmount] = useState<string>(
+    inquiry.total_amount ? inquiry.total_amount.toString() : ''
+  );
+  const [advanceAmount, setAdvanceAmount] = useState<string>(
+    inquiry.advance_amount ? inquiry.advance_amount.toString() : ''
+  );
+  const [quoteNotes, setQuoteNotes] = useState<string>(inquiry.quote_notes || '');
+  const [isSaving, setIsSaving] = useState(false);
+  const [savedSuccess, setSavedSuccess] = useState(false);
+
+  const handleSaveQuote = async (statusOverride?: InquiryStatus) => {
+    setIsSaving(true);
+    setSavedSuccess(false);
+    const total = parseFloat(totalAmount) || 0;
+    const advance = parseFloat(advanceAmount) || 0;
+
+    const updates: Partial<InquiryItem> = {
+      total_amount: total,
+      advance_amount: advance,
+      quote_notes: quoteNotes.trim(),
+    };
+    if (statusOverride) {
+      updates.status = statusOverride;
+    } else if (inquiry.status === 'new' || inquiry.status === 'reviewed') {
+      updates.status = 'accepted';
+    }
+
+    const ok = await onUpdate(inquiry.id, updates);
+    setIsSaving(false);
+    if (ok) {
+      setSavedSuccess(true);
+      setTimeout(() => setSavedSuccess(false), 3500);
+    }
+  };
+
+  return (
+    <div className="mt-4 p-4 rounded-xl border border-indigo-500/30 bg-indigo-500/[0.04] dark:bg-indigo-500/[0.04] light:bg-indigo-50/70 space-y-3">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-2 border-b border-indigo-500/20">
+        <div className="flex items-center gap-2">
+          <IndianRupee className="w-4 h-4 text-indigo-400" />
+          <span className="text-xs font-bold font-mono uppercase tracking-wider text-white dark:text-white light:text-slate-900">
+            Custom Pricing &amp; Milestone Valuation (Admin Configured)
+          </span>
+        </div>
+        <div className="flex items-center gap-2 text-[11px] font-mono">
+          {inquiry.paid_amount && inquiry.paid_amount > 0 ? (
+            <span className="px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">
+              Paid by Client: ₹{inquiry.paid_amount.toLocaleString('en-IN')}
+            </span>
+          ) : inquiry.total_amount ? (
+            <span className="px-2 py-0.5 rounded-full bg-indigo-500/20 text-indigo-300 border border-indigo-500/30">
+              Quoted: ₹{inquiry.total_amount.toLocaleString('en-IN')}
+            </span>
+          ) : (
+            <span className="px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-300 border border-amber-500/30">
+              Awaiting Engineering Assessment
+            </span>
+          )}
+        </div>
+      </div>
+
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+        <div>
+          <label className="block text-[11px] font-medium text-zinc-300 dark:text-zinc-300 light:text-slate-700 mb-1">
+            Total Agreed Project Fee (INR ₹)
+          </label>
+          <div className="relative">
+            <span className="absolute left-3 top-1/2 -translate-y-1/2 text-xs text-zinc-400 font-mono">₹</span>
+            <input
+              type="number"
+              placeholder="e.g. 50000"
+              value={totalAmount}
+              onChange={e => setTotalAmount(e.target.value)}
+              className="w-full pl-7 pr-3 py-2 rounded-xl border border-[#252A36] dark:border-[#252A36] light:border-slate-300 bg-[#0B0D12] dark:bg-[#0B0D12] light:bg-white text-xs text-white dark:text-white light:text-slate-900 font-mono focus:outline-none focus:border-indigo-500"
+            />
+          </div>
+          <p className="text-[10px] text-zinc-500 mt-0.5">Final negotiated project value</p>
+        </div>
+
+        <div>
+          <label className="block text-[11px] font-medium text-zinc-300 dark:text-zinc-300 light:text-slate-700 mb-1">
+            Advance Kickoff Deposit (INR ₹)
+          </label>
+          <div className="relative">
+            <span className="absolute left-3 top-1/2 -translate-y-1/2 text-xs text-zinc-400 font-mono">₹</span>
+            <input
+              type="number"
+              placeholder="e.g. 20000"
+              value={advanceAmount}
+              onChange={e => setAdvanceAmount(e.target.value)}
+              className="w-full pl-7 pr-3 py-2 rounded-xl border border-[#252A36] dark:border-[#252A36] light:border-slate-300 bg-[#0B0D12] dark:bg-[#0B0D12] light:bg-white text-xs text-white dark:text-white light:text-slate-900 font-mono focus:outline-none focus:border-indigo-500"
+            />
+          </div>
+          <p className="text-[10px] text-zinc-500 mt-0.5">Required deposit for client to initiate engineering work</p>
+        </div>
+      </div>
+
+      <div>
+        <label className="block text-[11px] font-medium text-zinc-300 dark:text-zinc-300 light:text-slate-700 mb-1">
+          Scope Breakdown &amp; Deliverables Notes (Visible to Client in Portal)
+        </label>
+        <textarea
+          rows={2}
+          placeholder="e.g. Scope includes: 5-page custom responsive design, Supabase Auth integration, Razorpay INR payment flow, and 2 rounds of design revisions..."
+          value={quoteNotes}
+          onChange={e => setQuoteNotes(e.target.value)}
+          className="w-full px-3 py-2 rounded-xl border border-[#252A36] dark:border-[#252A36] light:border-slate-300 bg-[#0B0D12] dark:bg-[#0B0D12] light:bg-white text-xs text-white dark:text-white light:text-slate-900 placeholder:text-zinc-500 focus:outline-none focus:border-indigo-500"
+        />
+      </div>
+
+      <div className="flex flex-wrap items-center justify-between gap-3 pt-1">
+        {savedSuccess ? (
+          <div className="flex items-center gap-1.5 text-xs text-emerald-400 font-mono">
+            <CheckCircle className="w-3.5 h-3.5" />
+            <span>Custom quote saved &amp; client portal updated!</span>
+          </div>
+        ) : (
+          <div className="text-[11px] text-zinc-500 font-mono">
+            Saving updates this client's portal with payment triggers for their agreed quote.
+          </div>
+        )}
+
+        <div className="flex items-center gap-2">
+          <button
+            type="button"
+            disabled={isSaving}
+            onClick={() => handleSaveQuote()}
+            className="px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-semibold text-xs transition-all shadow-md shadow-indigo-500/20 disabled:opacity-50 cursor-pointer flex items-center gap-1.5"
+          >
+            <Save className="w-3.5 h-3.5" />
+            <span>{isSaving ? 'Updating...' : 'Set Custom Quote & Approve'}</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+};
 
 export const AdminDashboard: React.FC = () => {
   const navigate = useNavigate();
@@ -70,6 +212,7 @@ export const AdminDashboard: React.FC = () => {
     updateProject,
     deleteProject,
     inquiries,
+    updateInquiry,
     updateInquiryStatus,
     deleteInquiry,
     services,
@@ -82,9 +225,36 @@ export const AdminDashboard: React.FC = () => {
     updateTestimonial,
     deleteTestimonial,
     payments,
+    recordPayment,
     clientSubscriptions,
     cancelSubscription,
   } = useStudio();
+
+  // Payment Gateway Secrets visibility toggles
+  const [showSecretRazorpay, setShowSecretRazorpay] = useState(false);
+  const [showWebhookRazorpay, setShowWebhookRazorpay] = useState(false);
+  const [showSecretCashfree, setShowSecretCashfree] = useState(false);
+  const [showWebhookCashfree, setShowWebhookCashfree] = useState(false);
+
+  // Manual payment recording modal
+  const [isManualPaymentOpen, setIsManualPaymentOpen] = useState(false);
+  const [manualPaymentForm, setManualPaymentForm] = useState({
+    inquiry_id: '',
+    client_name: '',
+    client_email: '',
+    amount: '',
+    method: 'upi_direct' as 'upi_direct' | 'neft_imps' | 'cash' | 'other',
+    reference_id: '',
+    notes: '',
+  });
+  const [manualPaymentSuccess, setManualPaymentSuccess] = useState<string | null>(null);
+
+  // Gateway test validator message
+  const [gatewayValidationMessage, setGatewayValidationMessage] = useState<{
+    gateway: 'razorpay' | 'cashfree';
+    valid: boolean;
+    text: string;
+  } | null>(null);
 
   // Supabase dynamic setup state
   const [supabaseUrlInput, setSupabaseUrlInput] = useState(configuredUrl || '');
@@ -182,6 +352,104 @@ export const AdminDashboard: React.FC = () => {
       setSaveSuccess(true);
       setTimeout(() => setSaveSuccess(false), 3000);
     }
+  };
+
+  // Handle Manual / Offline Payment Submit
+  const handleManualPaymentSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!manualPaymentForm.client_name || !manualPaymentForm.client_email || !manualPaymentForm.amount) {
+      return;
+    }
+    const amt = parseFloat(manualPaymentForm.amount);
+    if (isNaN(amt) || amt <= 0) return;
+
+    const refId = manualPaymentForm.reference_id.trim() || `MAN-${Date.now().toString().slice(-6)}`;
+    const invoiceNum = `INV-WSL-${new Date().getFullYear()}-${Math.floor(1000 + Math.random() * 9000)}`;
+
+    const newRecord: PaymentRecord = {
+      id: `pay_manual_${Date.now()}`,
+      client_email: manualPaymentForm.client_email.trim().toLowerCase(),
+      client_name: manualPaymentForm.client_name.trim(),
+      inquiry_id: manualPaymentForm.inquiry_id || undefined,
+      amount: amt,
+      currency: 'INR',
+      gateway: 'manual',
+      payment_id: `offline_${refId}`,
+      order_id: `ord_offline_${Date.now()}`,
+      payment_type: manualPaymentForm.inquiry_id ? 'advance_deposit' : 'full_payment',
+      title: manualPaymentForm.inquiry_id ? 'Project Milestone Payment (Manual / Offline)' : 'Custom Engineering Payment',
+      status: 'success',
+      invoice_number: invoiceNum,
+      notes: `${manualPaymentForm.method.toUpperCase()} Ref: ${refId}. ${manualPaymentForm.notes}`,
+      created_at: new Date().toISOString(),
+    };
+
+    await recordPayment(newRecord);
+    setManualPaymentSuccess(`Payment of ₹${amt.toLocaleString('en-IN')} recorded successfully with Invoice #${invoiceNum}`);
+    setTimeout(() => {
+      setManualPaymentSuccess(null);
+      setIsManualPaymentOpen(false);
+      setManualPaymentForm({
+        inquiry_id: '',
+        client_name: '',
+        client_email: '',
+        amount: '',
+        method: 'upi_direct',
+        reference_id: '',
+        notes: '',
+      });
+    }, 1800);
+  };
+
+  const handleValidateRazorpay = () => {
+    const keyId = formSettings.razorpay_key_id?.trim() || '';
+    if (!keyId) {
+      setGatewayValidationMessage({
+        gateway: 'razorpay',
+        valid: false,
+        text: 'Please enter a Razorpay Key ID (e.g. rzp_test_... or rzp_live_...) first.',
+      });
+      return;
+    }
+    if (keyId.startsWith('rzp_live_')) {
+      setGatewayValidationMessage({
+        gateway: 'razorpay',
+        valid: true,
+        text: 'Valid Razorpay PRODUCTION Live Key ID format detected. Live payments enabled.',
+      });
+    } else if (keyId.startsWith('rzp_test_')) {
+      setGatewayValidationMessage({
+        gateway: 'razorpay',
+        valid: true,
+        text: 'Valid Razorpay SANDBOX Test Key ID format detected. Test mode active.',
+      });
+    } else {
+      setGatewayValidationMessage({
+        gateway: 'razorpay',
+        valid: false,
+        text: 'Unrecognized Key ID format. Standard Razorpay keys start with rzp_test_ or rzp_live_.',
+      });
+    }
+  };
+
+  const handleValidateCashfree = () => {
+    const appId = formSettings.cashfree_app_id?.trim() || '';
+    if (!appId) {
+      setGatewayValidationMessage({
+        gateway: 'cashfree',
+        valid: false,
+        text: 'Please enter a Cashfree App ID (Client ID) first.',
+      });
+      return;
+    }
+    const isSandbox = appId.toLowerCase().includes('sandbox') || appId.toLowerCase().includes('test') || formSettings.cashfree_mode === 'sandbox';
+    setGatewayValidationMessage({
+      gateway: 'cashfree',
+      valid: true,
+      text: isSandbox
+        ? 'Cashfree SANDBOX credentials configured. Ready for test checkout sessions.'
+        : 'Cashfree PRODUCTION credentials configured. Real-time settlements active.',
+    });
   };
 
   // Handle Project Form Submit
@@ -497,7 +765,7 @@ export const AdminDashboard: React.FC = () => {
                       payments.reduce((acc, p) => acc + (p.status === 'success' ? p.amount : 0), 0)
                     )}
                   </div>
-                  <div className="text-[10px] text-zinc-400">Razorpay &amp; Cashfree &rarr; View Invoices</div>
+                  <div className="text-[10px] text-zinc-400">Settled Client Invoices &rarr; View Invoices</div>
                 </div>
 
                 <div
@@ -520,7 +788,7 @@ export const AdminDashboard: React.FC = () => {
                 >
                   <div className="text-xs font-mono uppercase text-purple-400 flex items-center justify-between">
                     <span>Monthly Retainer MRR</span>
-                    <DollarSign className="w-4 h-4" />
+                    <IndianRupee className="w-4 h-4" />
                   </div>
                   <div className="text-2xl font-extrabold text-white">
                     {formatCurrency(
@@ -910,6 +1178,24 @@ export const AdminDashboard: React.FC = () => {
                         </div>
                       </div>
 
+                      {/* Domain & Cloud Infrastructure Preferences if present */}
+                      {(inq.domain_preference || inq.cloud_preference) && (
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs font-mono">
+                          {inq.domain_preference && (
+                            <div className="p-3 rounded-xl bg-cyan-500/[0.04] border border-cyan-500/20">
+                              <span className="text-cyan-400 block font-semibold mb-0.5">🌐 Domain / CDN Preference:</span>
+                              <span className="text-zinc-200 dark:text-zinc-200 light:text-slate-800">{inq.domain_preference}</span>
+                            </div>
+                          )}
+                          {inq.cloud_preference && (
+                            <div className="p-3 rounded-xl bg-indigo-500/[0.04] border border-indigo-500/20">
+                              <span className="text-indigo-400 block font-semibold mb-0.5">⚡ Cloud / Database Preference:</span>
+                              <span className="text-zinc-200 dark:text-zinc-200 light:text-slate-800">{inq.cloud_preference}</span>
+                            </div>
+                          )}
+                        </div>
+                      )}
+
                       {/* Description */}
                       <div className="p-4 rounded-xl bg-[#0B0D12] dark:bg-[#0B0D12] light:bg-slate-50 border border-white/5 dark:border-white/5 light:border-slate-200 text-xs text-zinc-300 dark:text-zinc-300 light:text-slate-700 leading-relaxed">
                         <span className="text-zinc-500 light:text-slate-400 font-mono block mb-1">Project Scope:</span>
@@ -920,6 +1206,9 @@ export const AdminDashboard: React.FC = () => {
                           </div>
                         )}
                       </div>
+
+                      {/* Scope Valuation & Custom Quote Card */}
+                      <InquiryQuoteCard inquiry={inq} onUpdate={updateInquiry} />
 
                       {/* Admin Internal Notes */}
                       <div className="flex items-center gap-3">
@@ -996,16 +1285,26 @@ export const AdminDashboard: React.FC = () => {
                       <span>Transactions &amp; Tax Invoices</span>
                     </h3>
                     <p className="text-xs text-zinc-400 dark:text-zinc-400 light:text-slate-500 mt-0.5">
-                      Real-time payment logs captured from Razorpay and Cashfree checkout sessions.
+                      Real-time payment logs captured from Razorpay, Cashfree, and verified offline settlements.
                     </p>
                   </div>
-                  <button
-                    onClick={() => window.print()}
-                    className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-semibold border border-[#252A36] dark:border-[#252A36] light:border-slate-300 bg-[#0B0D12] dark:bg-[#0B0D12] light:bg-slate-50 text-zinc-300 dark:text-zinc-300 light:text-slate-700 hover:text-white dark:hover:text-white light:hover:text-slate-900 cursor-pointer transition-colors shadow-sm"
-                  >
-                    <Download className="w-3.5 h-3.5" />
-                    <span>Export / Print Invoices</span>
-                  </button>
+                  <div className="flex items-center gap-2">
+                    <button
+                      type="button"
+                      onClick={() => setIsManualPaymentOpen(true)}
+                      className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-semibold bg-emerald-600 hover:bg-emerald-500 text-white cursor-pointer transition-colors shadow-md shadow-emerald-500/20"
+                    >
+                      <Plus className="w-3.5 h-3.5" />
+                      <span>Record Offline / Manual Payment</span>
+                    </button>
+                    <button
+                      onClick={() => window.print()}
+                      className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-semibold border border-[#252A36] dark:border-[#252A36] light:border-slate-300 bg-[#0B0D12] dark:bg-[#0B0D12] light:bg-slate-50 text-zinc-300 dark:text-zinc-300 light:text-slate-700 hover:text-white dark:hover:text-white light:hover:text-slate-900 cursor-pointer transition-colors shadow-sm"
+                    >
+                      <Download className="w-3.5 h-3.5" />
+                      <span>Export / Print</span>
+                    </button>
+                  </div>
                 </div>
 
                 <div className="overflow-x-auto">
@@ -1036,8 +1335,14 @@ export const AdminDashboard: React.FC = () => {
                             <span className="text-[10px] text-zinc-500 dark:text-zinc-500 light:text-slate-400 font-mono">{pay.payment_id}</span>
                           </td>
                           <td className="p-4">
-                            <span className="px-2 py-0.5 rounded text-[10px] font-mono font-semibold uppercase bg-indigo-500/10 dark:bg-indigo-500/10 light:bg-indigo-50 text-indigo-400 light:text-indigo-700 border border-indigo-500/20 light:border-indigo-200">
-                              {pay.gateway}
+                            <span className={`px-2 py-0.5 rounded text-[10px] font-mono font-semibold uppercase border ${
+                              pay.gateway === 'manual'
+                                ? 'bg-amber-500/10 text-amber-300 border-amber-500/30'
+                                : pay.gateway === 'cashfree'
+                                ? 'bg-purple-500/10 text-purple-400 border-purple-500/30'
+                                : 'bg-indigo-500/10 text-indigo-400 border-indigo-500/30'
+                            }`}>
+                              {pay.gateway === 'manual' ? 'MANUAL / OFFLINE' : pay.gateway}
                             </span>
                           </td>
                           <td className="p-4 font-bold text-white dark:text-white light:text-slate-900">
@@ -1057,6 +1362,183 @@ export const AdminDashboard: React.FC = () => {
                   </table>
                 </div>
               </div>
+
+              {/* Manual / Offline Payment Modal */}
+              {isManualPaymentOpen && (
+                <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto">
+                  <div className="bg-[#121620] dark:bg-[#121620] light:bg-white border border-[#252A36] dark:border-[#252A36] light:border-slate-200 rounded-2xl w-full max-w-lg p-6 space-y-5 shadow-2xl animate-scaleUp">
+                    <div className="flex items-center justify-between pb-3 border-b border-[#252A36] dark:border-[#252A36] light:border-slate-200">
+                      <div>
+                        <h3 className="text-base font-bold text-white dark:text-white light:text-slate-900 flex items-center gap-2">
+                          <IndianRupee className="w-5 h-5 text-emerald-400" />
+                          <span>Record Manual / Offline Payment</span>
+                        </h3>
+                        <p className="text-xs text-zinc-400 dark:text-zinc-400 light:text-slate-500 mt-0.5">
+                          Record a direct bank deposit, UPI transaction, or cash settlement and issue an official tax invoice.
+                        </p>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => setIsManualPaymentOpen(false)}
+                        className="text-zinc-400 hover:text-white p-1 text-sm cursor-pointer"
+                      >
+                        ✕
+                      </button>
+                    </div>
+
+                    {manualPaymentSuccess && (
+                      <div className="p-3.5 rounded-xl border border-emerald-500/30 bg-emerald-500/10 text-emerald-300 text-xs flex items-center gap-2 font-medium">
+                        <CheckCircle className="w-4 h-4 text-emerald-400 shrink-0" />
+                        <span>{manualPaymentSuccess}</span>
+                      </div>
+                    )}
+
+                    <form onSubmit={handleManualPaymentSubmit} className="space-y-4 text-xs">
+                      {/* Link to Inquiry */}
+                      <div>
+                        <label className="block text-zinc-300 dark:text-zinc-300 light:text-slate-700 font-medium mb-1">
+                          Link to Client Project / Inquiry (Optional)
+                        </label>
+                        <select
+                          value={manualPaymentForm.inquiry_id}
+                          onChange={e => {
+                            const inqId = e.target.value;
+                            const selected = inquiries.find(i => i.id === inqId);
+                            if (selected) {
+                              const remaining = (selected.total_amount || selected.advance_amount || 0) - (selected.paid_amount || 0);
+                              setManualPaymentForm({
+                                ...manualPaymentForm,
+                                inquiry_id: inqId,
+                                client_name: selected.full_name,
+                                client_email: selected.email,
+                                amount: remaining > 0 ? String(remaining) : manualPaymentForm.amount,
+                              });
+                            } else {
+                              setManualPaymentForm({ ...manualPaymentForm, inquiry_id: '' });
+                            }
+                          }}
+                          className="w-full px-3 py-2.5 rounded-xl border border-[#252A36] dark:border-[#252A36] light:border-slate-300 bg-[#0B0D12] dark:bg-[#0B0D12] light:bg-white text-xs text-white dark:text-white light:text-slate-900 focus:outline-none focus:border-indigo-500"
+                        >
+                          <option value="">-- Standalone Payment / General Client --</option>
+                          {inquiries.map(inq => (
+                            <option key={inq.id} value={inq.id}>
+                              {inq.full_name} ({inq.email}) - {inq.project_type} {inq.total_amount ? `[Quote: ₹${inq.total_amount.toLocaleString('en-IN')}]` : ''}
+                            </option>
+                          ))}
+                        </select>
+                      </div>
+
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        <div>
+                          <label className="block text-zinc-300 dark:text-zinc-300 light:text-slate-700 font-medium mb-1">
+                            Client Name *
+                          </label>
+                          <input
+                            type="text"
+                            required
+                            placeholder="e.g. Ramesh Kumar"
+                            value={manualPaymentForm.client_name}
+                            onChange={e => setManualPaymentForm({ ...manualPaymentForm, client_name: e.target.value })}
+                            className="w-full px-3 py-2 rounded-xl border border-[#252A36] dark:border-[#252A36] light:border-slate-300 bg-[#0B0D12] dark:bg-[#0B0D12] light:bg-white text-xs text-white dark:text-white light:text-slate-900 focus:outline-none focus:border-indigo-500"
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-zinc-300 dark:text-zinc-300 light:text-slate-700 font-medium mb-1">
+                            Client Email *
+                          </label>
+                          <input
+                            type="email"
+                            required
+                            placeholder="example@gmail.com"
+                            value={manualPaymentForm.client_email}
+                            onChange={e => setManualPaymentForm({ ...manualPaymentForm, client_email: e.target.value })}
+                            className="w-full px-3 py-2 rounded-xl border border-[#252A36] dark:border-[#252A36] light:border-slate-300 bg-[#0B0D12] dark:bg-[#0B0D12] light:bg-white text-xs text-white dark:text-white light:text-slate-900 focus:outline-none focus:border-indigo-500"
+                          />
+                        </div>
+                      </div>
+
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        <div>
+                          <label className="block text-zinc-300 dark:text-zinc-300 light:text-slate-700 font-medium mb-1">
+                            Amount Paid (₹ INR) *
+                          </label>
+                          <div className="relative">
+                            <span className="absolute left-3 top-1/2 -translate-y-1/2 text-zinc-400 font-bold">₹</span>
+                            <input
+                              type="number"
+                              min="1"
+                              step="any"
+                              required
+                              placeholder="25000"
+                              value={manualPaymentForm.amount}
+                              onChange={e => setManualPaymentForm({ ...manualPaymentForm, amount: e.target.value })}
+                              className="w-full pl-8 pr-3 py-2 rounded-xl border border-[#252A36] dark:border-[#252A36] light:border-slate-300 bg-[#0B0D12] dark:bg-[#0B0D12] light:bg-white text-xs text-white dark:text-white light:text-slate-900 font-mono focus:outline-none focus:border-indigo-500"
+                            />
+                          </div>
+                        </div>
+                        <div>
+                          <label className="block text-zinc-300 dark:text-zinc-300 light:text-slate-700 font-medium mb-1">
+                            Payment Method *
+                          </label>
+                          <select
+                            value={manualPaymentForm.method}
+                            onChange={e => setManualPaymentForm({ ...manualPaymentForm, method: e.target.value as any })}
+                            className="w-full px-3 py-2 rounded-xl border border-[#252A36] dark:border-[#252A36] light:border-slate-300 bg-[#0B0D12] dark:bg-[#0B0D12] light:bg-white text-xs text-white dark:text-white light:text-slate-900 focus:outline-none focus:border-indigo-500"
+                          >
+                            <option value="upi_direct">Direct UPI (GPay / PhonePe / Paytm / QR)</option>
+                            <option value="neft_imps">Bank Transfer (NEFT / RTGS / IMPS)</option>
+                            <option value="cash">Cash / In-Person</option>
+                            <option value="other">Cheque / Demand Draft / Other</option>
+                          </select>
+                        </div>
+                      </div>
+
+                      <div>
+                        <label className="block text-zinc-300 dark:text-zinc-300 light:text-slate-700 font-medium mb-1">
+                          Bank UTR / Transaction Reference ID
+                        </label>
+                        <input
+                          type="text"
+                          placeholder="e.g. UTR492819284102 or UPI Ref 41029381928"
+                          value={manualPaymentForm.reference_id}
+                          onChange={e => setManualPaymentForm({ ...manualPaymentForm, reference_id: e.target.value })}
+                          className="w-full px-3 py-2 rounded-xl border border-[#252A36] dark:border-[#252A36] light:border-slate-300 bg-[#0B0D12] dark:bg-[#0B0D12] light:bg-white text-xs text-white dark:text-white light:text-slate-900 font-mono focus:outline-none focus:border-indigo-500"
+                        />
+                      </div>
+
+                      <div>
+                        <label className="block text-zinc-300 dark:text-zinc-300 light:text-slate-700 font-medium mb-1">
+                          Internal Note / Milestone Description
+                        </label>
+                        <textarea
+                          rows={2}
+                          placeholder="e.g. Sprinted milestone 1 delivered, advance received via direct bank transfer."
+                          value={manualPaymentForm.notes}
+                          onChange={e => setManualPaymentForm({ ...manualPaymentForm, notes: e.target.value })}
+                          className="w-full px-3 py-2 rounded-xl border border-[#252A36] dark:border-[#252A36] light:border-slate-300 bg-[#0B0D12] dark:bg-[#0B0D12] light:bg-white text-xs text-white dark:text-white light:text-slate-900 focus:outline-none focus:border-indigo-500"
+                        />
+                      </div>
+
+                      <div className="flex items-center justify-end gap-3 pt-3 border-t border-[#252A36] dark:border-[#252A36] light:border-slate-200">
+                        <button
+                          type="button"
+                          onClick={() => setIsManualPaymentOpen(false)}
+                          className="px-4 py-2 rounded-xl border border-[#252A36] text-zinc-400 hover:text-white text-xs font-medium cursor-pointer"
+                        >
+                          Cancel
+                        </button>
+                        <button
+                          type="submit"
+                          className="px-5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-semibold text-xs shadow-md shadow-emerald-500/20 flex items-center gap-1.5 cursor-pointer"
+                        >
+                          <CheckCircle className="w-3.5 h-3.5" />
+                          <span>Record Payment &amp; Issue Invoice</span>
+                        </button>
+                      </div>
+                    </form>
+                  </div>
+                </div>
+              )}
             </div>
           )}
 
@@ -1185,6 +1667,84 @@ export const AdminDashboard: React.FC = () => {
                   <span>Website settings updated successfully!</span>
                 </div>
               )}
+
+              {/* Studio Modules & Feature Visibility */}
+              <div className="rounded-2xl border border-indigo-500/30 bg-[#121620] dark:bg-[#121620] light:bg-white p-6 space-y-4 shadow-sm">
+                <div className="pb-3 border-b border-[#252A36] dark:border-[#252A36] light:border-slate-200">
+                  <h3 className="text-base font-bold text-white dark:text-white light:text-slate-900 flex items-center gap-2">
+                    <Sparkles className="w-5 h-5 text-indigo-400" />
+                    <span>Studio Modules &amp; Feature Visibility (Website Controls)</span>
+                  </h3>
+                  <p className="text-xs text-zinc-400 dark:text-zinc-400 light:text-slate-600 mt-1">
+                    Toggle offerings on or off across navigation, footer, and landing pages to keep the business bespoke, lean, and focused.
+                  </p>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  {/* Store Toggle */}
+                  <div className="p-4 rounded-xl border border-[#252A36] dark:border-[#252A36] light:border-slate-200 bg-[#0B0D12] dark:bg-[#0B0D12] light:bg-slate-50 space-y-2">
+                    <div className="flex items-center justify-between">
+                      <span className="text-xs font-bold text-white dark:text-white light:text-slate-900 flex items-center gap-1.5">
+                        <ShoppingBag className="w-4 h-4 text-indigo-400" />
+                        <span>Ready-Made Templates Store</span>
+                      </span>
+                      <input
+                        type="checkbox"
+                        checked={formSettings.enable_store ?? false}
+                        onChange={e =>
+                          setFormSettings({ ...formSettings, enable_store: e.target.checked })
+                        }
+                        className="rounded border-[#252A36] text-indigo-600 focus:ring-0 cursor-pointer"
+                      />
+                    </div>
+                    <p className="text-[11px] text-zinc-400 dark:text-zinc-400 light:text-slate-600">
+                      When OFF, completely removes the digital store &amp; templates from navigation, footer, and pillars.
+                    </p>
+                  </div>
+
+                  {/* Maintenance Retainers Toggle */}
+                  <div className="p-4 rounded-xl border border-[#252A36] dark:border-[#252A36] light:border-slate-200 bg-[#0B0D12] dark:bg-[#0B0D12] light:bg-slate-50 space-y-2">
+                    <div className="flex items-center justify-between">
+                      <span className="text-xs font-bold text-white dark:text-white light:text-slate-900 flex items-center gap-1.5">
+                        <ShieldCheck className="w-4 h-4 text-emerald-400" />
+                        <span>Maintenance Retainers</span>
+                      </span>
+                      <input
+                        type="checkbox"
+                        checked={formSettings.enable_maintenance ?? false}
+                        onChange={e =>
+                          setFormSettings({ ...formSettings, enable_maintenance: e.target.checked })
+                        }
+                        className="rounded border-[#252A36] text-indigo-600 focus:ring-0 cursor-pointer"
+                      />
+                    </div>
+                    <p className="text-[11px] text-zinc-400 dark:text-zinc-400 light:text-slate-600">
+                      When OFF, hides maintenance plans and retainer subscriptions from client navigation and public pages.
+                    </p>
+                  </div>
+
+                  {/* India Location Notice Toggle */}
+                  <div className="p-4 rounded-xl border border-[#252A36] dark:border-[#252A36] light:border-slate-200 bg-[#0B0D12] dark:bg-[#0B0D12] light:bg-slate-50 space-y-2">
+                    <div className="flex items-center justify-between">
+                      <span className="text-xs font-bold text-white dark:text-white light:text-slate-900 flex items-center gap-1.5">
+                        <span className="text-sm">🇮🇳</span>
+                        <span>India-Only Regional Filter</span>
+                      </span>
+                      <input
+                        type="checkbox"
+                        checked={formSettings.india_only_notice ?? true}
+                        onChange={e =>
+                          setFormSettings({ ...formSettings, india_only_notice: e.target.checked })
+                        }
+                        className="rounded border-[#252A36] text-indigo-600 focus:ring-0 cursor-pointer"
+                      />
+                    </div>
+                    <p className="text-[11px] text-zinc-400 dark:text-zinc-400 light:text-slate-600">
+                      When ON, informs non-Indian visitors regarding domestic India-only focus and ₹ INR billing.
+                    </p>
+                  </div>
+                </div>
+              </div>
 
               {/* Company Info */}
               <div className="rounded-2xl border border-[#252A36] dark:border-[#252A36] light:border-slate-200 bg-[#121620] dark:bg-[#121620] light:bg-white p-6 space-y-4 shadow-sm">
@@ -1476,23 +2036,93 @@ export const AdminDashboard: React.FC = () => {
 
               {/* Payment Gateways Configuration (Razorpay & Cashfree) */}
               <div className="rounded-2xl border border-[#252A36] dark:border-[#252A36] light:border-slate-200 bg-[#121620] dark:bg-[#121620] light:bg-white p-6 space-y-6 shadow-sm">
-                <div className="pb-3 border-b border-[#252A36] flex items-center justify-between">
-                  <h3 className="text-base font-bold text-white dark:text-white light:text-slate-900 flex items-center gap-2">
-                    <CreditCard className="w-5 h-5 text-indigo-400" />
-                    <span>Indian &amp; Global Payment Gateways (Razorpay &amp; Cashfree)</span>
-                  </h3>
-                  <span className="text-[11px] font-mono text-emerald-400 bg-emerald-500/10 px-2.5 py-1 rounded-full border border-emerald-500/20">
-                    Active Dual Integration
+                <div className="pb-3 border-b border-[#252A36] dark:border-[#252A36] light:border-slate-200 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                  <div>
+                    <h3 className="text-base font-bold text-white dark:text-white light:text-slate-900 flex items-center gap-2">
+                      <CreditCard className="w-5 h-5 text-indigo-400" />
+                      <span>Domestic India Payment Gateways (UPI, Cards, NetBanking)</span>
+                    </h3>
+                    <p className="text-xs text-zinc-400 dark:text-zinc-400 light:text-slate-500 mt-0.5">
+                      Configure and control Razorpay and Cashfree API credentials, webhooks, and default checkout routing.
+                    </p>
+                  </div>
+                  <span className="text-[11px] font-mono text-emerald-400 bg-emerald-500/10 px-2.5 py-1 rounded-full border border-emerald-500/20 w-fit">
+                    Active Gateway Hub
                   </span>
                 </div>
 
+                {/* Default Gateway Selector */}
+                <div className="p-4 rounded-xl border border-indigo-500/20 bg-[#0B0D12] dark:bg-[#0B0D12] light:bg-slate-50 space-y-2">
+                  <label className="block text-xs font-bold text-white dark:text-white light:text-slate-900">
+                    Default Payment Gateway &amp; Client Checkout Routing
+                  </label>
+                  <p className="text-[11px] text-zinc-400 dark:text-zinc-400 light:text-slate-600">
+                    Determines what your clients see when settling agreed project quotes or advance payments.
+                  </p>
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-1">
+                    <label className={`p-3 rounded-xl border text-xs cursor-pointer flex items-center gap-2.5 transition-all ${
+                      (formSettings.default_payment_gateway || 'customer_choice') === 'customer_choice'
+                        ? 'border-indigo-500 bg-indigo-500/10 text-white dark:text-white light:text-slate-900 font-semibold'
+                        : 'border-[#252A36] dark:border-[#252A36] light:border-slate-300 text-zinc-400 hover:border-zinc-500'
+                    }`}>
+                      <input
+                        type="radio"
+                        name="default_gateway"
+                        value="customer_choice"
+                        checked={(formSettings.default_payment_gateway || 'customer_choice') === 'customer_choice'}
+                        onChange={() => setFormSettings({ ...formSettings, default_payment_gateway: 'customer_choice' })}
+                        className="text-indigo-600"
+                      />
+                      <span>Customer Choice (Show Both)</span>
+                    </label>
+
+                    <label className={`p-3 rounded-xl border text-xs cursor-pointer flex items-center gap-2.5 transition-all ${
+                      formSettings.default_payment_gateway === 'razorpay'
+                        ? 'border-indigo-500 bg-indigo-500/10 text-white dark:text-white light:text-slate-900 font-semibold'
+                        : 'border-[#252A36] dark:border-[#252A36] light:border-slate-300 text-zinc-400 hover:border-zinc-500'
+                    }`}>
+                      <input
+                        type="radio"
+                        name="default_gateway"
+                        value="razorpay"
+                        checked={formSettings.default_payment_gateway === 'razorpay'}
+                        onChange={() => setFormSettings({ ...formSettings, default_payment_gateway: 'razorpay' })}
+                        className="text-indigo-600"
+                      />
+                      <span>Preferred: Razorpay</span>
+                    </label>
+
+                    <label className={`p-3 rounded-xl border text-xs cursor-pointer flex items-center gap-2.5 transition-all ${
+                      formSettings.default_payment_gateway === 'cashfree'
+                        ? 'border-purple-500 bg-purple-500/10 text-white dark:text-white light:text-slate-900 font-semibold'
+                        : 'border-[#252A36] dark:border-[#252A36] light:border-slate-300 text-zinc-400 hover:border-zinc-500'
+                    }`}>
+                      <input
+                        type="radio"
+                        name="default_gateway"
+                        value="cashfree"
+                        checked={formSettings.default_payment_gateway === 'cashfree'}
+                        onChange={() => setFormSettings({ ...formSettings, default_payment_gateway: 'cashfree' })}
+                        className="text-purple-600"
+                      />
+                      <span>Preferred: Cashfree</span>
+                    </label>
+                  </div>
+                </div>
+
+                {/* Gateway Cards Grid */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  {/* Razorpay Setup */}
-                  <div className="p-4 rounded-xl border border-[#252A36] bg-[#0B0D12] space-y-3">
-                    <div className="flex items-center justify-between">
-                      <span className="text-xs font-bold text-white flex items-center gap-1.5">
-                        <span className="w-2 h-2 rounded-full bg-indigo-500" />
+                  {/* Razorpay Management */}
+                  <div className="p-5 rounded-xl border border-[#252A36] dark:border-[#252A36] light:border-slate-200 bg-[#0B0D12] dark:bg-[#0B0D12] light:bg-slate-50 space-y-4">
+                    <div className="flex items-center justify-between pb-2 border-b border-[#252A36] dark:border-[#252A36] light:border-slate-200">
+                      <span className="text-xs font-bold text-white dark:text-white light:text-slate-900 flex items-center gap-2">
+                        <span className="w-2.5 h-2.5 rounded-full bg-indigo-500" />
                         <span>Razorpay Gateway</span>
+                        {formSettings.razorpay_key_id?.startsWith('rzp_live_') ? (
+                          <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-400 font-semibold">LIVE</span>
+                        ) : (
+                          <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-amber-500/20 text-amber-300 font-semibold">TEST</span>
+                        )}
                       </span>
                       <label className="flex items-center gap-2 cursor-pointer text-xs text-zinc-400">
                         <input
@@ -1503,13 +2133,13 @@ export const AdminDashboard: React.FC = () => {
                           }
                           className="rounded border-[#252A36] text-indigo-600 focus:ring-0"
                         />
-                        <span>Enabled</span>
+                        <span className="font-medium text-white dark:text-white light:text-slate-900">Enabled</span>
                       </label>
                     </div>
 
                     <div>
-                      <label className="block text-[11px] font-medium text-zinc-400 mb-1">
-                        Razorpay Key ID (Test or Live)
+                      <label className="block text-[11px] font-medium text-zinc-400 dark:text-zinc-400 light:text-slate-600 mb-1">
+                        Razorpay Key ID
                       </label>
                       <input
                         type="text"
@@ -1521,16 +2151,84 @@ export const AdminDashboard: React.FC = () => {
                         className="w-full px-3 py-2 rounded-lg border border-[#252A36] dark:border-[#252A36] light:border-slate-300 bg-[#121620] dark:bg-[#121620] light:bg-white text-xs text-white dark:text-white light:text-slate-900 focus:outline-none focus:border-indigo-500 font-mono shadow-sm"
                       />
                     </div>
+
+                    <div>
+                      <label className="block text-[11px] font-medium text-zinc-400 dark:text-zinc-400 light:text-slate-600 mb-1">
+                        Razorpay Key Secret (Server / Webhook verification)
+                      </label>
+                      <div className="relative">
+                        <input
+                          type={showSecretRazorpay ? 'text' : 'password'}
+                          placeholder="Enter Razorpay Secret Key"
+                          value={formSettings.razorpay_key_secret || ''}
+                          onChange={e =>
+                            setFormSettings({ ...formSettings, razorpay_key_secret: e.target.value })
+                          }
+                          className="w-full px-3 py-2 pr-9 rounded-lg border border-[#252A36] dark:border-[#252A36] light:border-slate-300 bg-[#121620] dark:bg-[#121620] light:bg-white text-xs text-white dark:text-white light:text-slate-900 focus:outline-none focus:border-indigo-500 font-mono shadow-sm"
+                        />
+                        <button
+                          type="button"
+                          onClick={() => setShowSecretRazorpay(!showSecretRazorpay)}
+                          className="absolute right-2.5 top-1/2 -translate-y-1/2 text-zinc-400 hover:text-white"
+                        >
+                          {showSecretRazorpay ? <EyeOff className="w-3.5 h-3.5" /> : <Eye className="w-3.5 h-3.5" />}
+                        </button>
+                      </div>
+                    </div>
+
+                    <div>
+                      <label className="block text-[11px] font-medium text-zinc-400 dark:text-zinc-400 light:text-slate-600 mb-1">
+                        Webhook Secret (Optional)
+                      </label>
+                      <div className="relative">
+                        <input
+                          type={showWebhookRazorpay ? 'text' : 'password'}
+                          placeholder="Razorpay Webhook Secret"
+                          value={formSettings.razorpay_webhook_secret || ''}
+                          onChange={e =>
+                            setFormSettings({ ...formSettings, razorpay_webhook_secret: e.target.value })
+                          }
+                          className="w-full px-3 py-2 pr-9 rounded-lg border border-[#252A36] dark:border-[#252A36] light:border-slate-300 bg-[#121620] dark:bg-[#121620] light:bg-white text-xs text-white dark:text-white light:text-slate-900 focus:outline-none focus:border-indigo-500 font-mono shadow-sm"
+                        />
+                        <button
+                          type="button"
+                          onClick={() => setShowWebhookRazorpay(!showWebhookRazorpay)}
+                          className="absolute right-2.5 top-1/2 -translate-y-1/2 text-zinc-400 hover:text-white"
+                        >
+                          {showWebhookRazorpay ? <EyeOff className="w-3.5 h-3.5" /> : <Eye className="w-3.5 h-3.5" />}
+                        </button>
+                      </div>
+                    </div>
+
+                    <div className="flex items-center justify-between pt-1">
+                      <button
+                        type="button"
+                        onClick={handleValidateRazorpay}
+                        className="px-3 py-1.5 rounded-lg border border-indigo-500/30 bg-indigo-500/10 text-indigo-300 hover:bg-indigo-500/20 text-[11px] font-semibold transition-colors"
+                      >
+                        Verify Key Format
+                      </button>
+                      <span className="text-[10px] text-zinc-500 font-mono">
+                        Webhook: /api/webhooks/razorpay
+                      </span>
+                    </div>
                   </div>
 
-                  {/* Cashfree Setup */}
-                  <div className="p-4 rounded-xl border border-[#252A36] dark:border-[#252A36] light:border-slate-200 bg-[#0B0D12] dark:bg-[#0B0D12] light:bg-slate-50 space-y-3">
-                    <div className="flex items-center justify-between">
-                      <span className="text-xs font-bold text-white dark:text-white light:text-slate-900 flex items-center gap-1.5">
-                        <span className="w-2 h-2 rounded-full bg-purple-500" />
+                  {/* Cashfree Management */}
+                  <div className="p-5 rounded-xl border border-[#252A36] dark:border-[#252A36] light:border-slate-200 bg-[#0B0D12] dark:bg-[#0B0D12] light:bg-slate-50 space-y-4">
+                    <div className="flex items-center justify-between pb-2 border-b border-[#252A36] dark:border-[#252A36] light:border-slate-200">
+                      <span className="text-xs font-bold text-white dark:text-white light:text-slate-900 flex items-center gap-2">
+                        <span className="w-2.5 h-2.5 rounded-full bg-purple-500" />
                         <span>Cashfree Payments</span>
+                        <span className={`text-[10px] font-mono px-2 py-0.5 rounded font-semibold ${
+                          formSettings.cashfree_mode === 'production'
+                            ? 'bg-emerald-500/20 text-emerald-400'
+                            : 'bg-purple-500/20 text-purple-300'
+                        }`}>
+                          {formSettings.cashfree_mode === 'production' ? 'PROD' : 'SANDBOX'}
+                        </span>
                       </span>
-                      <label className="flex items-center gap-2 cursor-pointer text-xs text-zinc-400 dark:text-zinc-400 light:text-slate-600">
+                      <label className="flex items-center gap-2 cursor-pointer text-xs text-zinc-400">
                         <input
                           type="checkbox"
                           checked={formSettings.cashfree_enabled ?? true}
@@ -1539,26 +2237,126 @@ export const AdminDashboard: React.FC = () => {
                           }
                           className="rounded border-[#252A36] dark:border-[#252A36] light:border-slate-300 text-purple-600 focus:ring-0"
                         />
-                        <span>Enabled</span>
+                        <span className="font-medium text-white dark:text-white light:text-slate-900">Enabled</span>
                       </label>
+                    </div>
+
+                    <div className="grid grid-cols-2 gap-3">
+                      <div>
+                        <label className="block text-[11px] font-medium text-zinc-400 dark:text-zinc-400 light:text-slate-600 mb-1">
+                          Environment Mode
+                        </label>
+                        <select
+                          value={formSettings.cashfree_mode || 'sandbox'}
+                          onChange={e =>
+                            setFormSettings({ ...formSettings, cashfree_mode: e.target.value as 'sandbox' | 'production' })
+                          }
+                          className="w-full px-3 py-2 rounded-lg border border-[#252A36] dark:border-[#252A36] light:border-slate-300 bg-[#121620] dark:bg-[#121620] light:bg-white text-xs text-white dark:text-white light:text-slate-900 focus:outline-none focus:border-indigo-500 font-mono shadow-sm cursor-pointer"
+                        >
+                          <option value="sandbox">Sandbox (Testing)</option>
+                          <option value="production">Production (Live Settlement)</option>
+                        </select>
+                      </div>
+
+                      <div>
+                        <label className="block text-[11px] font-medium text-zinc-400 dark:text-zinc-400 light:text-slate-600 mb-1">
+                          Cashfree App ID (Client ID)
+                        </label>
+                        <input
+                          type="text"
+                          placeholder="cf_app_... or production ID"
+                          value={formSettings.cashfree_app_id || ''}
+                          onChange={e =>
+                            setFormSettings({ ...formSettings, cashfree_app_id: e.target.value })
+                          }
+                          className="w-full px-3 py-2 rounded-lg border border-[#252A36] dark:border-[#252A36] light:border-slate-300 bg-[#121620] dark:bg-[#121620] light:bg-white text-xs text-white dark:text-white light:text-slate-900 focus:outline-none focus:border-indigo-500 font-mono shadow-sm"
+                        />
+                      </div>
                     </div>
 
                     <div>
                       <label className="block text-[11px] font-medium text-zinc-400 dark:text-zinc-400 light:text-slate-600 mb-1">
-                        Cashfree App ID (Client ID)
+                        Cashfree Secret Key
                       </label>
-                      <input
-                        type="text"
-                        placeholder="cf_app_... or production ID"
-                        value={formSettings.cashfree_app_id || ''}
-                        onChange={e =>
-                          setFormSettings({ ...formSettings, cashfree_app_id: e.target.value })
-                        }
-                        className="w-full px-3 py-2 rounded-lg border border-[#252A36] dark:border-[#252A36] light:border-slate-300 bg-[#121620] dark:bg-[#121620] light:bg-white text-xs text-white dark:text-white light:text-slate-900 focus:outline-none focus:border-indigo-500 font-mono shadow-sm"
-                      />
+                      <div className="relative">
+                        <input
+                          type={showSecretCashfree ? 'text' : 'password'}
+                          placeholder="Enter Cashfree Secret Key"
+                          value={formSettings.cashfree_secret_key || ''}
+                          onChange={e =>
+                            setFormSettings({ ...formSettings, cashfree_secret_key: e.target.value })
+                          }
+                          className="w-full px-3 py-2 pr-9 rounded-lg border border-[#252A36] dark:border-[#252A36] light:border-slate-300 bg-[#121620] dark:bg-[#121620] light:bg-white text-xs text-white dark:text-white light:text-slate-900 focus:outline-none focus:border-indigo-500 font-mono shadow-sm"
+                        />
+                        <button
+                          type="button"
+                          onClick={() => setShowSecretCashfree(!showSecretCashfree)}
+                          className="absolute right-2.5 top-1/2 -translate-y-1/2 text-zinc-400 hover:text-white"
+                        >
+                          {showSecretCashfree ? <EyeOff className="w-3.5 h-3.5" /> : <Eye className="w-3.5 h-3.5" />}
+                        </button>
+                      </div>
+                    </div>
+
+                    <div>
+                      <label className="block text-[11px] font-medium text-zinc-400 dark:text-zinc-400 light:text-slate-600 mb-1">
+                        Webhook Secret (Optional)
+                      </label>
+                      <div className="relative">
+                        <input
+                          type={showWebhookCashfree ? 'text' : 'password'}
+                          placeholder="Cashfree Webhook Secret"
+                          value={formSettings.cashfree_webhook_secret || ''}
+                          onChange={e =>
+                            setFormSettings({ ...formSettings, cashfree_webhook_secret: e.target.value })
+                          }
+                          className="w-full px-3 py-2 pr-9 rounded-lg border border-[#252A36] dark:border-[#252A36] light:border-slate-300 bg-[#121620] dark:bg-[#121620] light:bg-white text-xs text-white dark:text-white light:text-slate-900 focus:outline-none focus:border-indigo-500 font-mono shadow-sm"
+                        />
+                        <button
+                          type="button"
+                          onClick={() => setShowWebhookCashfree(!showWebhookCashfree)}
+                          className="absolute right-2.5 top-1/2 -translate-y-1/2 text-zinc-400 hover:text-white"
+                        >
+                          {showWebhookCashfree ? <EyeOff className="w-3.5 h-3.5" /> : <Eye className="w-3.5 h-3.5" />}
+                        </button>
+                      </div>
+                    </div>
+
+                    <div className="flex items-center justify-between pt-1">
+                      <button
+                        type="button"
+                        onClick={handleValidateCashfree}
+                        className="px-3 py-1.5 rounded-lg border border-purple-500/30 bg-purple-500/10 text-purple-300 hover:bg-purple-500/20 text-[11px] font-semibold transition-colors"
+                      >
+                        Verify Key Format
+                      </button>
+                      <span className="text-[10px] text-zinc-500 font-mono">
+                        Webhook: /api/webhooks/cashfree
+                      </span>
                     </div>
                   </div>
                 </div>
+
+                {/* Validation Feedback Banner */}
+                {gatewayValidationMessage && (
+                  <div className={`p-4 rounded-xl border text-xs flex items-center justify-between animate-fadeIn ${
+                    gatewayValidationMessage.valid
+                      ? 'border-emerald-500/30 bg-emerald-500/10 text-emerald-300'
+                      : 'border-amber-500/30 bg-amber-500/10 text-amber-300'
+                  }`}>
+                    <div className="flex items-center gap-2">
+                      {gatewayValidationMessage.valid ? <CheckCircle className="w-4 h-4 text-emerald-400" /> : <AlertCircle className="w-4 h-4 text-amber-400" />}
+                      <span className="font-medium">{gatewayValidationMessage.text}</span>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => setGatewayValidationMessage(null)}
+                      className="text-xs text-zinc-400 hover:text-white"
+                    >
+                      Dismiss
+                    </button>
+                  </div>
+                )}
 
                 {/* Tax & Invoicing Details */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
@@ -1582,7 +2380,7 @@ export const AdminDashboard: React.FC = () => {
                     </label>
                     <input
                       type="text"
-                      placeholder="₹ or $"
+                      placeholder="₹"
                       value={formSettings.currency_symbol || '₹'}
                       onChange={e =>
                         setFormSettings({ ...formSettings, currency_symbol: e.target.value })
@@ -2032,27 +2830,47 @@ export const AdminDashboard: React.FC = () => {
                       <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-2 pt-2 border-t border-emerald-500/20 text-center font-mono text-[11px]">
                         <div className="p-2 rounded bg-black/30">
                           <div className="text-zinc-400">Settings</div>
-                          <div className="font-bold text-white text-sm">{connMessage.tableCounts.site_settings}</div>
+                          <div className="font-bold text-white text-sm">{connMessage.tableCounts.site_settings ?? 0}</div>
                         </div>
                         <div className="p-2 rounded bg-black/30">
                           <div className="text-zinc-400">Services</div>
-                          <div className="font-bold text-white text-sm">{connMessage.tableCounts.services}</div>
+                          <div className="font-bold text-white text-sm">{connMessage.tableCounts.services ?? 0}</div>
                         </div>
                         <div className="p-2 rounded bg-black/30">
                           <div className="text-zinc-400">Projects</div>
-                          <div className="font-bold text-white text-sm">{connMessage.tableCounts.projects}</div>
+                          <div className="font-bold text-white text-sm">{connMessage.tableCounts.projects ?? 0}</div>
                         </div>
                         <div className="p-2 rounded bg-black/30">
                           <div className="text-zinc-400">Inquiries</div>
-                          <div className="font-bold text-white text-sm">{connMessage.tableCounts.inquiries}</div>
+                          <div className="font-bold text-white text-sm">{connMessage.tableCounts.inquiries ?? 0}</div>
                         </div>
                         <div className="p-2 rounded bg-black/30">
                           <div className="text-zinc-400">FAQs</div>
-                          <div className="font-bold text-white text-sm">{connMessage.tableCounts.faqs}</div>
+                          <div className="font-bold text-white text-sm">{connMessage.tableCounts.faqs ?? 0}</div>
                         </div>
                         <div className="p-2 rounded bg-black/30">
-                          <div className="text-zinc-400">Testimonials</div>
-                          <div className="font-bold text-white text-sm">{connMessage.tableCounts.testimonials}</div>
+                          <div className="text-zinc-400">Feedback</div>
+                          <div className="font-bold text-white text-sm">{connMessage.tableCounts.testimonials ?? 0}</div>
+                        </div>
+                        <div className="p-2 rounded bg-black/30">
+                          <div className="text-zinc-400">Payments</div>
+                          <div className="font-bold text-white text-sm">{connMessage.tableCounts.payments ?? 0}</div>
+                        </div>
+                        <div className="p-2 rounded bg-black/30">
+                          <div className="text-zinc-400">Subscriptions</div>
+                          <div className="font-bold text-white text-sm">{connMessage.tableCounts.subscriptions ?? 0}</div>
+                        </div>
+                        <div className="p-2 rounded bg-black/30">
+                          <div className="text-zinc-400">Sub Plans</div>
+                          <div className="font-bold text-white text-sm">{connMessage.tableCounts.subscription_plans ?? 0}</div>
+                        </div>
+                        <div className="p-2 rounded bg-black/30">
+                          <div className="text-zinc-400">Store Products</div>
+                          <div className="font-bold text-white text-sm">{connMessage.tableCounts.store_products ?? 0}</div>
+                        </div>
+                        <div className="p-2 rounded bg-black/30 col-span-2">
+                          <div className="text-zinc-400">Collab Messages</div>
+                          <div className="font-bold text-white text-sm">{connMessage.tableCounts.collaboration_messages ?? 0}</div>
                         </div>
                       </div>
                     )}

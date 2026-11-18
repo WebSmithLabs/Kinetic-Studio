@@ -40,8 +40,8 @@ export const WhyChooseUs: React.FC = () => {
     },
     {
       icon: <Layers className="w-5 h-5 text-cyan-400" />,
-      title: 'Independent Craft',
-      description: 'An autonomous studio with meticulous attention to detail in every release.',
+      title: '100% Code Ownership',
+      description: 'Full repository source code and complete commercial rights with zero vendor lock-in.',
     },
   ];
 

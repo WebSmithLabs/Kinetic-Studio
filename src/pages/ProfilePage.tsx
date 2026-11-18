@@ -450,7 +450,7 @@ export const ProfilePage: React.FC = () => {
                     <input
                       type="text"
                       required
-                      placeholder="Jane Doe"
+                      placeholder="e.g. Ramesh Kumar"
                       value={fullName}
                       onChange={e => setFullName(e.target.value)}
                       className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-[#252A36] dark:border-[#252A36] light:border-slate-300 bg-[#0B0D12] dark:bg-[#0B0D12] light:bg-slate-50 text-sm text-white dark:text-white light:text-slate-900 placeholder:text-zinc-600 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500"
@@ -485,7 +485,7 @@ export const ProfilePage: React.FC = () => {
                     </div>
                     <input
                       type="tel"
-                      placeholder="+1 (555) 000-0000"
+                      placeholder="+91 98765 43210"
                       value={phone}
                       onChange={e => setPhone(e.target.value)}
                       className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-[#252A36] dark:border-[#252A36] light:border-slate-300 bg-[#0B0D12] dark:bg-[#0B0D12] light:bg-slate-50 text-sm text-white dark:text-white light:text-slate-900 placeholder:text-zinc-600 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500"

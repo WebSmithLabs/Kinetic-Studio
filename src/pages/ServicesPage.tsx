@@ -12,6 +12,7 @@ import {
   Globe,
   Layers,
   Zap,
+  User,
 } from 'lucide-react';
 import { SEO } from '../components/common/SEO';
 import { useStudio } from '../context/StudioContext';
@@ -35,6 +36,12 @@ export const ServicesPage: React.FC = () => {
 
   const renderIcon = (iconName: string) => {
     switch (iconName) {
+      case 'Globe':
+        return <Globe className="w-6 h-6 text-cyan-400" />;
+      case 'User':
+        return <User className="w-6 h-6 text-indigo-400" />;
+      case 'Zap':
+        return <Zap className="w-6 h-6 text-amber-400" />;
       case 'Building2':
         return <Building2 className="w-6 h-6 text-indigo-400" />;
       case 'Code2':

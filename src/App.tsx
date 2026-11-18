@@ -5,6 +5,7 @@ import { Navbar } from './components/layout/Navbar';
 import { Footer } from './components/layout/Footer';
 import { ScrollToTop } from './components/common/ScrollToTop';
 import { LoadingSpinner } from './components/common/LoadingSpinner';
+import { IndiaLocationFilter } from './components/common/IndiaLocationFilter';
 
 // Eager load Home for instant First Contentful Paint
 import { HomePage } from './pages/HomePage';
@@ -66,6 +67,7 @@ const AppLayout: React.FC = () => {
   return (
     <div className="flex flex-col min-h-screen bg-[#0B0D12] dark:bg-[#0B0D12] light:bg-[#FAFAFC] text-white dark:text-white light:text-slate-900 transition-colors">
       <ScrollToTop />
+      <IndiaLocationFilter />
       <Navbar />
       <div className="flex-grow">
         <Suspense fallback={<LoadingSpinner />}>

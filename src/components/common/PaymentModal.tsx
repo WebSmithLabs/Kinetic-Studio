@@ -50,7 +50,15 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
 }) => {
   const { settings, currentUser, recordPayment, updateInquiryStatus } = useStudio();
 
-  const [selectedGateway, setSelectedGateway] = useState<PaymentGateway>('razorpay');
+  const [selectedGateway, setSelectedGateway] = useState<PaymentGateway>(() => {
+    if (settings.default_payment_gateway === 'cashfree' && settings.cashfree_enabled) {
+      return 'cashfree';
+    }
+    if (settings.razorpay_enabled) {
+      return 'razorpay';
+    }
+    return settings.cashfree_enabled ? 'cashfree' : 'razorpay';
+  });
   const [clientName, setClientName] = useState(
     defaultClientName || currentUser?.full_name || ''
   );
@@ -256,54 +264,56 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
             </div>
 
             {/* Gateway Selection */}
-            <div>
-              <label className="text-xs font-semibold text-zinc-300 dark:text-zinc-300 light:text-slate-700 block mb-2">
-                Select Indian &amp; Global Payment Gateway:
-              </label>
-              <div className="grid grid-cols-2 gap-3">
-                {/* Razorpay Option */}
-                <button
-                  type="button"
-                  onClick={() => setSelectedGateway('razorpay')}
-                  className={`p-3.5 rounded-2xl border text-left transition-all relative ${
-                    selectedGateway === 'razorpay'
-                      ? 'border-indigo-500 bg-indigo-500/10 shadow-md shadow-indigo-500/20'
-                      : 'border-[#252A36] dark:border-[#252A36] light:border-slate-200 bg-[#0B0D12] dark:bg-[#0B0D12] light:bg-slate-50 opacity-80 hover:opacity-100'
-                  }`}
-                >
-                  <div className="flex items-center justify-between mb-1">
-                    <span className="text-xs font-bold text-white dark:text-white light:text-slate-900">
-                      Razorpay
-                    </span>
-                    <span className="text-[10px] font-mono text-indigo-400 font-semibold">UPI / Cards</span>
-                  </div>
-                  <p className="text-[10px] text-zinc-400 dark:text-zinc-400 light:text-slate-500 leading-tight">
-                    Google Pay, PhonePe, Paytm, RuPay, Visa, MC &amp; NetBanking
-                  </p>
-                </button>
+            {settings.razorpay_enabled && settings.cashfree_enabled ? (
+              <div>
+                <label className="text-xs font-semibold text-zinc-300 dark:text-zinc-300 light:text-slate-700 block mb-2">
+                  Select Payment Method:
+                </label>
+                <div className="grid grid-cols-2 gap-3">
+                  {/* Razorpay Option */}
+                  <button
+                    type="button"
+                    onClick={() => setSelectedGateway('razorpay')}
+                    className={`p-3.5 rounded-2xl border text-left transition-all relative ${
+                      selectedGateway === 'razorpay'
+                        ? 'border-indigo-500 bg-indigo-500/10 shadow-md shadow-indigo-500/20'
+                        : 'border-[#252A36] dark:border-[#252A36] light:border-slate-200 bg-[#0B0D12] dark:bg-[#0B0D12] light:bg-slate-50 opacity-80 hover:opacity-100'
+                    }`}
+                  >
+                    <div className="flex items-center justify-between mb-1">
+                      <span className="text-xs font-bold text-white dark:text-white light:text-slate-900">
+                        UPI &amp; NetBanking
+                      </span>
+                      <span className="text-[10px] font-mono text-indigo-400 font-semibold">Primary</span>
+                    </div>
+                    <p className="text-[10px] text-zinc-400 dark:text-zinc-400 light:text-slate-500 leading-tight">
+                      Google Pay, PhonePe, Paytm, RuPay, Visa, MC &amp; NetBanking
+                    </p>
+                  </button>
 
-                {/* Cashfree Option */}
-                <button
-                  type="button"
-                  onClick={() => setSelectedGateway('cashfree')}
-                  className={`p-3.5 rounded-2xl border text-left transition-all relative ${
-                    selectedGateway === 'cashfree'
-                      ? 'border-purple-500 bg-purple-500/10 shadow-md shadow-purple-500/20'
-                      : 'border-[#252A36] dark:border-[#252A36] light:border-slate-200 bg-[#0B0D12] dark:bg-[#0B0D12] light:bg-slate-50 opacity-80 hover:opacity-100'
-                  }`}
-                >
-                  <div className="flex items-center justify-between mb-1">
-                    <span className="text-xs font-bold text-white dark:text-white light:text-slate-900">
-                      Cashfree
-                    </span>
-                    <span className="text-[10px] font-mono text-purple-400 font-semibold">Fast PG</span>
-                  </div>
-                  <p className="text-[10px] text-zinc-400 dark:text-zinc-400 light:text-slate-500 leading-tight">
-                    Instant UPI QR, Credit/Debit Cards, NetBanking &amp; Wallets
-                  </p>
-                </button>
+                  {/* Cashfree Option */}
+                  <button
+                    type="button"
+                    onClick={() => setSelectedGateway('cashfree')}
+                    className={`p-3.5 rounded-2xl border text-left transition-all relative ${
+                      selectedGateway === 'cashfree'
+                        ? 'border-purple-500 bg-purple-500/10 shadow-md shadow-purple-500/20'
+                        : 'border-[#252A36] dark:border-[#252A36] light:border-slate-200 bg-[#0B0D12] dark:bg-[#0B0D12] light:bg-slate-50 opacity-80 hover:opacity-100'
+                    }`}
+                  >
+                    <div className="flex items-center justify-between mb-1">
+                      <span className="text-xs font-bold text-white dark:text-white light:text-slate-900">
+                        Instant UPI QR
+                      </span>
+                      <span className="text-[10px] font-mono text-purple-400 font-semibold">Fast PG</span>
+                    </div>
+                    <p className="text-[10px] text-zinc-400 dark:text-zinc-400 light:text-slate-500 leading-tight">
+                      Instant Scan &amp; Pay QR, Credit/Debit Cards, Wallets
+                    </p>
+                  </button>
+                </div>
               </div>
-            </div>
+            ) : null}
 
             {/* Client Inputs */}
             <div className="space-y-3">
@@ -316,7 +326,7 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
                   required
                   value={clientName}
                   onChange={e => setClientName(e.target.value)}
-                  placeholder="e.g. John Doe or Acme Corp"
+                  placeholder="e.g. Ramesh Kumar"
                   className="w-full px-3.5 py-2.5 rounded-xl border border-[#252A36] dark:border-[#252A36] light:border-slate-200 bg-[#0B0D12] dark:bg-[#0B0D12] light:bg-slate-50 text-white dark:text-white light:text-slate-900 text-xs focus:outline-none focus:border-indigo-500 transition-colors"
                 />
               </div>
@@ -331,7 +341,7 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
                     required
                     value={clientEmail}
                     onChange={e => setClientEmail(e.target.value)}
-                    placeholder="name@company.com"
+                    placeholder="example@gmail.com"
                     className="w-full px-3.5 py-2.5 rounded-xl border border-[#252A36] dark:border-[#252A36] light:border-slate-200 bg-[#0B0D12] dark:bg-[#0B0D12] light:bg-slate-50 text-white dark:text-white light:text-slate-900 text-xs focus:outline-none focus:border-indigo-500 transition-colors"
                   />
                 </div>
@@ -366,13 +376,13 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
               {isProcessing ? (
                 <>
                   <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                  <span>Connecting to {selectedGateway.toUpperCase()} Gateway...</span>
+                  <span>Connecting to Secure Gateway...</span>
                 </>
               ) : (
                 <>
                   <Lock className="w-4 h-4" />
                   <span>
-                    Pay {formatCurrency(amount, currency)} with {selectedGateway.toUpperCase()}
+                    Pay {formatCurrency(amount, currency)} Securely
                   </span>
                   <ArrowRight className="w-4 h-4" />
                 </>
