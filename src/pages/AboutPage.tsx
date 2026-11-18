@@ -54,25 +54,25 @@ export const AboutPage: React.FC = () => {
         canonical="https://websmithlabs.com/about"
       />
 
-      <div className="pt-32 pb-24 text-left">
+      <div className="pt-24 sm:pt-32 pb-16 sm:pb-24 text-left transition-colors">
         {/* Header Section */}
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-20">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-12 sm:mb-20">
           <div className="max-w-3xl space-y-4">
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-indigo-500/30 bg-indigo-500/10 text-xs font-mono font-semibold text-indigo-300">
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-indigo-500/30 bg-indigo-500/10 light:border-indigo-200 light:bg-indigo-50 text-xs font-mono font-semibold text-indigo-300 light:text-indigo-600">
               <Compass className="w-3.5 h-3.5" />
               <span>WHO WE ARE</span>
             </div>
-            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold text-white dark:text-white light:text-slate-900 tracking-tight leading-tight">
+            <h1 className="text-3xl sm:text-5xl lg:text-6xl font-extrabold text-white dark:text-white light:text-slate-900 tracking-tight leading-tight break-words">
               An Independent Studio Powered by Craft and Engineering.
             </h1>
-            <p className="text-lg sm:text-xl text-zinc-300 dark:text-zinc-300 light:text-slate-600 leading-relaxed font-normal">
+            <p className="text-base sm:text-lg lg:text-xl text-zinc-300 dark:text-zinc-300 light:text-slate-600 leading-relaxed font-normal">
               We design and build bespoke digital experiences that help businesses stand out and grow.
             </p>
           </div>
         </div>
 
         {/* Mission & Vision Cards */}
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-20">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-12 sm:mb-20">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
             {/* Mission */}
             <div className="p-8 sm:p-10 rounded-3xl border border-[#252A36] dark:border-[#252A36] light:border-slate-200 bg-[#121620]/80 dark:bg-[#121620]/80 light:bg-white space-y-4 shadow-xl">
@@ -109,10 +109,10 @@ export const AboutPage: React.FC = () => {
         </div>
 
         {/* Independence Banner */}
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-20">
-          <div className="rounded-3xl border border-[#252A36] dark:border-[#252A36] light:border-slate-200 bg-[#0E1118]/80 dark:bg-[#0E1118]/80 light:bg-slate-50 p-8 sm:p-12">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-12 sm:mb-20">
+          <div className="rounded-3xl border border-[#252A36] dark:border-[#252A36] light:border-slate-200 bg-[#0E1118]/80 dark:bg-[#0E1118]/80 light:bg-slate-50 p-6 sm:p-12">
             <div className="max-w-2xl space-y-4">
-              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-indigo-500/30 bg-indigo-500/10 text-xs font-mono font-semibold text-indigo-300">
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-indigo-500/30 bg-indigo-500/10 light:border-indigo-200 light:bg-indigo-50 text-xs font-mono font-semibold text-indigo-300 light:text-indigo-600">
                 <Shield className="w-3.5 h-3.5" />
                 <span>INDEPENDENT STUDIO</span>
               </div>
@@ -127,7 +127,7 @@ export const AboutPage: React.FC = () => {
         </div>
 
         {/* Core Values Grid */}
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-20">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-12 sm:mb-20">
           <div className="max-w-2xl mb-12 space-y-2">
             <div className="text-xs font-mono font-semibold uppercase tracking-wider text-indigo-400">
               VALUES

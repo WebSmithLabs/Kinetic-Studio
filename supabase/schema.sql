@@ -43,6 +43,13 @@ CREATE TABLE IF NOT EXISTS public.site_settings (
     meta_title TEXT DEFAULT 'Web Smith Labs | Modern Websites, Web Applications & Digital Platforms',
     meta_description TEXT DEFAULT 'Web Smith Labs builds modern websites, custom web applications and high-impact digital experiences for businesses, startups and individuals.',
     footer_text TEXT DEFAULT 'Web Smith Labs is an independent digital engineering and web technology company. Collaborating with select technology innovators.',
+    razorpay_key_id TEXT DEFAULT 'rzp_test_wsl1024demo',
+    razorpay_enabled BOOLEAN DEFAULT true,
+    cashfree_app_id TEXT DEFAULT 'cf_app_sandbox_wsl8838',
+    cashfree_mode TEXT DEFAULT 'sandbox',
+    cashfree_enabled BOOLEAN DEFAULT true,
+    currency_symbol TEXT DEFAULT '₹',
+    gst_number TEXT DEFAULT '29ABCDE1234F1Z5',
     updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
 );
 
@@ -141,6 +148,81 @@ CREATE TABLE IF NOT EXISTS public.faqs (
     created_at TIMESTAMPTZ NOT NULL DEFAULT now()
 );
 
+-- 9. Payments (Razorpay & Cashfree Transactions)
+CREATE TABLE IF NOT EXISTS public.payments (
+    id TEXT PRIMARY KEY,
+    user_id UUID REFERENCES auth.users(id) ON DELETE SET NULL,
+    client_email TEXT NOT NULL,
+    client_name TEXT NOT NULL,
+    inquiry_id TEXT,
+    product_id TEXT,
+    subscription_id TEXT,
+    amount NUMERIC NOT NULL,
+    currency TEXT NOT NULL DEFAULT 'INR',
+    gateway TEXT NOT NULL CHECK (gateway IN ('razorpay', 'cashfree', 'demo')),
+    payment_id TEXT NOT NULL,
+    order_id TEXT NOT NULL,
+    payment_type TEXT NOT NULL,
+    title TEXT NOT NULL,
+    status TEXT NOT NULL DEFAULT 'success' CHECK (status IN ('success', 'pending', 'failed', 'refunded')),
+    invoice_number TEXT NOT NULL,
+    notes TEXT,
+    receipt_url TEXT,
+    created_at TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+
+-- 10. Subscriptions (Maintenance Retainers)
+CREATE TABLE IF NOT EXISTS public.subscriptions (
+    id TEXT PRIMARY KEY,
+    user_id UUID REFERENCES auth.users(id) ON DELETE SET NULL,
+    client_email TEXT NOT NULL,
+    client_name TEXT NOT NULL,
+    plan_slug TEXT NOT NULL,
+    plan_name TEXT NOT NULL,
+    billing_cycle TEXT NOT NULL DEFAULT 'monthly' CHECK (billing_cycle IN ('monthly', 'annual')),
+    amount NUMERIC NOT NULL,
+    currency TEXT NOT NULL DEFAULT 'INR',
+    gateway TEXT NOT NULL DEFAULT 'razorpay',
+    status TEXT NOT NULL DEFAULT 'active' CHECK (status IN ('active', 'cancelled', 'paused', 'past_due')),
+    start_date TIMESTAMPTZ NOT NULL DEFAULT now(),
+    next_billing_date TIMESTAMPTZ NOT NULL,
+    created_at TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+
+-- 11. Store Products (Ready-Made Websites & Turnkey Templates)
+CREATE TABLE IF NOT EXISTS public.store_products (
+    id TEXT PRIMARY KEY,
+    slug TEXT UNIQUE NOT NULL,
+    title TEXT NOT NULL,
+    tagline TEXT NOT NULL,
+    category TEXT NOT NULL,
+    price_inr NUMERIC NOT NULL,
+    original_price_inr NUMERIC NOT NULL,
+    price_usd NUMERIC NOT NULL,
+    thumbnail_url TEXT NOT NULL,
+    live_demo_url TEXT NOT NULL,
+    tech_stack JSONB NOT NULL DEFAULT '[]'::jsonb,
+    features JSONB NOT NULL DEFAULT '[]'::jsonb,
+    deliverables JSONB NOT NULL DEFAULT '[]'::jsonb,
+    badge TEXT,
+    is_featured BOOLEAN NOT NULL DEFAULT true,
+    created_at TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+
+-- 12. Collaboration Messages
+CREATE TABLE IF NOT EXISTS public.collaboration_messages (
+    id TEXT PRIMARY KEY,
+    inquiry_id TEXT NOT NULL,
+    sender_email TEXT NOT NULL,
+    sender_name TEXT NOT NULL,
+    sender_role TEXT NOT NULL DEFAULT 'client' CHECK (sender_role IN ('client', 'team')),
+    message TEXT NOT NULL,
+    attachments JSONB DEFAULT '[]'::jsonb,
+    type TEXT NOT NULL DEFAULT 'message',
+    status TEXT DEFAULT 'pending',
+    created_at TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+
 -- ==============================================================================
 -- INDEXES FOR MAXIMUM QUERY PERFORMANCE
 -- ==============================================================================
@@ -149,6 +231,9 @@ CREATE INDEX IF NOT EXISTS idx_projects_category ON public.projects(category);
 CREATE INDEX IF NOT EXISTS idx_services_active ON public.services(is_active, display_order);
 CREATE INDEX IF NOT EXISTS idx_inquiries_status ON public.inquiries(status, created_at DESC);
 CREATE INDEX IF NOT EXISTS idx_faqs_active ON public.faqs(is_active, display_order);
+CREATE INDEX IF NOT EXISTS idx_payments_client ON public.payments(client_email, created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_subscriptions_client ON public.subscriptions(client_email, status);
+CREATE INDEX IF NOT EXISTS idx_collab_inquiry ON public.collaboration_messages(inquiry_id, created_at ASC);
 
 -- ==============================================================================
 -- DATA API GRANTS
@@ -168,6 +253,59 @@ ALTER TABLE public.projects ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.inquiries ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.testimonials ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.faqs ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.payments ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.subscriptions ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.store_products ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.collaboration_messages ENABLE ROW LEVEL SECURITY;
+
+-- 8. PAYMENTS POLICIES
+DROP POLICY IF EXISTS "Users can view own payments" ON public.payments;
+CREATE POLICY "Users can view own payments"
+    ON public.payments FOR SELECT
+    TO anon, authenticated
+    USING (true);
+
+DROP POLICY IF EXISTS "Public can record payments" ON public.payments;
+CREATE POLICY "Public can record payments"
+    ON public.payments FOR INSERT
+    TO anon, authenticated
+    WITH CHECK (true);
+
+-- 9. SUBSCRIPTIONS POLICIES
+DROP POLICY IF EXISTS "Users can view own subscriptions" ON public.subscriptions;
+CREATE POLICY "Users can view own subscriptions"
+    ON public.subscriptions FOR SELECT
+    TO anon, authenticated
+    USING (true);
+
+DROP POLICY IF EXISTS "Authenticated can manage subscriptions" ON public.subscriptions;
+CREATE POLICY "Authenticated can manage subscriptions"
+    ON public.subscriptions FOR ALL
+    TO anon, authenticated
+    USING (true)
+    WITH CHECK (true);
+
+-- 10. STORE PRODUCTS POLICIES
+DROP POLICY IF EXISTS "Public can view store products" ON public.store_products;
+CREATE POLICY "Public can view store products"
+    ON public.store_products FOR SELECT
+    TO anon, authenticated
+    USING (true);
+
+DROP POLICY IF EXISTS "Authenticated can manage store products" ON public.store_products;
+CREATE POLICY "Authenticated can manage store products"
+    ON public.store_products FOR ALL
+    TO authenticated
+    USING (true)
+    WITH CHECK (true);
+
+-- 11. COLLABORATION POLICIES
+DROP POLICY IF EXISTS "Public can exchange collaboration messages" ON public.collaboration_messages;
+CREATE POLICY "Public can exchange collaboration messages"
+    ON public.collaboration_messages FOR ALL
+    TO anon, authenticated
+    USING (true)
+    WITH CHECK (true);
 
 -- 1. PROFILES POLICIES
 DROP POLICY IF EXISTS "Users can view own profile or admins view all" ON public.profiles;

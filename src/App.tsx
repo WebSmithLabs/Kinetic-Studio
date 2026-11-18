@@ -49,6 +49,12 @@ const ProfilePage = lazy(() =>
 const MyInquiriesPage = lazy(() =>
   import('./pages/MyInquiriesPage').then(m => ({ default: m.MyInquiriesPage }))
 );
+const StorePage = lazy(() =>
+  import('./pages/StorePage').then(m => ({ default: m.StorePage }))
+);
+const MaintenancePage = lazy(() =>
+  import('./pages/MaintenancePage').then(m => ({ default: m.MaintenancePage }))
+);
 const NotFoundPage = lazy(() =>
   import('./pages/NotFoundPage').then(m => ({ default: m.NotFoundPage }))
 );
@@ -71,6 +77,10 @@ const AppLayout: React.FC = () => {
             <Route path="/about" element={<AboutPage />} />
             <Route path="/contact" element={<ContactPage />} />
             <Route path="/start-project" element={<StartProjectPage />} />
+            <Route path="/store" element={<StorePage />} />
+            <Route path="/templates" element={<StorePage />} />
+            <Route path="/maintenance" element={<MaintenancePage />} />
+            <Route path="/subscriptions" element={<MaintenancePage />} />
             <Route path="/privacy-policy" element={<PrivacyPolicyPage />} />
             <Route path="/terms" element={<TermsPage />} />
             <Route path="/refund-policy" element={<RefundPolicyPage />} />

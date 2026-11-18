@@ -39,7 +39,9 @@ export const Navbar: React.FC = () => {
     { name: 'Home', href: '/' },
     { name: 'Services', href: '/services' },
     { name: 'Our Work', href: '/work' },
-    { name: 'About Us', href: '/about' },
+    { name: 'Store & Templates', href: '/store' },
+    { name: 'Maintenance', href: '/maintenance' },
+    { name: 'About', href: '/about' },
     { name: 'Contact', href: '/contact' },
   ];
 
@@ -273,10 +275,10 @@ export const Navbar: React.FC = () => {
               <Link
                 to="/my-inquiries"
                 onClick={() => setMobileMenuOpen(false)}
-                className="flex items-center gap-2 px-4 py-3 text-indigo-400 bg-indigo-500/10 border border-indigo-500/20 rounded-xl font-medium"
+                className="flex items-center gap-2 px-4 py-3 text-indigo-400 dark:text-indigo-400 light:text-indigo-600 bg-indigo-500/10 dark:bg-indigo-500/10 light:bg-indigo-50 border border-indigo-500/20 light:border-indigo-200 rounded-xl font-medium"
               >
                 <ClipboardList className="w-4 h-4" />
-                <span>My Inquiries</span>
+                <span>My Inquiries &amp; Workspace</span>
               </Link>
             )}
 
@@ -284,7 +286,7 @@ export const Navbar: React.FC = () => {
               <Link
                 to="/admin"
                 onClick={() => setMobileMenuOpen(false)}
-                className="flex items-center gap-2 px-4 py-3 text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 rounded-xl font-medium"
+                className="flex items-center gap-2 px-4 py-3 text-emerald-400 dark:text-emerald-400 light:text-emerald-700 bg-emerald-500/10 dark:bg-emerald-500/10 light:bg-emerald-50 border border-emerald-500/20 light:border-emerald-200 rounded-xl font-medium"
               >
                 <Shield className="w-4 h-4" />
                 <span>Admin Dashboard</span>

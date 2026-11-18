@@ -72,18 +72,18 @@ export const ContactPage: React.FC = () => {
         canonical="https://websmithlabs.com/contact"
       />
 
-      <div className="pt-32 pb-24 text-left">
+      <div className="pt-24 sm:pt-32 pb-16 sm:pb-24 text-left transition-colors">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           {/* Header */}
-          <div className="max-w-3xl space-y-4 mb-16">
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-indigo-500/30 bg-indigo-500/10 text-xs font-mono font-semibold text-indigo-300">
+          <div className="max-w-3xl space-y-4 mb-10 sm:mb-16">
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-indigo-500/30 bg-indigo-500/10 light:border-indigo-200 light:bg-indigo-50 text-xs font-mono font-semibold text-indigo-300 light:text-indigo-600">
               <MessageSquare className="w-3.5 h-3.5" />
               <span>CONTACT</span>
             </div>
-            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold text-white dark:text-white light:text-slate-900 tracking-tight leading-tight">
+            <h1 className="text-3xl sm:text-5xl lg:text-6xl font-extrabold text-white dark:text-white light:text-slate-900 tracking-tight leading-tight break-words">
               Let&rsquo;s Start a Conversation.
             </h1>
-            <p className="text-lg sm:text-xl text-zinc-400 dark:text-zinc-400 light:text-slate-600 leading-relaxed">
+            <p className="text-base sm:text-lg lg:text-xl text-zinc-400 dark:text-zinc-400 light:text-slate-600 leading-relaxed">
               Have a project in mind, technical question, or prospective partnership? Reach out to our team.
             </p>
           </div>

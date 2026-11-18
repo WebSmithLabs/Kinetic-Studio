@@ -2,6 +2,7 @@ import React from 'react';
 import { SEO } from '../components/common/SEO';
 import { HeroSection } from '../components/home/HeroSection';
 import { CollaborationBanner } from '../components/home/CollaborationBanner';
+import { CompanyPillarsSection } from '../components/home/CompanyPillarsSection';
 import { ServicesOverview } from '../components/home/ServicesOverview';
 import { FeaturedProjects } from '../components/home/FeaturedProjects';
 import { WhyChooseUs } from '../components/home/WhyChooseUs';
@@ -29,6 +30,9 @@ export const HomePage: React.FC = () => {
 
         {/* Independence & Strategic Collaboration Banner */}
         <CollaborationBanner />
+
+        {/* 5 Core Pillars: Make, Sell, Manage, Collaborate, Maintain */}
+        <CompanyPillarsSection />
 
         {/* Services Overview */}
         <ServicesOverview />

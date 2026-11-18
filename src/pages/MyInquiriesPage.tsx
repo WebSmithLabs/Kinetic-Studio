@@ -1,4 +1,4 @@
-import React, { useMemo, useEffect } from 'react';
+import React, { useMemo, useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import {
   ClipboardList,
@@ -22,10 +22,19 @@ import {
   Eye,
   ChevronDown,
   ChevronUp,
+  Download,
+  Receipt,
+  ShieldCheck,
+  Send,
+  ExternalLink,
+  Layers,
+  Paperclip,
 } from 'lucide-react';
 import { SEO } from '../components/common/SEO';
 import { useStudio } from '../context/StudioContext';
-import { InquiryStatus } from '../types';
+import { InquiryStatus, PaymentRecord, CollaborationItem } from '../types';
+import { PaymentModal } from '../components/common/PaymentModal';
+import { formatCurrency } from '../lib/payments';
 
 // Status configuration with colors, labels, and icons
 const STATUS_CONFIG: Record<
@@ -116,7 +125,7 @@ const TIMELINE_STEPS = [
   { key: 'finished', label: 'Delivered' },
 ];
 
-const InquiryCard: React.FC<{
+interface InquiryCardProps {
   inquiry: {
     id: string;
     full_name: string;
@@ -132,8 +141,19 @@ const InquiryCard: React.FC<{
     created_at: string;
     updated_at?: string;
   };
-}> = ({ inquiry }) => {
-  const [expanded, setExpanded] = React.useState(false);
+  onTriggerPayment: (
+    inquiry: any,
+    type: 'advance_deposit' | 'milestone_payment',
+    amount: number
+  ) => void;
+}
+
+const InquiryCard: React.FC<InquiryCardProps> = ({ inquiry, onTriggerPayment }) => {
+  const [expanded, setExpanded] = useState(false);
+  const [collabExpanded, setCollabExpanded] = useState(false);
+  const [collabText, setCollabText] = useState('');
+  const { collaborations, addCollaborationMessage, currentUser } = useStudio();
+
   const config = STATUS_CONFIG[inquiry.status] || STATUS_CONFIG.new;
   const currentStep = config.step;
 
@@ -150,6 +170,25 @@ const InquiryCard: React.FC<{
         day: 'numeric',
       })
     : null;
+
+  // Filter messages related to this inquiry
+  const projectMessages = collaborations.filter(c => c.inquiry_id === inquiry.id);
+
+  const handleSendCollaborationNote = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!collabText.trim()) return;
+
+    await addCollaborationMessage({
+      inquiry_id: inquiry.id,
+      sender_email: currentUser?.email || inquiry.email,
+      sender_name: currentUser?.full_name || inquiry.full_name,
+      sender_role: 'client',
+      message: collabText.trim(),
+      type: 'message',
+    });
+
+    setCollabText('');
+  };
 
   return (
     <div className="rounded-2xl border border-[#252A36] dark:border-[#252A36] light:border-slate-200 bg-[#121620] dark:bg-[#121620] light:bg-white shadow-xl overflow-hidden transition-all">
@@ -176,13 +215,22 @@ const InquiryCard: React.FC<{
               )}
             </p>
           </div>
-          <button
-            onClick={() => setExpanded(!expanded)}
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[11px] font-medium text-zinc-400 hover:text-white dark:hover:text-white light:text-slate-500 light:hover:text-slate-900 border border-[#252A36] dark:border-[#252A36] light:border-slate-200 bg-[#0B0D12] dark:bg-[#0B0D12] light:bg-slate-50 hover:bg-[#181D2A] dark:hover:bg-[#181D2A] light:hover:bg-slate-100 transition-all cursor-pointer"
-          >
-            <span>{expanded ? 'Less' : 'Details'}</span>
-            {expanded ? <ChevronUp className="w-3.5 h-3.5" /> : <ChevronDown className="w-3.5 h-3.5" />}
-          </button>
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => setCollabExpanded(!collabExpanded)}
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[11px] font-medium text-indigo-400 hover:text-indigo-300 border border-indigo-500/30 bg-indigo-500/10 hover:bg-indigo-500/20 transition-all cursor-pointer"
+            >
+              <MessageSquare className="w-3.5 h-3.5" />
+              <span>Workspace &amp; Notes</span>
+            </button>
+            <button
+              onClick={() => setExpanded(!expanded)}
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[11px] font-medium text-zinc-400 hover:text-white dark:hover:text-white light:text-slate-500 light:hover:text-slate-900 border border-[#252A36] dark:border-[#252A36] light:border-slate-200 bg-[#0B0D12] dark:bg-[#0B0D12] light:bg-slate-50 hover:bg-[#181D2A] transition-all cursor-pointer"
+            >
+              <span>{expanded ? 'Less' : 'Details'}</span>
+              {expanded ? <ChevronUp className="w-3.5 h-3.5" /> : <ChevronDown className="w-3.5 h-3.5" />}
+            </button>
+          </div>
         </div>
 
         {/* Progress Tracker */}
@@ -240,7 +288,139 @@ const InquiryCard: React.FC<{
             })}
           </div>
         </div>
+
+        {/* PAYMENT ACTION BANNERS */}
+        {inquiry.status === 'accepted' && (
+          <div className="mt-5 p-4 rounded-xl bg-gradient-to-r from-emerald-500/10 via-indigo-500/10 to-transparent border border-emerald-500/30 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div>
+              <span className="text-xs font-bold text-white dark:text-white light:text-slate-900 flex items-center gap-1.5">
+                <CheckCircle2 className="w-4 h-4 text-emerald-400" />
+                <span>Project Accepted by Web Smith Labs!</span>
+              </span>
+              <p className="text-[11px] text-zinc-300 dark:text-zinc-300 light:text-slate-600 mt-0.5">
+                Please deposit the initial 50% project advance (₹25,000) to kick off architectural design and sprint 1 development.
+              </p>
+            </div>
+            <button
+              onClick={() => onTriggerPayment(inquiry, 'advance_deposit', 25000)}
+              className="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl text-xs font-bold text-white bg-emerald-600 hover:bg-emerald-500 shadow-md shadow-emerald-500/20 transition-all shrink-0 cursor-pointer"
+            >
+              <CreditCard className="w-4 h-4" />
+              <span>Pay Advance Deposit (₹25,000)</span>
+            </button>
+          </div>
+        )}
+
+        {(inquiry.status === 'advance_payment_completed' || inquiry.status === 'ongoing') && (
+          <div className="mt-5 p-4 rounded-xl bg-gradient-to-r from-indigo-500/10 via-purple-500/10 to-transparent border border-indigo-500/30 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div>
+              <span className="text-xs font-bold text-white dark:text-white light:text-slate-900 flex items-center gap-1.5">
+                <Rocket className="w-4 h-4 text-indigo-400" />
+                <span>Sprint in Progress &bull; Final Milestone Ready</span>
+              </span>
+              <p className="text-[11px] text-zinc-300 dark:text-zinc-300 light:text-slate-600 mt-0.5">
+                Advance payment confirmed. Settle remaining milestone invoice (₹25,000) for final source code release and domain DNS handover.
+              </p>
+            </div>
+            <button
+              onClick={() => onTriggerPayment(inquiry, 'milestone_payment', 25000)}
+              className="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl text-xs font-bold text-white bg-indigo-600 hover:bg-indigo-500 shadow-md shadow-indigo-500/20 transition-all shrink-0 cursor-pointer"
+            >
+              <CreditCard className="w-4 h-4" />
+              <span>Settle Final Balance (₹25,000)</span>
+            </button>
+          </div>
+        )}
+
+        {inquiry.status === 'payment_completed' && (
+          <div className="mt-5 p-3 rounded-xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-between text-xs text-emerald-400">
+            <span className="flex items-center gap-2 font-semibold">
+              <CheckCircle2 className="w-4 h-4" />
+              <span>Payments Complete &bull; Handover &amp; Assets Unlocked</span>
+            </span>
+            <span className="text-[11px] font-mono text-zinc-400">
+              Receipt verified
+            </span>
+          </div>
+        )}
       </div>
+
+      {/* Workspace Collaboration Drawer */}
+      {collabExpanded && (
+        <div className="border-t border-[#252A36] dark:border-[#252A36] light:border-slate-200 p-5 sm:p-6 bg-[#0E1118]/70 dark:bg-[#0E1118]/70 light:bg-slate-50 space-y-4">
+          <div className="flex items-center justify-between">
+            <h4 className="text-xs font-mono font-bold uppercase tracking-wider text-indigo-400 flex items-center gap-1.5">
+              <MessageSquare className="w-4 h-4" />
+              <span>Project Collaboration &amp; Deliverables Channel</span>
+            </h4>
+            <span className="text-[10px] text-zinc-500">Live Client &bull; Squad Workspace</span>
+          </div>
+
+          {/* Messages Feed */}
+          <div className="space-y-3 max-h-60 overflow-y-auto pr-1">
+            {projectMessages.length > 0 ? (
+              projectMessages.map(msg => (
+                <div
+                  key={msg.id}
+                  className={`p-3 rounded-xl text-xs space-y-1.5 ${
+                    msg.sender_role === 'team'
+                      ? 'bg-indigo-500/10 dark:bg-indigo-500/10 light:bg-indigo-50/80 border border-indigo-500/30 light:border-indigo-200'
+                      : 'bg-white/[0.03] dark:bg-white/[0.03] light:bg-white border border-white/5 dark:border-white/5 light:border-slate-200 light:shadow-sm'
+                  }`}
+                >
+                  <div className="flex items-center justify-between text-[10px] text-zinc-400 dark:text-zinc-400 light:text-slate-500">
+                    <span className="font-bold text-white dark:text-white light:text-slate-900">
+                      {msg.sender_name} {msg.sender_role === 'team' && <span className="text-indigo-400 light:text-indigo-600 font-mono">[Engineering Squad]</span>}
+                    </span>
+                    <span>{new Date(msg.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
+                  </div>
+                  <p className="text-zinc-200 dark:text-zinc-200 light:text-slate-800 leading-relaxed">
+                    {msg.message}
+                  </p>
+                  {msg.attachments && msg.attachments.length > 0 && (
+                    <div className="pt-1 flex flex-wrap gap-2">
+                      {msg.attachments.map((att, i) => (
+                        <a
+                          key={i}
+                          href={att.url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="inline-flex items-center gap-1 px-2.5 py-1 rounded-md text-[10px] font-mono bg-black/40 text-indigo-300 border border-white/10 hover:border-indigo-400 transition-colors"
+                        >
+                          <Paperclip className="w-3 h-3" />
+                          <span>{att.name}</span>
+                        </a>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              ))
+            ) : (
+              <p className="text-xs text-zinc-500 dark:text-zinc-500 light:text-slate-400 italic py-2">
+                No discussion entries yet. Post questions, design feedback, or asset requests below.
+              </p>
+            )}
+          </div>
+
+          {/* Post Message Form */}
+          <form onSubmit={handleSendCollaborationNote} className="flex gap-2">
+            <input
+              type="text"
+              value={collabText}
+              onChange={e => setCollabText(e.target.value)}
+              placeholder="Send project feedback, revision request, or link..."
+              className="flex-grow px-3.5 py-2 rounded-xl text-xs bg-[#0B0D12] dark:bg-[#0B0D12] light:bg-white border border-[#252A36] dark:border-[#252A36] light:border-slate-300 text-white dark:text-white light:text-slate-900 placeholder:text-zinc-500 dark:placeholder:text-zinc-500 light:placeholder:text-slate-400 focus:outline-none focus:border-indigo-500 shadow-sm"
+            />
+            <button
+              type="submit"
+              className="inline-flex items-center gap-1 px-4 py-2 rounded-xl text-xs font-semibold bg-indigo-600 hover:bg-indigo-500 text-white cursor-pointer"
+            >
+              <Send className="w-3.5 h-3.5" />
+              <span>Send</span>
+            </button>
+          </form>
+        </div>
+      )}
 
       {/* Expanded Details */}
       {expanded && (
@@ -312,9 +492,28 @@ const InquiryCard: React.FC<{
 
 export const MyInquiriesPage: React.FC = () => {
   const navigate = useNavigate();
-  const { currentUser, inquiries, authLoading, settings } = useStudio();
+  const {
+    currentUser,
+    inquiries,
+    payments,
+    clientSubscriptions,
+    authLoading,
+    settings,
+  } = useStudio();
 
-  // Filter inquiries belonging to the current user (matched by email)
+  const [activeTab, setActiveTab] = useState<'inquiries' | 'subscriptions' | 'payments'>('inquiries');
+
+  // Payment Modal Trigger State
+  const [paymentModalState, setPaymentModalState] = useState<{
+    isOpen: boolean;
+    title: string;
+    description: string;
+    amount: number;
+    paymentType: 'advance_deposit' | 'milestone_payment';
+    inquiryId: string;
+  } | null>(null);
+
+  // Filter inquiries belonging to current user
   const myInquiries = useMemo(() => {
     if (!currentUser) return [];
     const email = currentUser.email.toLowerCase().trim();
@@ -323,6 +522,24 @@ export const MyInquiriesPage: React.FC = () => {
       .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
   }, [currentUser, inquiries]);
 
+  // Filter user's payment records
+  const myPayments = useMemo(() => {
+    if (!currentUser) return [];
+    const email = currentUser.email.toLowerCase().trim();
+    return payments
+      .filter(p => p.client_email.toLowerCase().trim() === email)
+      .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
+  }, [currentUser, payments]);
+
+  // Filter user's active subscriptions
+  const mySubscriptions = useMemo(() => {
+    if (!currentUser) return [];
+    const email = currentUser.email.toLowerCase().trim();
+    return clientSubscriptions
+      .filter(s => s.client_email.toLowerCase().trim() === email)
+      .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
+  }, [currentUser, clientSubscriptions]);
+
   // Redirect unauthenticated users
   useEffect(() => {
     if (!authLoading && !currentUser) {
@@ -330,9 +547,7 @@ export const MyInquiriesPage: React.FC = () => {
     }
   }, [authLoading, currentUser, navigate]);
 
-  if (!currentUser) {
-    return null;
-  }
+  if (!currentUser) return null;
 
   const activeCount = myInquiries.filter(
     inq => !['finished', 'archived'].includes(inq.status)
@@ -341,130 +556,284 @@ export const MyInquiriesPage: React.FC = () => {
     inq => inq.status === 'finished' || inq.status === 'payment_completed'
   ).length;
 
+  const handleOpenPayment = (
+    inq: any,
+    type: 'advance_deposit' | 'milestone_payment',
+    amount: number
+  ) => {
+    setPaymentModalState({
+      isOpen: true,
+      title: type === 'advance_deposit' ? `Advance Project Deposit: ${inq.project_type}` : `Milestone Settlement: ${inq.project_type}`,
+      description: `Payment for project #${inq.id.slice(0, 8).toUpperCase()}`,
+      amount,
+      paymentType: type,
+      inquiryId: inq.id,
+    });
+  };
+
   return (
     <>
       <SEO
-        title="My Inquiries | Web Smith Labs"
-        description="Track the status of your project inquiries and engineering submissions with Web Smith Labs."
+        title="Client Workspace & Project Hub | Web Smith Labs"
+        description="Track your project milestones, pay invoices via Razorpay or Cashfree, review deliverables, and manage active retainers with Web Smith Labs."
       />
 
-      <div className="min-h-screen pt-32 pb-24 px-4 sm:px-6 lg:px-8 bg-[#0B0D12] dark:bg-[#0B0D12] light:bg-[#FAFAFC] text-left transition-colors">
-        <div className="max-w-4xl mx-auto space-y-8">
-          {/* Page Header */}
+      <div className="min-h-screen pt-24 sm:pt-32 pb-16 sm:pb-24 px-4 sm:px-6 lg:px-8 bg-[#0B0D12] dark:bg-[#0B0D12] light:bg-[#FAFAFC] text-left transition-colors">
+        <div className="max-w-5xl mx-auto space-y-8">
+          {/* Header */}
           <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 pb-6 border-b border-[#252A36] dark:border-[#252A36] light:border-slate-200">
             <div>
               <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-indigo-500/30 bg-indigo-500/10 light:border-indigo-200 light:bg-indigo-50 text-xs font-mono font-semibold text-indigo-300 light:text-indigo-600 mb-2">
                 <ClipboardList className="w-3.5 h-3.5" />
-                <span>PROJECT TRACKER</span>
+                <span>CLIENT WORKSPACE &amp; DASHBOARD</span>
               </div>
               <h1 className="text-3xl sm:text-4xl font-extrabold text-white dark:text-white light:text-slate-900 tracking-tight">
-                My Inquiries
+                Projects, Retainers &amp; Payments
               </h1>
               <p className="text-sm text-zinc-400 dark:text-zinc-400 light:text-slate-600 mt-1">
-                Track the status and progress of your project submissions.
+                Collaborate with our engineering team, settle milestone invoices, and manage your website retainers.
               </p>
             </div>
 
-            <Link
-              to="/start-project"
-              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold text-white bg-gradient-to-r from-indigo-500 via-indigo-600 to-purple-600 hover:from-indigo-400 hover:to-purple-500 shadow-lg shadow-indigo-500/25 transition-all duration-200 group active:scale-95 shrink-0"
-            >
-              <Sparkles className="w-4 h-4 text-indigo-200" />
-              <span>New Inquiry</span>
-              <ArrowRight className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" />
-            </Link>
-          </div>
-
-          {/* Stats Summary */}
-          {myInquiries.length > 0 && (
-            <div className="grid grid-cols-3 gap-3 sm:gap-4">
-              <div className="p-4 rounded-2xl border border-[#252A36] dark:border-[#252A36] light:border-slate-200 bg-[#121620] dark:bg-[#121620] light:bg-white text-center">
-                <div className="text-2xl sm:text-3xl font-extrabold text-white dark:text-white light:text-slate-900">
-                  {myInquiries.length}
-                </div>
-                <div className="text-[11px] font-mono text-zinc-400 dark:text-zinc-400 light:text-slate-500 uppercase tracking-wider mt-0.5">
-                  Total
-                </div>
-              </div>
-              <div className="p-4 rounded-2xl border border-indigo-500/20 bg-indigo-500/5 light:border-indigo-200 light:bg-indigo-50 text-center">
-                <div className="text-2xl sm:text-3xl font-extrabold text-indigo-400 light:text-indigo-600">
-                  {activeCount}
-                </div>
-                <div className="text-[11px] font-mono text-indigo-400/70 light:text-indigo-500 uppercase tracking-wider mt-0.5">
-                  Active
-                </div>
-              </div>
-              <div className="p-4 rounded-2xl border border-emerald-500/20 bg-emerald-500/5 light:border-emerald-200 light:bg-emerald-50 text-center">
-                <div className="text-2xl sm:text-3xl font-extrabold text-emerald-400 light:text-emerald-600">
-                  {completedCount}
-                </div>
-                <div className="text-[11px] font-mono text-emerald-400/70 light:text-emerald-500 uppercase tracking-wider mt-0.5">
-                  Completed
-                </div>
-              </div>
-            </div>
-          )}
-
-          {/* Inquiry Cards */}
-          {myInquiries.length > 0 ? (
-            <div className="space-y-4">
-              {myInquiries.map(inquiry => (
-                <InquiryCard key={inquiry.id} inquiry={inquiry} />
-              ))}
-            </div>
-          ) : (
-            /* Empty State */
-            <div className="text-center py-16 space-y-5">
-              <div className="w-20 h-20 rounded-3xl bg-indigo-500/10 border border-indigo-500/20 text-indigo-400 flex items-center justify-center mx-auto">
-                <ClipboardList className="w-10 h-10" />
-              </div>
-              <div>
-                <h2 className="text-xl sm:text-2xl font-bold text-white dark:text-white light:text-slate-900 mb-2">
-                  No Project Inquiries Yet
-                </h2>
-                <p className="text-sm text-zinc-400 dark:text-zinc-400 light:text-slate-500 max-w-md mx-auto leading-relaxed">
-                  You haven&apos;t submitted any project inquiries yet. Start by describing your project idea and our engineering team will review your submission.
-                </p>
-              </div>
+            <div className="flex items-center gap-2">
+              <Link
+                to="/store"
+                className="inline-flex items-center gap-1.5 px-4 py-2.5 rounded-xl text-xs font-semibold border border-[#252A36] dark:border-[#252A36] light:border-slate-300 text-zinc-300 dark:text-zinc-300 light:text-slate-700 hover:text-white dark:hover:text-white light:hover:text-slate-900 bg-[#121620] dark:bg-[#121620] light:bg-white hover:bg-[#181D2A] light:hover:bg-slate-50 transition-colors shadow-sm"
+              >
+                <span>Browse Store</span>
+              </Link>
               <Link
                 to="/start-project"
-                className="inline-flex items-center gap-2 px-6 py-3 rounded-xl text-sm font-semibold text-white bg-gradient-to-r from-indigo-500 via-indigo-600 to-purple-600 hover:from-indigo-400 hover:to-purple-500 shadow-lg shadow-indigo-500/25 transition-all group"
+                className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-xs font-bold text-white bg-gradient-to-r from-indigo-500 via-indigo-600 to-purple-600 hover:from-indigo-400 hover:to-purple-500 shadow-lg shadow-indigo-500/25 transition-all active:scale-95 shrink-0"
               >
                 <Sparkles className="w-4 h-4 text-indigo-200" />
-                <span>Start a Project</span>
-                <ArrowRight className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" />
+                <span>New Project</span>
+                <ArrowRight className="w-4 h-4" />
               </Link>
+            </div>
+          </div>
+
+          {/* Navigation Tabs */}
+          <div className="flex items-center gap-2 border-b border-[#252A36] dark:border-[#252A36] light:border-slate-200 pb-3 overflow-x-auto no-scrollbar">
+            <button
+              onClick={() => setActiveTab('inquiries')}
+              className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-semibold whitespace-nowrap transition-all cursor-pointer ${
+                activeTab === 'inquiries'
+                  ? 'bg-indigo-600 text-white shadow-md shadow-indigo-500/20'
+                  : 'text-zinc-400 dark:text-zinc-400 light:text-slate-600 hover:text-white dark:hover:text-white light:hover:text-slate-900 hover:bg-white/5 dark:hover:bg-white/5 light:hover:bg-slate-100'
+              }`}
+            >
+              <ClipboardList className="w-4 h-4" />
+              <span>Projects &amp; Inquiries ({myInquiries.length})</span>
+            </button>
+            <button
+              onClick={() => setActiveTab('subscriptions')}
+              className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-semibold whitespace-nowrap transition-all cursor-pointer ${
+                activeTab === 'subscriptions'
+                  ? 'bg-indigo-600 text-white shadow-md shadow-indigo-500/20'
+                  : 'text-zinc-400 dark:text-zinc-400 light:text-slate-600 hover:text-white dark:hover:text-white light:hover:text-slate-900 hover:bg-white/5 dark:hover:bg-white/5 light:hover:bg-slate-100'
+              }`}
+            >
+              <ShieldCheck className="w-4 h-4" />
+              <span>Active Retainers ({mySubscriptions.length})</span>
+            </button>
+            <button
+              onClick={() => setActiveTab('payments')}
+              className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-semibold whitespace-nowrap transition-all cursor-pointer ${
+                activeTab === 'payments'
+                  ? 'bg-indigo-600 text-white shadow-md shadow-indigo-500/20'
+                  : 'text-zinc-400 dark:text-zinc-400 light:text-slate-600 hover:text-white dark:hover:text-white light:hover:text-slate-900 hover:bg-white/5 dark:hover:bg-white/5 light:hover:bg-slate-100'
+              }`}
+            >
+              <Receipt className="w-4 h-4" />
+              <span>Invoices &amp; Receipts ({myPayments.length})</span>
+            </button>
+          </div>
+
+          {/* TAB 1: INQUIRIES & PROJECTS */}
+          {activeTab === 'inquiries' && (
+            <div className="space-y-6">
+              {/* Stats Bar */}
+              {myInquiries.length > 0 && (
+                <div className="grid grid-cols-3 gap-3 sm:gap-4">
+                  <div className="p-4 rounded-2xl border border-[#252A36] dark:border-[#252A36] light:border-slate-200 bg-[#121620] dark:bg-[#121620] light:bg-white text-center shadow-sm">
+                    <div className="text-2xl sm:text-3xl font-extrabold text-white dark:text-white light:text-slate-900">{myInquiries.length}</div>
+                    <div className="text-[11px] font-mono text-zinc-400 dark:text-zinc-400 light:text-slate-500 uppercase tracking-wider mt-0.5">Total</div>
+                  </div>
+                  <div className="p-4 rounded-2xl border border-indigo-500/20 light:border-indigo-200 bg-indigo-500/5 light:bg-indigo-50/70 text-center shadow-sm">
+                    <div className="text-2xl sm:text-3xl font-extrabold text-indigo-400 light:text-indigo-600">{activeCount}</div>
+                    <div className="text-[11px] font-mono text-indigo-400/70 light:text-indigo-600/80 uppercase tracking-wider mt-0.5">Active</div>
+                  </div>
+                  <div className="p-4 rounded-2xl border border-emerald-500/20 light:border-emerald-200 bg-emerald-500/5 light:bg-emerald-50/70 text-center shadow-sm">
+                    <div className="text-2xl sm:text-3xl font-extrabold text-emerald-400 light:text-emerald-600">{completedCount}</div>
+                    <div className="text-[11px] font-mono text-emerald-400/70 light:text-emerald-600/80 uppercase tracking-wider mt-0.5">Completed</div>
+                  </div>
+                </div>
+              )}
+
+              {/* Cards List */}
+              {myInquiries.length > 0 ? (
+                <div className="space-y-4">
+                  {myInquiries.map(inquiry => (
+                    <InquiryCard
+                      key={inquiry.id}
+                      inquiry={inquiry}
+                      onTriggerPayment={handleOpenPayment}
+                    />
+                  ))}
+                </div>
+              ) : (
+                <div className="text-center py-16 space-y-4 rounded-3xl border border-[#252A36] dark:border-[#252A36] light:border-slate-200 bg-[#121620]/40 dark:bg-[#121620]/40 light:bg-white p-8">
+                  <ClipboardList className="w-12 h-12 text-zinc-500 light:text-slate-400 mx-auto" />
+                  <h3 className="text-lg font-bold text-white dark:text-white light:text-slate-900">No active project inquiries</h3>
+                  <p className="text-xs text-zinc-400 dark:text-zinc-400 light:text-slate-600 max-w-sm mx-auto">
+                    Submit your project specifications to begin design workshops and Sprint 1 development.
+                  </p>
+                  <Link
+                    to="/start-project"
+                    className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-xs font-bold text-white bg-indigo-600 hover:bg-indigo-500 transition-colors shadow-md shadow-indigo-500/20"
+                  >
+                    <span>Start a Project</span>
+                  </Link>
+                </div>
+              )}
             </div>
           )}
 
-          {/* Help Section */}
-          <div className="rounded-2xl border border-[#252A36] dark:border-[#252A36] light:border-slate-200 bg-[#121620]/60 dark:bg-[#121620]/60 light:bg-white p-5 sm:p-6">
-            <h3 className="text-sm font-bold text-white dark:text-white light:text-slate-900 mb-2">
-              Need Help With Your Project?
-            </h3>
-            <p className="text-xs text-zinc-400 dark:text-zinc-400 light:text-slate-500 leading-relaxed mb-3">
-              If you have questions about your inquiry status or need to update your project requirements, reach out to our team directly.
-            </p>
-            <div className="flex flex-wrap items-center gap-3">
-              {settings.contact_email && (
-                <a
-                  href={`mailto:${settings.contact_email}`}
-                  className="inline-flex items-center gap-1.5 text-xs font-medium text-indigo-400 light:text-indigo-600 hover:text-indigo-300 light:hover:text-indigo-500 transition-colors"
-                >
-                  <Mail className="w-3.5 h-3.5" />
-                  <span>{settings.contact_email}</span>
-                </a>
-              )}
-              {settings.phone_number && (
-                <span className="inline-flex items-center gap-1.5 text-xs text-zinc-400 dark:text-zinc-400 light:text-slate-500">
-                  <Phone className="w-3.5 h-3.5" />
-                  <span>{settings.phone_number}</span>
-                </span>
+          {/* TAB 2: ACTIVE RETAINERS & SUBSCRIPTIONS */}
+          {activeTab === 'subscriptions' && (
+            <div className="space-y-6">
+              {mySubscriptions.length > 0 ? (
+                <div className="space-y-4">
+                  {mySubscriptions.map(sub => (
+                    <div
+                      key={sub.id}
+                      className="p-6 rounded-2xl border border-[#252A36] dark:border-[#252A36] light:border-slate-200 bg-[#121620] dark:bg-[#121620] light:bg-white flex flex-col sm:flex-row sm:items-center justify-between gap-4 shadow-sm"
+                    >
+                      <div className="space-y-1">
+                        <div className="flex items-center gap-2">
+                          <span className="px-2.5 py-0.5 rounded-md text-[10px] font-mono font-bold uppercase bg-emerald-500/10 text-emerald-400 border border-emerald-500/30">
+                            {sub.status}
+                          </span>
+                          <span className="text-xs font-mono text-zinc-500 dark:text-zinc-500 light:text-slate-400">
+                            ID: {sub.id}
+                          </span>
+                        </div>
+                        <h3 className="text-lg font-bold text-white dark:text-white light:text-slate-900">{sub.plan_name}</h3>
+                        <p className="text-xs text-zinc-400 dark:text-zinc-400 light:text-slate-600">
+                          {formatCurrency(sub.amount, sub.currency)} / {sub.billing_cycle} &bull; Next renewal: {new Date(sub.next_billing_date).toLocaleDateString()}
+                        </p>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <Link
+                          to="/maintenance"
+                          className="px-4 py-2 rounded-xl text-xs font-semibold border border-[#252A36] dark:border-[#252A36] light:border-slate-200 bg-[#0B0D12] dark:bg-[#0B0D12] light:bg-slate-50 text-zinc-300 dark:text-zinc-300 light:text-slate-700 hover:text-white dark:hover:text-white light:hover:text-slate-900 transition-colors"
+                        >
+                          Change Plan
+                        </Link>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <div className="p-8 rounded-2xl border border-dashed border-[#252A36] dark:border-[#252A36] light:border-slate-300 bg-[#121620]/30 dark:bg-[#121620]/30 light:bg-white text-center space-y-4">
+                  <ShieldCheck className="w-12 h-12 text-indigo-400 light:text-indigo-600 mx-auto" />
+                  <h3 className="text-lg font-bold text-white dark:text-white light:text-slate-900">No Active Website Retainers</h3>
+                  <p className="text-xs text-zinc-400 dark:text-zinc-400 light:text-slate-600 max-w-md mx-auto">
+                    Subscribe to continuous uptime monitoring, weekly database backups, and monthly developer support hours powered by Razorpay and Cashfree subscriptions.
+                  </p>
+                  <Link
+                    to="/maintenance"
+                    className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-xs font-bold text-white bg-indigo-600 hover:bg-indigo-500 shadow-md shadow-indigo-500/20"
+                  >
+                    <span>View Maintenance Plans</span>
+                  </Link>
+                </div>
               )}
             </div>
-          </div>
+          )}
+
+          {/* TAB 3: PAYMENTS & INVOICES */}
+          {activeTab === 'payments' && (
+            <div className="space-y-6">
+              {myPayments.length > 0 ? (
+                <div className="rounded-2xl border border-[#252A36] dark:border-[#252A36] light:border-slate-200 bg-[#121620] dark:bg-[#121620] light:bg-white overflow-hidden shadow-sm">
+                  <div className="overflow-x-auto">
+                    <table className="w-full min-w-[650px] text-left text-xs">
+                      <thead className="bg-[#0B0D12] dark:bg-[#0B0D12] light:bg-slate-100 text-zinc-400 dark:text-zinc-400 light:text-slate-600 font-mono uppercase text-[10px] border-b border-[#252A36] dark:border-[#252A36] light:border-slate-200">
+                        <tr>
+                          <th className="p-4">Invoice #</th>
+                          <th className="p-4">Description</th>
+                          <th className="p-4">Date</th>
+                          <th className="p-4">Gateway</th>
+                          <th className="p-4">Amount</th>
+                          <th className="p-4 text-right">Receipt</th>
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y divide-[#252A36] dark:divide-[#252A36] light:divide-slate-200 text-zinc-300 dark:text-zinc-300 light:text-slate-700">
+                        {myPayments.map(pay => (
+                          <tr key={pay.id} className="hover:bg-white/[0.02] dark:hover:bg-white/[0.02] light:hover:bg-slate-50 transition-colors">
+                            <td className="p-4 font-mono font-bold text-indigo-400 light:text-indigo-600">
+                              {pay.invoice_number}
+                            </td>
+                            <td className="p-4">
+                              <span className="font-semibold text-white dark:text-white light:text-slate-900 block">{pay.title}</span>
+                              <span className="text-[10px] text-zinc-500 font-mono">{pay.payment_id}</span>
+                            </td>
+                            <td className="p-4 text-zinc-400 dark:text-zinc-400 light:text-slate-500">
+                              {new Date(pay.created_at).toLocaleDateString()}
+                            </td>
+                            <td className="p-4 uppercase font-mono font-semibold text-emerald-400 light:text-emerald-700">
+                              {pay.gateway}
+                            </td>
+                            <td className="p-4 font-bold text-white dark:text-white light:text-slate-900">
+                              {formatCurrency(pay.amount, pay.currency)}
+                            </td>
+                            <td className="p-4 text-right">
+                              <button
+                                onClick={() => window.print()}
+                                className="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg border border-[#252A36] dark:border-[#252A36] light:border-slate-300 bg-[#0B0D12] dark:bg-[#0B0D12] light:bg-slate-50 hover:bg-[#181D2A] light:hover:bg-slate-100 text-[11px] font-semibold text-zinc-300 dark:text-zinc-300 light:text-slate-700 hover:text-white dark:hover:text-white light:hover:text-slate-900 cursor-pointer shadow-sm"
+                              >
+                                <Download className="w-3.5 h-3.5" />
+                                <span>Print</span>
+                              </button>
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              ) : (
+                <div className="p-8 rounded-2xl border border-dashed border-[#252A36] dark:border-[#252A36] light:border-slate-300 bg-[#121620]/30 dark:bg-[#121620]/30 light:bg-white text-center space-y-4">
+                  <Receipt className="w-12 h-12 text-zinc-500 light:text-slate-400 mx-auto" />
+                  <h3 className="text-lg font-bold text-white dark:text-white light:text-slate-900">No Payment Records Found</h3>
+                  <p className="text-xs text-zinc-400 dark:text-zinc-400 light:text-slate-600">
+                    Invoices and official GST receipts will appear here after your first milestone or template payment.
+                  </p>
+                </div>
+              )}
+            </div>
+          )}
         </div>
       </div>
+
+      {/* Payment Modal */}
+      {paymentModalState && (
+        <PaymentModal
+          isOpen={paymentModalState.isOpen}
+          onClose={() => setPaymentModalState(null)}
+          title={paymentModalState.title}
+          description={paymentModalState.description}
+          amount={paymentModalState.amount}
+          currency="INR"
+          paymentType={paymentModalState.paymentType}
+          inquiryId={paymentModalState.inquiryId}
+          onPaymentComplete={() => {
+            setPaymentModalState(null);
+          }}
+        />
+      )}
     </>
   );
 };

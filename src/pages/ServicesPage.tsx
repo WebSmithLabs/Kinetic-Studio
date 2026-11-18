@@ -60,32 +60,32 @@ export const ServicesPage: React.FC = () => {
         canonical="https://websmithlabs.com/services"
       />
 
-      <div className="pt-32 pb-24 text-left">
+      <div className="pt-24 sm:pt-32 pb-16 sm:pb-24 text-left transition-colors">
         {/* Page Header */}
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-20">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-12 sm:mb-16">
           <div className="max-w-3xl space-y-4">
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-indigo-500/30 bg-indigo-500/10 text-xs font-mono font-semibold text-indigo-300">
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-indigo-500/30 bg-indigo-500/10 light:border-indigo-200 light:bg-indigo-50 text-xs font-mono font-semibold text-indigo-300 light:text-indigo-600">
               <Layers className="w-3.5 h-3.5" />
               <span>SERVICES</span>
             </div>
-            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold text-white dark:text-white light:text-slate-900 tracking-tight leading-tight">
+            <h1 className="text-3xl sm:text-5xl lg:text-6xl font-extrabold text-white dark:text-white light:text-slate-900 tracking-tight leading-tight break-words">
               End-to-End Digital Engineering for Modern Businesses.
             </h1>
-            <p className="text-lg sm:text-xl text-zinc-400 dark:text-zinc-400 light:text-slate-600 leading-relaxed">
+            <p className="text-base sm:text-lg lg:text-xl text-zinc-400 dark:text-zinc-400 light:text-slate-600 leading-relaxed">
               Bespoke websites, high-speed web applications, and digital platforms built to convert and scale.
             </p>
           </div>
         </div>
 
         {/* Detailed Services List */}
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-12">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8 sm:space-y-12">
           {services
             .filter(s => s.is_active)
             .map((service, index) => (
               <div
                 key={service.id}
                 id={service.slug}
-                className="scroll-mt-32 rounded-3xl border border-[#252A36] dark:border-[#252A36] light:border-slate-200 bg-[#121620]/80 dark:bg-[#121620]/80 light:bg-white p-8 sm:p-12 transition-all duration-300 hover:border-indigo-500/40 shadow-xl"
+                className="scroll-mt-32 rounded-3xl border border-[#252A36] dark:border-[#252A36] light:border-slate-200 bg-[#121620]/80 dark:bg-[#121620]/80 light:bg-white p-6 sm:p-12 transition-all duration-300 hover:border-indigo-500/40 shadow-xl"
               >
                 <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-start">
                   {/* Left Column: Number, Title, Overview */}
@@ -110,7 +110,7 @@ export const ServicesPage: React.FC = () => {
                     <div className="pt-2">
                       <Link
                         to={`/start-project?service=${encodeURIComponent(service.title)}`}
-                        className="inline-flex items-center gap-2 px-6 py-3 rounded-xl text-sm font-semibold text-white bg-indigo-600 hover:bg-indigo-500 shadow-lg shadow-indigo-500/20 transition-all duration-200 group"
+                        className="inline-flex items-center justify-center gap-2 w-full sm:w-auto px-6 py-3 rounded-xl text-sm font-semibold text-white bg-indigo-600 hover:bg-indigo-500 shadow-lg shadow-indigo-500/20 transition-all duration-200 group"
                       >
                         <span>Start With This Service</span>
                         <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
@@ -160,7 +160,7 @@ export const ServicesPage: React.FC = () => {
         </div>
 
         {/* Bottom Banner */}
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-20">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-12 sm:mt-20">
           <ContactCtaBanner />
         </div>
       </div>

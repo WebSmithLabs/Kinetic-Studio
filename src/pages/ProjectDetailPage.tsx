@@ -55,7 +55,7 @@ export const ProjectDetailPage: React.FC = () => {
         canonical={`https://websmithlabs.com/work/${project.slug}`}
       />
 
-      <article className="pt-32 pb-24 text-left">
+      <article className="pt-24 sm:pt-32 pb-16 sm:pb-24 text-left transition-colors">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
           {/* Back button */}
           <div className="mb-8">
@@ -308,7 +308,7 @@ export const ProjectDetailPage: React.FC = () => {
           </div>
         </div>
 
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-20">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-12 sm:mt-20">
           <ContactCtaBanner />
         </div>
       </article>

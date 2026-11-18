@@ -19,6 +19,13 @@ import {
   Search,
   AlertCircle,
   Sparkles,
+  CreditCard,
+  Receipt,
+  ShieldCheck,
+  Download,
+  ShoppingBag,
+  ExternalLink,
+  DollarSign,
 } from 'lucide-react';
 import { useStudio } from '../context/StudioContext';
 import { SEO } from '../components/common/SEO';
@@ -34,7 +41,10 @@ import {
   TestimonialItem,
   ProjectCategory,
   InquiryStatus,
+  PaymentRecord,
+  ClientSubscription,
 } from '../types';
+import { formatCurrency } from '../lib/payments';
 
 export const AdminDashboard: React.FC = () => {
   const navigate = useNavigate();
@@ -71,6 +81,9 @@ export const AdminDashboard: React.FC = () => {
     addTestimonial,
     updateTestimonial,
     deleteTestimonial,
+    payments,
+    clientSubscriptions,
+    cancelSubscription,
   } = useStudio();
 
   // Supabase dynamic setup state
@@ -94,7 +107,7 @@ export const AdminDashboard: React.FC = () => {
 
   // Active Admin Tab
   const [activeTab, setActiveTab] = useState<
-    'overview' | 'projects' | 'inquiries' | 'settings' | 'content' | 'database'
+    'overview' | 'projects' | 'inquiries' | 'payments' | 'retainers' | 'settings' | 'content' | 'database'
   >('overview');
 
   // Notifications / feedback
@@ -377,6 +390,30 @@ export const AdminDashboard: React.FC = () => {
             </button>
 
             <button
+              onClick={() => setActiveTab('payments')}
+              className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-semibold whitespace-nowrap transition-all ${
+                activeTab === 'payments'
+                  ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-500/25'
+                  : 'text-zinc-400 dark:text-zinc-400 light:text-slate-600 hover:text-white dark:hover:text-white light:hover:text-slate-900 bg-[#121620] dark:bg-[#121620] light:bg-white border border-transparent light:border-slate-200'
+              }`}
+            >
+              <CreditCard className="w-4 h-4" />
+              <span>Payments &amp; Invoices ({payments.length})</span>
+            </button>
+
+            <button
+              onClick={() => setActiveTab('retainers')}
+              className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-semibold whitespace-nowrap transition-all ${
+                activeTab === 'retainers'
+                  ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-500/25'
+                  : 'text-zinc-400 dark:text-zinc-400 light:text-slate-600 hover:text-white dark:hover:text-white light:hover:text-slate-900 bg-[#121620] dark:bg-[#121620] light:bg-white border border-transparent light:border-slate-200'
+              }`}
+            >
+              <ShieldCheck className="w-4 h-4" />
+              <span>Retainers ({clientSubscriptions.length})</span>
+            </button>
+
+            <button
               onClick={() => setActiveTab('settings')}
               className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-semibold whitespace-nowrap transition-all ${
                 activeTab === 'settings'
@@ -442,6 +479,57 @@ export const AdminDashboard: React.FC = () => {
                   <div className="text-xs font-mono uppercase text-zinc-400 dark:text-zinc-400 light:text-slate-500">Active Pipeline</div>
                   <div className="text-3xl font-extrabold text-indigo-400 light:text-indigo-600">{pendingInquiries}</div>
                   <div className="text-[11px] text-zinc-500">New &amp; reviewed</div>
+                </div>
+              </div>
+
+              {/* Financial & Subscriptions Row */}
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-5">
+                <div
+                  onClick={() => setActiveTab('payments')}
+                  className="p-5 rounded-2xl border border-emerald-500/30 bg-emerald-500/5 hover:bg-emerald-500/10 transition-colors cursor-pointer space-y-1"
+                >
+                  <div className="text-xs font-mono uppercase text-emerald-400 flex items-center justify-between">
+                    <span>Total Revenue Collected</span>
+                    <CreditCard className="w-4 h-4" />
+                  </div>
+                  <div className="text-2xl font-extrabold text-white">
+                    {formatCurrency(
+                      payments.reduce((acc, p) => acc + (p.status === 'success' ? p.amount : 0), 0)
+                    )}
+                  </div>
+                  <div className="text-[10px] text-zinc-400">Razorpay &amp; Cashfree &rarr; View Invoices</div>
+                </div>
+
+                <div
+                  onClick={() => setActiveTab('retainers')}
+                  className="p-5 rounded-2xl border border-indigo-500/30 bg-indigo-500/5 hover:bg-indigo-500/10 transition-colors cursor-pointer space-y-1"
+                >
+                  <div className="text-xs font-mono uppercase text-indigo-400 flex items-center justify-between">
+                    <span>Active Retainers</span>
+                    <ShieldCheck className="w-4 h-4" />
+                  </div>
+                  <div className="text-2xl font-extrabold text-white">
+                    {clientSubscriptions.filter(s => s.status === 'active').length}
+                  </div>
+                  <div className="text-[10px] text-zinc-400">Website care subscriptions &rarr; View Retainers</div>
+                </div>
+
+                <div
+                  onClick={() => setActiveTab('retainers')}
+                  className="p-5 rounded-2xl border border-purple-500/30 bg-purple-500/5 hover:bg-purple-500/10 transition-colors cursor-pointer space-y-1"
+                >
+                  <div className="text-xs font-mono uppercase text-purple-400 flex items-center justify-between">
+                    <span>Monthly Retainer MRR</span>
+                    <DollarSign className="w-4 h-4" />
+                  </div>
+                  <div className="text-2xl font-extrabold text-white">
+                    {formatCurrency(
+                      clientSubscriptions
+                        .filter(s => s.status === 'active')
+                        .reduce((acc, s) => acc + s.amount, 0)
+                    )}
+                  </div>
+                  <div className="text-[10px] text-zinc-400">Guaranteed monthly recurring cashflow</div>
                 </div>
               </div>
 
@@ -571,7 +659,7 @@ export const AdminDashboard: React.FC = () => {
               {/* Projects Table */}
               <div className="rounded-2xl border border-[#252A36] dark:border-[#252A36] light:border-slate-200 bg-[#121620] dark:bg-[#121620] light:bg-white overflow-hidden shadow-sm">
                 <div className="overflow-x-auto">
-                  <table className="w-full text-left text-xs">
+                  <table className="w-full min-w-[650px] text-left text-xs">
                     <thead className="bg-[#0B0D12] dark:bg-[#0B0D12] light:bg-slate-100 text-zinc-400 dark:text-zinc-400 light:text-slate-600 font-mono uppercase tracking-wider border-b border-[#252A36] dark:border-[#252A36] light:border-slate-200">
                       <tr>
                         <th className="py-4 px-6">Project</th>
@@ -845,6 +933,243 @@ export const AdminDashboard: React.FC = () => {
                       </div>
                     </div>
                   ))}
+              </div>
+            </div>
+          )}
+
+          {/* ========================================================================= */}
+          {/* TAB: PAYMENTS & INVOICES */}
+          {/* ========================================================================= */}
+          {activeTab === 'payments' && (
+            <div className="space-y-8 animate-fadeIn">
+              {/* Payment Summary Metrics */}
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-5">
+                <div className="p-6 rounded-2xl border border-[#252A36] dark:border-[#252A36] light:border-slate-200 bg-[#121620] dark:bg-[#121620] light:bg-white space-y-1 shadow-sm">
+                  <div className="text-xs font-mono uppercase text-zinc-400 dark:text-zinc-400 light:text-slate-500">Total Volume</div>
+                  <div className="text-2xl sm:text-3xl font-extrabold text-emerald-400 light:text-emerald-600">
+                    {formatCurrency(
+                      payments.reduce((acc, p) => acc + (p.status === 'success' ? p.amount : 0), 0)
+                    )}
+                  </div>
+                  <div className="text-[11px] text-zinc-500 dark:text-zinc-500 light:text-slate-400">All gateways combined</div>
+                </div>
+
+                <div className="p-6 rounded-2xl border border-[#252A36] dark:border-[#252A36] light:border-slate-200 bg-[#121620] dark:bg-[#121620] light:bg-white space-y-1 shadow-sm">
+                  <div className="text-xs font-mono uppercase text-zinc-400 dark:text-zinc-400 light:text-slate-500">Razorpay Volume</div>
+                  <div className="text-2xl sm:text-3xl font-extrabold text-indigo-400 light:text-indigo-600">
+                    {formatCurrency(
+                      payments
+                        .filter(p => p.gateway === 'razorpay' && p.status === 'success')
+                        .reduce((acc, p) => acc + p.amount, 0)
+                    )}
+                  </div>
+                  <div className="text-[11px] text-zinc-500 dark:text-zinc-500 light:text-slate-400">UPI, Cards, NetBanking</div>
+                </div>
+
+                <div className="p-6 rounded-2xl border border-[#252A36] dark:border-[#252A36] light:border-slate-200 bg-[#121620] dark:bg-[#121620] light:bg-white space-y-1 shadow-sm">
+                  <div className="text-xs font-mono uppercase text-zinc-400 dark:text-zinc-400 light:text-slate-500">Cashfree Volume</div>
+                  <div className="text-2xl sm:text-3xl font-extrabold text-purple-400 light:text-purple-600">
+                    {formatCurrency(
+                      payments
+                        .filter(p => p.gateway === 'cashfree' && p.status === 'success')
+                        .reduce((acc, p) => acc + p.amount, 0)
+                    )}
+                  </div>
+                  <div className="text-[11px] text-zinc-500 dark:text-zinc-500 light:text-slate-400">Cashfree PG settlement</div>
+                </div>
+
+                <div className="p-6 rounded-2xl border border-[#252A36] dark:border-[#252A36] light:border-slate-200 bg-[#121620] dark:bg-[#121620] light:bg-white space-y-1 shadow-sm">
+                  <div className="text-xs font-mono uppercase text-zinc-400 dark:text-zinc-400 light:text-slate-500">Invoices Issued</div>
+                  <div className="text-2xl sm:text-3xl font-extrabold text-white dark:text-white light:text-slate-900">
+                    {payments.length}
+                  </div>
+                  <div className="text-[11px] text-zinc-500 dark:text-zinc-500 light:text-slate-400">Tax invoices on record</div>
+                </div>
+              </div>
+
+              {/* Transactions Table */}
+              <div className="rounded-2xl border border-[#252A36] dark:border-[#252A36] light:border-slate-200 bg-[#121620] dark:bg-[#121620] light:bg-white overflow-hidden shadow-sm">
+                <div className="p-6 border-b border-[#252A36] dark:border-[#252A36] light:border-slate-200 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                  <div>
+                    <h3 className="text-base font-bold text-white dark:text-white light:text-slate-900 flex items-center gap-2">
+                      <Receipt className="w-5 h-5 text-indigo-400 light:text-indigo-600" />
+                      <span>Transactions &amp; Tax Invoices</span>
+                    </h3>
+                    <p className="text-xs text-zinc-400 dark:text-zinc-400 light:text-slate-500 mt-0.5">
+                      Real-time payment logs captured from Razorpay and Cashfree checkout sessions.
+                    </p>
+                  </div>
+                  <button
+                    onClick={() => window.print()}
+                    className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-semibold border border-[#252A36] dark:border-[#252A36] light:border-slate-300 bg-[#0B0D12] dark:bg-[#0B0D12] light:bg-slate-50 text-zinc-300 dark:text-zinc-300 light:text-slate-700 hover:text-white dark:hover:text-white light:hover:text-slate-900 cursor-pointer transition-colors shadow-sm"
+                  >
+                    <Download className="w-3.5 h-3.5" />
+                    <span>Export / Print Invoices</span>
+                  </button>
+                </div>
+
+                <div className="overflow-x-auto">
+                  <table className="w-full min-w-[700px] text-left text-xs">
+                    <thead className="bg-[#0B0D12] dark:bg-[#0B0D12] light:bg-slate-100 text-zinc-400 dark:text-zinc-400 light:text-slate-600 font-mono uppercase text-[10px] border-b border-[#252A36] dark:border-[#252A36] light:border-slate-200">
+                      <tr>
+                        <th className="p-4">Invoice #</th>
+                        <th className="p-4">Client</th>
+                        <th className="p-4">Item / Description</th>
+                        <th className="p-4">Gateway</th>
+                        <th className="p-4">Amount</th>
+                        <th className="p-4">Status</th>
+                        <th className="p-4">Date</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-[#252A36] dark:divide-[#252A36] light:divide-slate-200 text-zinc-300 dark:text-zinc-300 light:text-slate-700">
+                      {payments.map(pay => (
+                        <tr key={pay.id} className="hover:bg-white/[0.02] dark:hover:bg-white/[0.02] light:hover:bg-slate-50 transition-colors">
+                          <td className="p-4 font-mono font-bold text-indigo-400 light:text-indigo-600">
+                            {pay.invoice_number}
+                          </td>
+                          <td className="p-4">
+                            <span className="font-semibold text-white dark:text-white light:text-slate-900 block">{pay.client_name}</span>
+                            <span className="text-[10px] text-zinc-500 dark:text-zinc-500 light:text-slate-400">{pay.client_email}</span>
+                          </td>
+                          <td className="p-4">
+                            <span className="text-white dark:text-white light:text-slate-900 block font-medium">{pay.title}</span>
+                            <span className="text-[10px] text-zinc-500 dark:text-zinc-500 light:text-slate-400 font-mono">{pay.payment_id}</span>
+                          </td>
+                          <td className="p-4">
+                            <span className="px-2 py-0.5 rounded text-[10px] font-mono font-semibold uppercase bg-indigo-500/10 dark:bg-indigo-500/10 light:bg-indigo-50 text-indigo-400 light:text-indigo-700 border border-indigo-500/20 light:border-indigo-200">
+                              {pay.gateway}
+                            </span>
+                          </td>
+                          <td className="p-4 font-bold text-white dark:text-white light:text-slate-900">
+                            {formatCurrency(pay.amount, pay.currency)}
+                          </td>
+                          <td className="p-4">
+                            <span className="px-2 py-0.5 rounded-full text-[10px] font-mono font-semibold uppercase bg-emerald-500/10 dark:bg-emerald-500/10 light:bg-emerald-50 text-emerald-400 light:text-emerald-700 border border-emerald-500/30 light:border-emerald-200">
+                              {pay.status}
+                            </span>
+                          </td>
+                          <td className="p-4 text-zinc-400 dark:text-zinc-400 light:text-slate-500">
+                            {new Date(pay.created_at).toLocaleDateString()}
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* ========================================================================= */}
+          {/* TAB: RETAINER SUBSCRIPTIONS */}
+          {/* ========================================================================= */}
+          {activeTab === 'retainers' && (
+            <div className="space-y-8 animate-fadeIn">
+              {/* Retainers Summary Metrics */}
+              <div className="grid grid-cols-2 md:grid-cols-3 gap-4 sm:gap-5">
+                <div className="p-6 rounded-2xl border border-[#252A36] dark:border-[#252A36] light:border-slate-200 bg-[#121620] dark:bg-[#121620] light:bg-white space-y-1 shadow-sm">
+                  <div className="text-xs font-mono uppercase text-zinc-400 dark:text-zinc-400 light:text-slate-500">Active Retainers</div>
+                  <div className="text-3xl font-extrabold text-white dark:text-white light:text-slate-900">
+                    {clientSubscriptions.filter(s => s.status === 'active').length}
+                  </div>
+                  <div className="text-[11px] text-zinc-500 dark:text-zinc-500 light:text-slate-400">Under SLA management</div>
+                </div>
+
+                <div className="p-6 rounded-2xl border border-[#252A36] dark:border-[#252A36] light:border-slate-200 bg-[#121620] dark:bg-[#121620] light:bg-white space-y-1 shadow-sm">
+                  <div className="text-xs font-mono uppercase text-zinc-400 dark:text-zinc-400 light:text-slate-500">Monthly Recurring Revenue (MRR)</div>
+                  <div className="text-3xl font-extrabold text-emerald-400 light:text-emerald-600">
+                    {formatCurrency(
+                      clientSubscriptions
+                        .filter(s => s.status === 'active')
+                        .reduce((acc, s) => acc + s.amount, 0)
+                    )}
+                  </div>
+                  <div className="text-[11px] text-zinc-500 dark:text-zinc-500 light:text-slate-400">Contracted monthly revenue</div>
+                </div>
+
+                <div className="p-6 rounded-2xl border border-[#252A36] dark:border-[#252A36] light:border-slate-200 bg-[#121620] dark:bg-[#121620] light:bg-white space-y-1 shadow-sm">
+                  <div className="text-xs font-mono uppercase text-zinc-400 dark:text-zinc-400 light:text-slate-500">Annual Run Rate (ARR)</div>
+                  <div className="text-3xl font-extrabold text-indigo-400 light:text-indigo-600">
+                    {formatCurrency(
+                      clientSubscriptions
+                        .filter(s => s.status === 'active')
+                        .reduce((acc, s) => acc + s.amount, 0) * 12
+                    )}
+                  </div>
+                  <div className="text-[11px] text-zinc-500 dark:text-zinc-500 light:text-slate-400">Projected annualized run rate</div>
+                </div>
+              </div>
+
+              {/* Subscriptions List */}
+              <div className="rounded-2xl border border-[#252A36] dark:border-[#252A36] light:border-slate-200 bg-[#121620] dark:bg-[#121620] light:bg-white overflow-hidden shadow-sm">
+                <div className="p-6 border-b border-[#252A36] dark:border-[#252A36] light:border-slate-200">
+                  <h3 className="text-base font-bold text-white dark:text-white light:text-slate-900 flex items-center gap-2">
+                    <ShieldCheck className="w-5 h-5 text-indigo-400 light:text-indigo-600" />
+                    <span>Client Retainer Contracts</span>
+                  </h3>
+                  <p className="text-xs text-zinc-400 dark:text-zinc-400 light:text-slate-500 mt-0.5">
+                    Ongoing SLA contracts, maintenance tiers, and recurring billing cycles.
+                  </p>
+                </div>
+
+                <div className="overflow-x-auto">
+                  <table className="w-full min-w-[750px] text-left text-xs">
+                    <thead className="bg-[#0B0D12] dark:bg-[#0B0D12] light:bg-slate-100 text-zinc-400 dark:text-zinc-400 light:text-slate-600 font-mono uppercase text-[10px] border-b border-[#252A36] dark:border-[#252A36] light:border-slate-200">
+                      <tr>
+                        <th className="p-4">Contract ID</th>
+                        <th className="p-4">Client</th>
+                        <th className="p-4">Plan</th>
+                        <th className="p-4">Billing Cycle</th>
+                        <th className="p-4">Amount</th>
+                        <th className="p-4">Gateway</th>
+                        <th className="p-4">Status</th>
+                        <th className="p-4">Next Renewal</th>
+                        <th className="p-4 text-right">Action</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-[#252A36] dark:divide-[#252A36] light:divide-slate-200 text-zinc-300 dark:text-zinc-300 light:text-slate-700">
+                      {clientSubscriptions.map(sub => (
+                        <tr key={sub.id} className="hover:bg-white/[0.02] dark:hover:bg-white/[0.02] light:hover:bg-slate-50 transition-colors">
+                          <td className="p-4 font-mono font-bold text-indigo-400 light:text-indigo-600">{sub.id}</td>
+                          <td className="p-4">
+                            <span className="font-semibold text-white dark:text-white light:text-slate-900 block">{sub.client_name}</span>
+                            <span className="text-[10px] text-zinc-500 dark:text-zinc-500 light:text-slate-400">{sub.client_email}</span>
+                          </td>
+                          <td className="p-4 font-semibold text-white dark:text-white light:text-slate-900">{sub.plan_name}</td>
+                          <td className="p-4 capitalize">{sub.billing_cycle}</td>
+                          <td className="p-4 font-bold text-white dark:text-white light:text-slate-900">
+                            {formatCurrency(sub.amount, sub.currency)}
+                          </td>
+                          <td className="p-4 uppercase font-mono text-[10px] text-indigo-400 light:text-indigo-600">
+                            {sub.gateway}
+                          </td>
+                          <td className="p-4">
+                            <span className={`px-2 py-0.5 rounded-full text-[10px] font-mono font-semibold uppercase ${
+                              sub.status === 'active'
+                                ? 'bg-emerald-500/10 dark:bg-emerald-500/10 light:bg-emerald-50 text-emerald-400 light:text-emerald-700 border border-emerald-500/30 light:border-emerald-200'
+                                : 'bg-zinc-500/10 dark:bg-zinc-500/10 light:bg-slate-100 text-zinc-400 dark:text-zinc-400 light:text-slate-600 border border-zinc-500/30 light:border-slate-200'
+                            }`}>
+                              {sub.status}
+                            </span>
+                          </td>
+                          <td className="p-4 text-zinc-400 dark:text-zinc-400 light:text-slate-500">
+                            {new Date(sub.next_billing_date).toLocaleDateString()}
+                          </td>
+                          <td className="p-4 text-right">
+                            {sub.status === 'active' && (
+                              <button
+                                onClick={() => cancelSubscription(sub.id)}
+                                className="px-3 py-1 rounded-lg border border-rose-500/30 text-rose-400 hover:bg-rose-500/10 text-[11px] font-medium transition-colors cursor-pointer"
+                              >
+                                Cancel
+                              </button>
+                            )}
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
               </div>
             </div>
           )}
@@ -1146,6 +1471,125 @@ export const AdminDashboard: React.FC = () => {
                     }
                     className="w-full px-3 py-2 rounded-xl border border-[#252A36] dark:border-[#252A36] light:border-slate-300 bg-[#0B0D12] dark:bg-[#0B0D12] light:bg-slate-50 text-xs text-white dark:text-white light:text-slate-900 focus:outline-none focus:border-indigo-500"
                   />
+                </div>
+              </div>
+
+              {/* Payment Gateways Configuration (Razorpay & Cashfree) */}
+              <div className="rounded-2xl border border-[#252A36] dark:border-[#252A36] light:border-slate-200 bg-[#121620] dark:bg-[#121620] light:bg-white p-6 space-y-6 shadow-sm">
+                <div className="pb-3 border-b border-[#252A36] flex items-center justify-between">
+                  <h3 className="text-base font-bold text-white dark:text-white light:text-slate-900 flex items-center gap-2">
+                    <CreditCard className="w-5 h-5 text-indigo-400" />
+                    <span>Indian &amp; Global Payment Gateways (Razorpay &amp; Cashfree)</span>
+                  </h3>
+                  <span className="text-[11px] font-mono text-emerald-400 bg-emerald-500/10 px-2.5 py-1 rounded-full border border-emerald-500/20">
+                    Active Dual Integration
+                  </span>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  {/* Razorpay Setup */}
+                  <div className="p-4 rounded-xl border border-[#252A36] bg-[#0B0D12] space-y-3">
+                    <div className="flex items-center justify-between">
+                      <span className="text-xs font-bold text-white flex items-center gap-1.5">
+                        <span className="w-2 h-2 rounded-full bg-indigo-500" />
+                        <span>Razorpay Gateway</span>
+                      </span>
+                      <label className="flex items-center gap-2 cursor-pointer text-xs text-zinc-400">
+                        <input
+                          type="checkbox"
+                          checked={formSettings.razorpay_enabled ?? true}
+                          onChange={e =>
+                            setFormSettings({ ...formSettings, razorpay_enabled: e.target.checked })
+                          }
+                          className="rounded border-[#252A36] text-indigo-600 focus:ring-0"
+                        />
+                        <span>Enabled</span>
+                      </label>
+                    </div>
+
+                    <div>
+                      <label className="block text-[11px] font-medium text-zinc-400 mb-1">
+                        Razorpay Key ID (Test or Live)
+                      </label>
+                      <input
+                        type="text"
+                        placeholder="rzp_test_... or rzp_live_..."
+                        value={formSettings.razorpay_key_id || ''}
+                        onChange={e =>
+                          setFormSettings({ ...formSettings, razorpay_key_id: e.target.value })
+                        }
+                        className="w-full px-3 py-2 rounded-lg border border-[#252A36] dark:border-[#252A36] light:border-slate-300 bg-[#121620] dark:bg-[#121620] light:bg-white text-xs text-white dark:text-white light:text-slate-900 focus:outline-none focus:border-indigo-500 font-mono shadow-sm"
+                      />
+                    </div>
+                  </div>
+
+                  {/* Cashfree Setup */}
+                  <div className="p-4 rounded-xl border border-[#252A36] dark:border-[#252A36] light:border-slate-200 bg-[#0B0D12] dark:bg-[#0B0D12] light:bg-slate-50 space-y-3">
+                    <div className="flex items-center justify-between">
+                      <span className="text-xs font-bold text-white dark:text-white light:text-slate-900 flex items-center gap-1.5">
+                        <span className="w-2 h-2 rounded-full bg-purple-500" />
+                        <span>Cashfree Payments</span>
+                      </span>
+                      <label className="flex items-center gap-2 cursor-pointer text-xs text-zinc-400 dark:text-zinc-400 light:text-slate-600">
+                        <input
+                          type="checkbox"
+                          checked={formSettings.cashfree_enabled ?? true}
+                          onChange={e =>
+                            setFormSettings({ ...formSettings, cashfree_enabled: e.target.checked })
+                          }
+                          className="rounded border-[#252A36] dark:border-[#252A36] light:border-slate-300 text-purple-600 focus:ring-0"
+                        />
+                        <span>Enabled</span>
+                      </label>
+                    </div>
+
+                    <div>
+                      <label className="block text-[11px] font-medium text-zinc-400 dark:text-zinc-400 light:text-slate-600 mb-1">
+                        Cashfree App ID (Client ID)
+                      </label>
+                      <input
+                        type="text"
+                        placeholder="cf_app_... or production ID"
+                        value={formSettings.cashfree_app_id || ''}
+                        onChange={e =>
+                          setFormSettings({ ...formSettings, cashfree_app_id: e.target.value })
+                        }
+                        className="w-full px-3 py-2 rounded-lg border border-[#252A36] dark:border-[#252A36] light:border-slate-300 bg-[#121620] dark:bg-[#121620] light:bg-white text-xs text-white dark:text-white light:text-slate-900 focus:outline-none focus:border-indigo-500 font-mono shadow-sm"
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                {/* Tax & Invoicing Details */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
+                  <div>
+                    <label className="block text-[11px] font-medium text-zinc-400 dark:text-zinc-400 light:text-slate-600 mb-1">
+                      Business GSTIN / Tax ID
+                    </label>
+                    <input
+                      type="text"
+                      placeholder="e.g. 29ABCDE1234F1Z5"
+                      value={formSettings.gst_number || ''}
+                      onChange={e =>
+                        setFormSettings({ ...formSettings, gst_number: e.target.value })
+                      }
+                      className="w-full px-3 py-2 rounded-lg border border-[#252A36] dark:border-[#252A36] light:border-slate-300 bg-[#0B0D12] dark:bg-[#0B0D12] light:bg-white text-xs text-white dark:text-white light:text-slate-900 focus:outline-none focus:border-indigo-500 font-mono shadow-sm"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-[11px] font-medium text-zinc-400 dark:text-zinc-400 light:text-slate-600 mb-1">
+                      Primary Currency Display Symbol
+                    </label>
+                    <input
+                      type="text"
+                      placeholder="₹ or $"
+                      value={formSettings.currency_symbol || '₹'}
+                      onChange={e =>
+                        setFormSettings({ ...formSettings, currency_symbol: e.target.value })
+                      }
+                      className="w-full px-3 py-2 rounded-lg border border-[#252A36] dark:border-[#252A36] light:border-slate-300 bg-[#0B0D12] dark:bg-[#0B0D12] light:bg-white text-xs text-white dark:text-white light:text-slate-900 focus:outline-none focus:border-indigo-500 shadow-sm"
+                    />
+                  </div>
                 </div>
               </div>
 

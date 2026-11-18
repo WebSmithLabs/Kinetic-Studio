@@ -15,17 +15,17 @@ export const RefundPolicyPage: React.FC = () => {
         canonical="https://websmithlabs.com/refund-policy"
       />
 
-      <div className="pt-32 pb-24 text-left">
+      <div className="pt-24 sm:pt-32 pb-16 sm:pb-24 text-left transition-colors">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="space-y-4 mb-12">
+          <div className="space-y-4 mb-8 sm:mb-12">
             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-indigo-500/30 bg-indigo-500/10 light:border-indigo-200 light:bg-indigo-50 text-xs font-mono font-semibold text-indigo-300 light:text-indigo-600">
               <ReceiptText className="w-3.5 h-3.5" />
               <span>BILLING &amp; CANCELLATION POLICY</span>
             </div>
-            <h1 className="text-4xl sm:text-5xl font-extrabold text-white dark:text-white light:text-slate-900 tracking-tight">
+            <h1 className="text-3xl sm:text-5xl font-extrabold text-white dark:text-white light:text-slate-900 tracking-tight break-words">
               Refund Policy
             </h1>
-            <p className="text-xs font-mono text-zinc-400 light:text-slate-500">
+            <p className="text-xs font-mono text-zinc-400 dark:text-zinc-400 light:text-slate-500">
               Last updated: November 2026 &bull; {settings.company_name} (WSL)
             </p>
           </div>

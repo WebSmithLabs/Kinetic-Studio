@@ -9,6 +9,11 @@ import {
   AdminUser,
   StudioUser,
   UserRole,
+  PaymentRecord,
+  SubscriptionPlan,
+  ClientSubscription,
+  StoreProduct,
+  CollaborationItem,
 } from '../types';
 import {
   initialSiteSettings,
@@ -17,6 +22,11 @@ import {
   initialFaqs,
   initialTestimonials,
   initialInquiries,
+  initialSubscriptionPlans,
+  initialStoreProducts,
+  initialPayments,
+  initialSubscriptions,
+  initialCollaborations,
 } from '../lib/defaultData';
 import {
   getSupabaseClient,
@@ -90,6 +100,26 @@ interface StudioContextType {
   addFaq: (faq: Omit<FaqItem, 'id'>) => Promise<boolean>;
   updateFaq: (id: string, updates: Partial<FaqItem>) => Promise<boolean>;
   deleteFaq: (id: string) => Promise<boolean>;
+
+  // Payments & Invoices (Razorpay & Cashfree)
+  payments: PaymentRecord[];
+  recordPayment: (payment: PaymentRecord) => Promise<boolean>;
+
+  // Subscriptions & Maintenance Retainers
+  subscriptionPlans: SubscriptionPlan[];
+  clientSubscriptions: ClientSubscription[];
+  addSubscription: (sub: Omit<ClientSubscription, 'id' | 'created_at'>) => Promise<boolean>;
+  cancelSubscription: (id: string) => Promise<boolean>;
+
+  // Store Products (Templates & Turnkey Websites)
+  storeProducts: StoreProduct[];
+  addStoreProduct: (prod: Omit<StoreProduct, 'id'>) => Promise<boolean>;
+  updateStoreProduct: (id: string, updates: Partial<StoreProduct>) => Promise<boolean>;
+  deleteStoreProduct: (id: string) => Promise<boolean>;
+
+  // Client Collaboration & Team Discussion
+  collaborations: CollaborationItem[];
+  addCollaborationMessage: (msg: Omit<CollaborationItem, 'id' | 'created_at'>) => Promise<boolean>;
 
   // Auth
   currentUser: StudioUser | null;
@@ -173,6 +203,31 @@ export const StudioProvider: React.FC<{ children: React.ReactNode }> = ({ childr
   const [faqs, setFaqs] = useState<FaqItem[]>(() => {
     const saved = localStorage.getItem('wsl_faqs') || localStorage.getItem('ks_faqs');
     return saved ? JSON.parse(saved) : initialFaqs;
+  });
+
+  const [payments, setPayments] = useState<PaymentRecord[]>(() => {
+    const saved = localStorage.getItem('wsl_payments');
+    return saved ? JSON.parse(saved) : initialPayments;
+  });
+
+  const [subscriptionPlans, setSubscriptionPlans] = useState<SubscriptionPlan[]>(() => {
+    const saved = localStorage.getItem('wsl_subscription_plans');
+    return saved ? JSON.parse(saved) : initialSubscriptionPlans;
+  });
+
+  const [clientSubscriptions, setClientSubscriptions] = useState<ClientSubscription[]>(() => {
+    const saved = localStorage.getItem('wsl_subscriptions');
+    return saved ? JSON.parse(saved) : initialSubscriptions;
+  });
+
+  const [storeProducts, setStoreProducts] = useState<StoreProduct[]>(() => {
+    const saved = localStorage.getItem('wsl_store_products');
+    return saved ? JSON.parse(saved) : initialStoreProducts;
+  });
+
+  const [collaborations, setCollaborations] = useState<CollaborationItem[]>(() => {
+    const saved = localStorage.getItem('wsl_collaborations');
+    return saved ? JSON.parse(saved) : initialCollaborations;
   });
 
   const [currentUser, setCurrentUser] = useState<StudioUser | null>(() => {
@@ -349,6 +404,26 @@ export const StudioProvider: React.FC<{ children: React.ReactNode }> = ({ childr
   useEffect(() => {
     localStorage.setItem('wsl_faqs', JSON.stringify(faqs));
   }, [faqs]);
+
+  useEffect(() => {
+    localStorage.setItem('wsl_payments', JSON.stringify(payments));
+  }, [payments]);
+
+  useEffect(() => {
+    localStorage.setItem('wsl_subscriptions', JSON.stringify(clientSubscriptions));
+  }, [clientSubscriptions]);
+
+  useEffect(() => {
+    localStorage.setItem('wsl_store_products', JSON.stringify(storeProducts));
+  }, [storeProducts]);
+
+  useEffect(() => {
+    localStorage.setItem('wsl_collaborations', JSON.stringify(collaborations));
+  }, [collaborations]);
+
+  useEffect(() => {
+    localStorage.setItem('wsl_subscription_plans', JSON.stringify(subscriptionPlans));
+  }, [subscriptionPlans]);
 
   // Load from Supabase when configured
   const loadSupabaseData = useCallback(async () => {
@@ -852,6 +927,135 @@ export const StudioProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     return true;
   };
 
+  // Payment Recording & Gateway Transaction Log
+  const recordPayment = async (payment: PaymentRecord): Promise<boolean> => {
+    setPayments(prev => [payment, ...prev]);
+    const client = getSupabaseClient();
+    if (client && isSupabaseConfigured()) {
+      try {
+        const { error } = await client.from('payments').insert([payment]);
+        if (error) console.warn('Supabase payment insert notice:', error);
+      } catch (err) {
+        console.warn('Supabase payment insert caught error:', err);
+      }
+    }
+    return true;
+  };
+
+  // Subscriptions & Retainers
+  const addSubscription = async (
+    sub: Omit<ClientSubscription, 'id' | 'created_at'>
+  ): Promise<boolean> => {
+    const item: ClientSubscription = {
+      ...sub,
+      id: `sub_${Date.now()}`,
+      created_at: new Date().toISOString(),
+    };
+    setClientSubscriptions(prev => [item, ...prev]);
+    const client = getSupabaseClient();
+    if (client && isSupabaseConfigured()) {
+      try {
+        const { error } = await client.from('subscriptions').insert([item]);
+        if (error) console.warn('Supabase subscription insert notice:', error);
+      } catch (err) {
+        console.warn('Supabase subscription caught error:', err);
+      }
+    }
+    return true;
+  };
+
+  const cancelSubscription = async (id: string): Promise<boolean> => {
+    setClientSubscriptions(prev =>
+      prev.map(s => (s.id === id ? { ...s, status: 'cancelled' } : s))
+    );
+    const client = getSupabaseClient();
+    if (client && isSupabaseConfigured()) {
+      try {
+        const { error } = await client
+          .from('subscriptions')
+          .update({ status: 'cancelled' })
+          .eq('id', id);
+        if (error) console.warn('Supabase subscription cancel error:', error);
+      } catch (err) {
+        console.warn('Supabase subscription cancel caught error:', err);
+      }
+    }
+    return true;
+  };
+
+  // Store Products (Templates & Turnkey Websites)
+  const addStoreProduct = async (prod: Omit<StoreProduct, 'id'>): Promise<boolean> => {
+    const item: StoreProduct = {
+      ...prod,
+      id: generateUUID(),
+      created_at: new Date().toISOString(),
+    };
+    setStoreProducts(prev => [item, ...prev]);
+    const client = getSupabaseClient();
+    if (client && isSupabaseConfigured()) {
+      try {
+        const { error } = await client.from('store_products').insert([item]);
+        if (error) console.warn('Supabase store product insert error:', error);
+      } catch (err) {
+        console.warn('Supabase store product insert caught error:', err);
+      }
+    }
+    return true;
+  };
+
+  const updateStoreProduct = async (
+    id: string,
+    updates: Partial<StoreProduct>
+  ): Promise<boolean> => {
+    setStoreProducts(prev => prev.map(p => (p.id === id ? { ...p, ...updates } : p)));
+    const client = getSupabaseClient();
+    if (client && isSupabaseConfigured()) {
+      try {
+        const { error } = await client.from('store_products').update(updates).eq('id', id);
+        if (error) console.warn('Supabase store product update error:', error);
+      } catch (err) {
+        console.warn('Supabase store product update caught error:', err);
+      }
+    }
+    return true;
+  };
+
+  const deleteStoreProduct = async (id: string): Promise<boolean> => {
+    setStoreProducts(prev => prev.filter(p => p.id !== id));
+    const client = getSupabaseClient();
+    if (client && isSupabaseConfigured()) {
+      try {
+        const { error } = await client.from('store_products').delete().eq('id', id);
+        if (error) console.warn('Supabase store product delete error:', error);
+      } catch (err) {
+        console.warn('Supabase store product delete caught error:', err);
+      }
+    }
+    return true;
+  };
+
+  // Client Collaboration & Team Messaging
+  const addCollaborationMessage = async (
+    msg: Omit<CollaborationItem, 'id' | 'created_at'>
+  ): Promise<boolean> => {
+    const item: CollaborationItem = {
+      ...msg,
+      id: generateUUID(),
+      created_at: new Date().toISOString(),
+    };
+    setCollaborations(prev => [...prev, item]);
+    const client = getSupabaseClient();
+    if (client && isSupabaseConfigured()) {
+      try {
+        const { error } = await client.from('collaboration_messages').insert([item]);
+        if (error) console.warn('Supabase collaboration message insert error:', error);
+      } catch (err) {
+        console.warn('Supabase collaboration caught error:', err);
+      }
+    }
+    return true;
+  };
+
   // Authentication Methods Connected to Supabase Auth
   const loginWithEmail = async (
     email: string,
@@ -1235,6 +1439,18 @@ export const StudioProvider: React.FC<{ children: React.ReactNode }> = ({ childr
         addFaq,
         updateFaq,
         deleteFaq,
+        payments,
+        recordPayment,
+        subscriptionPlans,
+        clientSubscriptions,
+        addSubscription,
+        cancelSubscription,
+        storeProducts,
+        addStoreProduct,
+        updateStoreProduct,
+        deleteStoreProduct,
+        collaborations,
+        addCollaborationMessage,
         currentUser,
         adminUser,
         isAdmin,

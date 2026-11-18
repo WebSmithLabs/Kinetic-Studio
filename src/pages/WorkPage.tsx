@@ -55,24 +55,24 @@ export const WorkPage: React.FC = () => {
         canonical="https://websmithlabs.com/work"
       />
 
-      <div className="pt-32 pb-24 text-left">
+      <div className="pt-24 sm:pt-32 pb-16 sm:pb-24 text-left transition-colors">
         {/* Header */}
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-16">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-10 sm:mb-16">
           <div className="max-w-3xl space-y-4">
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-indigo-500/30 bg-indigo-500/10 text-xs font-mono font-semibold text-indigo-300">
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-indigo-500/30 bg-indigo-500/10 light:border-indigo-200 light:bg-indigo-50 text-xs font-mono font-semibold text-indigo-300 light:text-indigo-600">
               <Layers className="w-3.5 h-3.5" />
               <span>PORTFOLIO</span>
             </div>
-            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold text-white dark:text-white light:text-slate-900 tracking-tight leading-tight">
+            <h1 className="text-3xl sm:text-5xl lg:text-6xl font-extrabold text-white dark:text-white light:text-slate-900 tracking-tight leading-tight break-words">
               A Portfolio of Purpose-Built Digital Experiences.
             </h1>
-            <p className="text-lg sm:text-xl text-zinc-400 dark:text-zinc-400 light:text-slate-600 leading-relaxed">
+            <p className="text-base sm:text-lg lg:text-xl text-zinc-400 dark:text-zinc-400 light:text-slate-600 leading-relaxed">
               Explore our recent business websites, web applications, and digital platforms.
             </p>
           </div>
 
           {/* Filters & Search Bar */}
-          <div className="mt-12 flex flex-col md:flex-row items-stretch md:items-center justify-between gap-4 pt-6 border-t border-[#252A36] dark:border-[#252A36] light:border-slate-200">
+          <div className="mt-8 sm:mt-12 flex flex-col md:flex-row items-stretch md:items-center justify-between gap-4 pt-6 border-t border-[#252A36] dark:border-[#252A36] light:border-slate-200">
             {/* Category Pills */}
             <div className="flex items-center gap-2 overflow-x-auto pb-2 md:pb-0 no-scrollbar">
               {categories.map(cat => (
@@ -227,7 +227,7 @@ export const WorkPage: React.FC = () => {
         </div>
 
         {/* Bottom Banner */}
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-20">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-12 sm:mt-20">
           <ContactCtaBanner />
         </div>
       </div>

@@ -53,6 +53,13 @@ export interface SiteSettings {
   meta_title: string;
   meta_description: string;
   footer_text: string;
+  razorpay_key_id?: string;
+  razorpay_enabled?: boolean;
+  cashfree_app_id?: string;
+  cashfree_mode?: 'sandbox' | 'production';
+  cashfree_enabled?: boolean;
+  currency_symbol?: string;
+  gst_number?: string;
   updated_at?: string;
 }
 
@@ -109,6 +116,9 @@ export interface InquiryItem {
   reference_websites?: string;
   status: InquiryStatus;
   admin_notes?: string;
+  advance_amount?: number;
+  total_amount?: number;
+  paid_amount?: number;
   created_at: string;
   updated_at?: string;
 }
@@ -153,3 +163,100 @@ export interface StudioUser {
 }
 
 export type AdminUser = StudioUser;
+
+export type PaymentGateway = 'razorpay' | 'cashfree' | 'demo';
+
+export type PaymentType =
+  | 'advance_deposit'
+  | 'milestone_payment'
+  | 'full_payment'
+  | 'template_purchase'
+  | 'subscription_retainer';
+
+export interface PaymentRecord {
+  id: string;
+  user_id?: string;
+  client_email: string;
+  client_name: string;
+  inquiry_id?: string;
+  product_id?: string;
+  subscription_id?: string;
+  amount: number;
+  currency: 'INR' | 'USD';
+  gateway: PaymentGateway;
+  payment_id: string;
+  order_id: string;
+  payment_type: PaymentType;
+  title: string;
+  status: 'success' | 'pending' | 'failed' | 'refunded';
+  invoice_number: string;
+  notes?: string;
+  receipt_url?: string;
+  created_at: string;
+}
+
+export interface SubscriptionPlan {
+  id: string;
+  slug: string;
+  name: string;
+  badge?: string;
+  monthly_price_inr: number;
+  annual_price_inr: number;
+  monthly_price_usd: number;
+  annual_price_usd: number;
+  description: string;
+  features: string[];
+  sla: string;
+  support_channel: string;
+  hours_included: string;
+  is_popular: boolean;
+}
+
+export interface ClientSubscription {
+  id: string;
+  user_id?: string;
+  client_email: string;
+  client_name: string;
+  plan_slug: string;
+  plan_name: string;
+  billing_cycle: 'monthly' | 'annual';
+  amount: number;
+  currency: 'INR' | 'USD';
+  gateway: PaymentGateway;
+  status: 'active' | 'cancelled' | 'paused' | 'past_due';
+  start_date: string;
+  next_billing_date: string;
+  created_at: string;
+}
+
+export interface StoreProduct {
+  id: string;
+  slug: string;
+  title: string;
+  tagline: string;
+  category: string;
+  price_inr: number;
+  original_price_inr: number;
+  price_usd: number;
+  thumbnail_url: string;
+  live_demo_url: string;
+  tech_stack: string[];
+  features: string[];
+  deliverables: string[];
+  badge?: string;
+  is_featured: boolean;
+  created_at?: string;
+}
+
+export interface CollaborationItem {
+  id: string;
+  inquiry_id: string;
+  sender_email: string;
+  sender_name: string;
+  sender_role: 'client' | 'team';
+  message: string;
+  attachments?: { name: string; url: string; size?: string }[];
+  type: 'message' | 'milestone_update' | 'deliverable_shared' | 'approval_request';
+  status?: 'pending' | 'approved' | 'rejected';
+  created_at: string;
+}
