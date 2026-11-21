@@ -9,16 +9,22 @@ interface SEOProps {
   image?: string;
 }
 
-const BASE_URL = 'https://websmithlabs.pages.dev';
+const getBaseUrl = () => {
+  if (typeof window !== 'undefined' && window.location && window.location.origin) {
+    return window.location.origin;
+  }
+  return 'https://websmithlabs.site';
+};
 
 export const SEO: React.FC<SEOProps> = ({
   title,
   description,
   canonical,
   type = 'website',
-  image = 'https://websmithlabs.pages.dev/Logo.png',
+  image = 'https://websmithlabs.site/Logo.png',
 }) => {
   const { settings } = useStudio();
+  const baseUrl = getBaseUrl();
 
   useEffect(() => {
     const finalTitle = title
@@ -46,7 +52,7 @@ export const SEO: React.FC<SEOProps> = ({
     setMetaTag('meta[property="og:image"]', 'content', image);
     setMetaTag('meta[property="og:image:secure_url"]', 'content', image);
     setMetaTag('meta[property="og:image:alt"]', 'content', `${settings.company_name} Official Logo`);
-    setMetaTag('meta[property="og:url"]', 'content', canonical || `${BASE_URL}${window.location.pathname}`);
+    setMetaTag('meta[property="og:url"]', 'content', canonical ? (canonical.startsWith('http') ? canonical : `${baseUrl}${canonical}`) : `${baseUrl}${window.location.pathname}`);
     setMetaTag('meta[name="robots"]', 'content', 'index, follow');
     setMetaTag('meta[property="twitter:title"]', 'content', finalTitle);
     setMetaTag('meta[property="twitter:description"]', 'content', finalDesc);
@@ -60,7 +66,7 @@ export const SEO: React.FC<SEOProps> = ({
         link.setAttribute('rel', 'canonical');
         document.head.appendChild(link);
       }
-      link.setAttribute('href', `${BASE_URL}${canonical}`);
+      link.setAttribute('href', canonical.startsWith('http') ? canonical : `${baseUrl}${canonical}`);
     }
   }, [title, description, canonical, type, image, settings]);
 
